@@ -26,8 +26,12 @@ public class AgentManager {
     private AgentManager(){
     }
 
-    public void update(){
+    public void update() throws InterruptedException {
+
+
+        instance.countDownLatch = new CountDownLatch(agentMap.size());
         instance.agentMap.values().forEach(threadPool::submit);
+        instance.countDownLatch.await();
     }
 
     public static AgentManager getInstance(){

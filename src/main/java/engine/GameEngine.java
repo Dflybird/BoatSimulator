@@ -1,7 +1,9 @@
-package game;
+package engine;
 
 import core.AgentManager;
 import gui.Window;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import util.TimeUtil;
 
 /**
@@ -10,6 +12,8 @@ import util.TimeUtil;
  * @Version 1.0
  **/
 public class GameEngine implements Runnable {
+
+    private final Logger logger = LoggerFactory.getLogger(GameEngine.class);
 
     /** 渲染频率 **/
     private int FPS = 60;
@@ -24,6 +28,10 @@ public class GameEngine implements Runnable {
     private Window window;
     private AgentManager agentManager;
 
+    public GameEngine(Window window) {
+        this.window = window;
+    }
+
     @Override
     public void run() {
         init();
@@ -31,7 +39,9 @@ public class GameEngine implements Runnable {
     }
 
     protected void init() {
+        window.init();
     }
+
     protected void gameLoop() {
         //可以用来更新逻辑的时间
         double accumulator = 0;
