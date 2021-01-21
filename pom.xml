@@ -360,6 +360,13 @@
             <version>${pngdecoder.version}</version>
         </dependency>
 
+        <!-- ODE library -->
+        <dependency>
+            <groupId>org.ode4j</groupId>
+            <artifactId>core</artifactId>
+            <version>0.4.0</version>
+        </dependency>
+
         <!-- Testing framework -->
         <dependency>
             <groupId>junit</groupId>

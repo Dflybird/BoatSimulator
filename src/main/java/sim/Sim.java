@@ -29,8 +29,8 @@ public class Sim {
     }
 
     private void start(){
-        Window window = new Window("BoatSimulator", 300, 300, false);
-        GameEngine gameEngine = new GameEngine(window);
-        gameEngine.run();
+//        Window window = new Window("BoatSimulator", 300, 300, false);
+//        GameEngine gameEngine = new GameEngine(window);
+//        gameEngine.run();
     }
 }

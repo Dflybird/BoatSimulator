@@ -3,10 +3,7 @@ package core;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 /**
  * @Author: gq
@@ -23,15 +20,31 @@ public class AgentManager {
     private CountDownLatch countDownLatch;
     private ConcurrentHashMap<String, Agent> agentMap = new ConcurrentHashMap<>();
 
-    private AgentManager(){
-    }
+    private ConcurrentLinkedQueue<Agent> agentInsertEven = new ConcurrentLinkedQueue<>();
+    private ConcurrentLinkedQueue<String> agentRemoveEven = new ConcurrentLinkedQueue<>();
 
-    public void update() throws InterruptedException {
+    private AgentManager(){}
 
+    public void update(double stepTime) {
+        while (!agentRemoveEven.isEmpty()) {
+            agentMap.remove(agentRemoveEven.poll());
+        }
+        while (!agentInsertEven.isEmpty()) {
+            Agent agent = agentInsertEven.poll();
+            agentMap.put(agent.getAgentID(), agent);
+        }
+        //TODO 网络ACC
 
         instance.countDownLatch = new CountDownLatch(agentMap.size());
         instance.agentMap.values().forEach(threadPool::submit);
-        instance.countDownLatch.await();
+        try {
+            instance.countDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        //TODO 物理引擎
+
+
     }
 
     public static AgentManager getInstance(){
@@ -40,6 +53,14 @@ public class AgentManager {
 
     public static void onDone(){
         instance.countDownLatch.countDown();
+    }
+
+    public static void addAgent(Agent agent) {
+        instance.agentInsertEven.offer(agent);
+    }
+
+    public static void deleteAgent(String agentID){
+        instance.agentRemoveEven.offer(agentID);
     }
 
 }

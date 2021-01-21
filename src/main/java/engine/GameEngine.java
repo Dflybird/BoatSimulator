@@ -18,18 +18,23 @@ public class GameEngine implements Runnable {
     /** 渲染频率 **/
     private int FPS = 60;
     /** 更新频率 **/
-    private int UPS = 500;
+    private int UPS = 200;
     /** Agent系统每周期时间步长，单位毫秒 **/
     private double stepTime = 1.0d / UPS;
     /** 每帧渲染时间，单位毫秒 **/
     private double secsPreFrame = 1.0d / FPS;
-    private double previous;
+
+    private int fpsCount = 0;
+    private int upsCount = 0;
 
     private Window window;
     private AgentManager agentManager;
+    private SimTimer timer;
 
-    public GameEngine(Window window) {
+    public GameEngine(Window window, AgentManager agentManager) {
         this.window = window;
+        this.agentManager = agentManager;
+        this.timer = new SimTimer();
     }
 
     @Override
@@ -40,17 +45,15 @@ public class GameEngine implements Runnable {
 
     protected void init() {
         window.init();
+        timer.init();
     }
 
     protected void gameLoop() {
         //可以用来更新逻辑的时间
         double accumulator = 0;
-        previous = TimeUtil.currentTime();
 
         while (true) {
-            double current = TimeUtil.currentTime();
-            double frameTime = current - previous;
-            previous = current;
+            double frameTime = timer.getDelta();
 
             accumulator += frameTime;
 
@@ -58,14 +61,21 @@ public class GameEngine implements Runnable {
 
             while (accumulator >= stepTime) {
                 //Agent系统周期更新
-
+                agentManager.update(stepTime);
+                timer.updateUPS();
                 accumulator-=stepTime;
             }
 
             double alpha = accumulator / stepTime;
-            //State state = currentState * alpha + previousState * ( 1.0 - alpha );
+            //GUIState guiState = currentSimState * alpha + previousSimState * ( 1.0 - alpha );
 
             //TODO 渲染
+            window.render();
+            timer.updateFPS();
+
+            timer.update();
+            //打印fps和ups
+            logger.info("FPS: {} | UPS: {}", timer.getFPS(), timer.getUPS());
 
             //如果没有开启垂直同步，通过sleep休眠CPU，控制刷新帧率
             if (!window.isvSync()) {
@@ -75,8 +85,9 @@ public class GameEngine implements Runnable {
     }
 
     private void sync() {
-        double frameEndTime = previous + secsPreFrame;
-        while (frameEndTime < TimeUtil.currentTime()) {
+        double frameEndTime = timer.getLastLoopTime() + secsPreFrame;
+        while (timer.getTime() < frameEndTime) {
+            Thread.yield();
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {
@@ -88,4 +99,5 @@ public class GameEngine implements Runnable {
     private void processInput() {
 
     }
+
 }

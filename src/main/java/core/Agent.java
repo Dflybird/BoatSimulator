@@ -11,15 +11,25 @@ public abstract class Agent implements Runnable {
 
     private final Logger logger = LoggerFactory.getLogger(Agent.class);
 
+    private final String agentID;
+
+    public Agent(String agentID) {
+        this.agentID = agentID;
+    }
 
     @Override
     public void run() {
-
+        update();
         AgentManager.onDone();
     }
 
+    protected abstract void update();
 
     public void send() {
 
+    }
+
+    public String getAgentID() {
+        return agentID;
     }
 }
