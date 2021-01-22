@@ -15,7 +15,7 @@ public class AgentManager {
 
     private static AgentManager instance = new AgentManager();
     private static final Integer processNum = Runtime.getRuntime().availableProcessors();
-    private static final ExecutorService threadPool = Executors.newCachedThreadPool();
+    private static final ExecutorService threadPool = Executors.newFixedThreadPool(processNum * 2);
 
     private CountDownLatch countDownLatch;
     private ConcurrentHashMap<String, Agent> agentMap = new ConcurrentHashMap<>();
