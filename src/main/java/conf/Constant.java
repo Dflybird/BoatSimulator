@@ -1,4 +1,4 @@
-package config;
+package conf;
 
 /**
  * @Author: gq
@@ -7,4 +7,6 @@ package config;
 public class Constant {
 
     public static final String DEFAULT_RESOURCES_DIR = "src/main/resources";
+
+    public static final String CONFIG_FILE_NAME = "config.json";
 }

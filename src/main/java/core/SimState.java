@@ -9,9 +9,5 @@ import java.util.List;
  */
 public class SimState {
 
-    private List<StateUpdateListener> listeners = new ArrayList<>();
 
-    public void addListener(StateUpdateListener listener) {
-        listeners.add(listener);
-    }
 }

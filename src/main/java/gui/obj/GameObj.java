@@ -1,5 +1,6 @@
 package gui.obj;
 
+import gui.graphic.Mesh;
 import org.joml.Vector3f;
 
 /**
@@ -12,7 +13,7 @@ public abstract class GameObj {
     protected Vector3f translation;
     protected Vector3f rotation;
     protected float scale;
-    protected Model model;
+    protected Mesh mesh;
 
     public GameObj(Vector3f translation, Vector3f rotation, float scale) {
         this.translation = translation;
@@ -54,5 +55,13 @@ public abstract class GameObj {
 
     public void setScale(float scale) {
         this.scale = scale;
+    }
+
+    public Mesh getMesh() {
+        return mesh;
+    }
+
+    public void setMesh(Mesh mesh) {
+        this.mesh = mesh;
     }
 }

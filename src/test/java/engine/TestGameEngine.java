@@ -6,6 +6,7 @@ import gui.Window;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sim.SimGUI;
 
 /**
  * @Author: gq
@@ -17,7 +18,6 @@ public class TestGameEngine {
 
     @Test
     public void testEngine(){
-        Window window = new Window("test", 300, 300, false);
         AgentManager.addAgent(new Agent("agent1") {
             @Override
             protected void update() {
@@ -49,7 +49,7 @@ public class TestGameEngine {
 
             }
         });
-        GameEngine engine = new GameEngine(window, AgentManager.getInstance());
-        engine.run();
+        new SimGUI().start();
+
     }
 }

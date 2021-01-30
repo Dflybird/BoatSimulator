@@ -1,6 +1,5 @@
-package gui.graphic;
+package gui.graphic.light;
 
-import engine.GameEngine;
 import org.joml.Vector3f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-package gui.graphic;
+package gui.graphic.light;
 
 import org.joml.Vector3f;
 import org.slf4j.Logger;

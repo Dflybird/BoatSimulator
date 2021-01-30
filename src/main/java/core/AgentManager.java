@@ -3,6 +3,8 @@ package core;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.*;
 
 /**
@@ -22,6 +24,9 @@ public class AgentManager {
 
     private ConcurrentLinkedQueue<Agent> agentInsertEven = new ConcurrentLinkedQueue<>();
     private ConcurrentLinkedQueue<String> agentRemoveEven = new ConcurrentLinkedQueue<>();
+
+    private static SimState simState = new SimState();
+    private static final List<StateUpdateListener> listeners = new ArrayList<>();
 
     private AgentManager(){}
 
@@ -45,6 +50,13 @@ public class AgentManager {
         //TODO 物理引擎
 
 
+        //收集所有Agent状态
+        simState = new SimState();
+        agentMap.forEach((agentID, agent) -> {
+
+        });
+
+        listeners.forEach(listener -> listener.stateUpdated(simState));
     }
 
     public static AgentManager getInstance(){
@@ -63,4 +75,8 @@ public class AgentManager {
         instance.agentRemoveEven.offer(agentID);
     }
 
+    public static void registerSimStateListener(StateUpdateListener listener) {
+        listeners.add(listener);
+        listener.stateInit(simState);
+    }
 }

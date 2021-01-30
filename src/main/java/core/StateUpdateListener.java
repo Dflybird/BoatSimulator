@@ -6,5 +6,7 @@ package core;
  */
 public interface StateUpdateListener {
 
+    void stateInit(SimState simState);
+
     void stateUpdated(SimState simState);
 }

@@ -2,6 +2,8 @@ package gui;
 
 import core.SimState;
 import core.StateUpdateListener;
+import gui.obj.Camera;
+import gui.obj.Scene;
 
 /**
  * @Author: gq
@@ -10,6 +12,20 @@ import core.StateUpdateListener;
 public class GUIState implements StateUpdateListener {
 
     private SyncedCacheBuffer<SimState> simStateBuffer;
+    private Window window;
+
+    public void init(Window window) {
+        this.window = window;
+    }
+
+    public void render(Window window, Camera camera, Scene scene) {
+
+    }
+
+    @Override
+    public void stateInit(SimState simState) {
+        this.simStateBuffer = new SyncedCacheBuffer<>(simState);
+    }
 
     @Override
     public void stateUpdated(SimState simState) {

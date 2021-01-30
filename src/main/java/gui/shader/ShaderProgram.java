@@ -1,9 +1,9 @@
 package gui.shader;
 
-import config.Constant;
-import gui.graphic.DirectionalLight;
+import conf.Constant;
+import gui.graphic.light.DirectionalLight;
 import gui.graphic.Material;
-import gui.graphic.PointLight;
+import gui.graphic.light.PointLight;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
