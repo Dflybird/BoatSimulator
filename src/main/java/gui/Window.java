@@ -64,7 +64,6 @@ public class Window {
         glfwSetFramebufferSizeCallback(windowID, (window, width, height) -> {
             this.width = width;
             this.height = height;
-            this.projectionMatrix.setPerspective(FOV, (float) width / (float)height, Z_NEAR, Z_FAR);
             this.resize = true;
         });
 
@@ -139,6 +138,11 @@ public class Window {
         return windowID;
     }
 
+    public Matrix4f updateProjectionMatrix() {
+        projectionMatrix.setPerspective(FOV, (float) width / (float)height, Z_NEAR, Z_FAR);
+        return projectionMatrix;
+    }
+
     public Matrix4f getProjectionMatrix() {
         return projectionMatrix;
     }
@@ -149,5 +153,9 @@ public class Window {
             resize = false;
         }
         return result;
+    }
+
+    public void updateViewPoint(){
+        glViewport(0, 0, width, height);
     }
 }

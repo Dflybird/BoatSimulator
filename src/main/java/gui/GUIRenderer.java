@@ -46,7 +46,8 @@ public class GUIRenderer {
 
     public void render() {
         if (window.isResize(true)) {
-            glViewport(0, 0, window.getWidth(), window.getHeight());
+            window.updateProjectionMatrix();
+            window.updateViewPoint();
         }
         transformation.updateViewMatrix(camera);
 
