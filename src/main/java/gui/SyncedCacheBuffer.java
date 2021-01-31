@@ -35,6 +35,9 @@ public class SyncedCacheBuffer<DataType> {
 
     public List<DataType> getLatest(int num) {
         List<DataType> list = new ArrayList<>(num);
+        for (int i = 0; i < num; i++){
+            list.add(null);
+        }
         long check;
         while (true) {
             check = checkpoint;

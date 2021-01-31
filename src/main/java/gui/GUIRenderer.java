@@ -1,5 +1,6 @@
 package gui;
 
+import core.SimState;
 import gui.graphic.Mesh;
 import gui.graphic.Transformation;
 import gui.graphic.light.DirectionalLight;
@@ -51,7 +52,7 @@ public class GUIRenderer {
         }
         transformation.updateViewMatrix(camera);
 
-        renderScene(scene, guiState);
+        renderScene();
         renderHud();
     }
 
@@ -74,7 +75,7 @@ public class GUIRenderer {
     PointLight.Attenuation att = new PointLight.Attenuation(0.6f, 0.2f, 0.2f);
     PointLight pointLight = new PointLight(new Vector3f(1, 1, 1), new Vector3f(0, 0, 3), 1.0f, att);
     DirectionalLight directionalLight = new DirectionalLight(new Vector3f(1, 1, 1), new Vector3f(-1, 0, 0), 1.0f);
-    private void renderScene(Scene scene, GUIState guiState) {
+    private void renderScene() {
         sceneProgram.bind();
         sceneProgram.setUniform("projection", window.getProjectionMatrix());
         //渲染光
@@ -103,22 +104,32 @@ public class GUIRenderer {
 
 
         //渲染对象实体
-        renderMeshes(scene, guiState);
+        renderMeshes();
 
         sceneProgram.unbind();
     }
 
-    private void renderMeshes(Scene scene, GUIState guiState) {
-        //TODO 根据guiState计算obj当前状态
-
-
+    private void renderMeshes() {
+        SimState renderState = guiState.getRenderState();
         Matrix4f viewMatrix = transformation.viewMatrix();
 
         sceneProgram.setUniform("texture_sampler", 0);
         Map<Mesh, List<GameObj>> meshMap = scene.getAllMesh();
         for (Mesh mesh : meshMap.keySet()) {
             sceneProgram.setUniform("material", mesh.getMaterial());
-            mesh.render(meshMap.get(mesh),
+            List<GameObj> objList = meshMap.get(mesh);
+            for (GameObj obj : objList) {
+                SimState.StateInfo stateInfo = renderState.getState(obj.getID());
+                if (stateInfo != null) {
+                    float[] t = stateInfo.getTranslation();
+                    float[] r = stateInfo.getRotation();
+                    float s = stateInfo.getScale();
+                    obj.setTranslation(new Vector3f(t[0], t[1], t[2]));
+                    obj.setRotation(new Vector3f(r[0], r[1], r[2]));
+                    obj.setScale(s);
+                }
+            }
+            mesh.render(objList,
                     obj -> sceneProgram.setUniform("world", transformation.worldMatrix(obj, viewMatrix)));
         }
     }
@@ -136,4 +147,6 @@ public class GUIRenderer {
     public ShaderProgram getSceneProgram() {
         return sceneProgram;
     }
+
+
 }

@@ -42,7 +42,6 @@ public class Scene {
         Mesh mesh = object.getMesh();
         List<GameObj> list = meshMap.computeIfAbsent(mesh, key -> new ArrayList<>());
         list.add(object);
-        logger.debug("mesh size: {}", meshMap.size());
     }
 
     public void setGameObj (Collection<GameObj> objects) {

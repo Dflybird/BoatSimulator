@@ -70,7 +70,6 @@ public class SimGUI implements GameLogic {
 
     @Override
     public void render(double alpha) {
-        //GUIState guiState = currentSimState * alpha + previousSimState * ( 1.0 - alpha );
         guiState.computeRenderState(alpha);
         renderer.render();
     }
