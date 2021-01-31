@@ -1,7 +1,11 @@
 package gui;
 
+import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sim.SimGUI;
 
 import java.util.Objects;
 
@@ -16,18 +20,27 @@ import static org.lwjgl.system.MemoryUtil.NULL;
  */
 public class Window {
 
+    private final Logger logger = LoggerFactory.getLogger(Window.class);
+
+    private final float FOV = (float) Math.toRadians(60);
+    private final float Z_NEAR = 0.01f;
+    private final float Z_FAR = 1000f;
+    private final Matrix4f projectionMatrix = new Matrix4f();
+
     private long windowID;
 
     private final String title;
     private int width;
     private int height;
     private boolean vSync;
+    private boolean resize;
 
     public Window(String title, int width, int height, boolean vSync) {
         this.title = title;
         this.width = width;
         this.height = height;
         this.vSync = vSync;
+        this.resize = false;
     }
     public void init(){
         GLFWErrorCallback.createPrint(System.err).set();
@@ -36,6 +49,8 @@ public class Window {
             throw new IllegalStateException("Unable to initialize GLFW");
 
         glfwDefaultWindowHints();
+        glfwWindowHint(GLFW_VISIBLE, GL_FALSE); // the window will stay hidden after creation
+        glfwWindowHint(GLFW_RESIZABLE, GL_TRUE); // the window will be resizable
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -49,6 +64,8 @@ public class Window {
         glfwSetFramebufferSizeCallback(windowID, (window, width, height) -> {
             this.width = width;
             this.height = height;
+            this.projectionMatrix.setPerspective(FOV, (float) width / (float)height, Z_NEAR, Z_FAR);
+            this.resize = true;
         });
 
         // Make the OpenGL context current
@@ -65,7 +82,7 @@ public class Window {
         GL.createCapabilities();
 
         // Set the clear color
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClearColor(0.2f, 0.2f, 0.8f, 0.0f);
 //        glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
 
         //绘制3D对象时，远处的像素比近处的像素先绘制
@@ -78,6 +95,7 @@ public class Window {
         //不渲染反面
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
+
     }
 
     public boolean isvSync() {
@@ -119,5 +137,17 @@ public class Window {
 
     public long getWindowID() {
         return windowID;
+    }
+
+    public Matrix4f getProjectionMatrix() {
+        return projectionMatrix;
+    }
+
+    public boolean isResize(boolean clean) {
+        boolean result = resize;
+        if (clean) {
+            resize = false;
+        }
+        return result;
     }
 }

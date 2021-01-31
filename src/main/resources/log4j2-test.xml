@@ -6,7 +6,10 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="engine" level="DEBUG" additivity="false">
+        <Logger name="engine" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="gui" level="DEBUG" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
 

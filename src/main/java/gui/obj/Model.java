@@ -26,8 +26,7 @@ public class Model {
         this.normals = normals;
     }
 
-    public static Model loadObj(String fileName) {
-        File file = new File(fileName);
+    public static Model loadObj(File file) {
         String line;
 
         List<Vector3f> verticesList = new ArrayList<>();

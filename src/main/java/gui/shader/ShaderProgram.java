@@ -32,7 +32,7 @@ public class ShaderProgram {
 
     private Map<String, Integer> uniforms;
 
-    public void init(String vertFile, String fragFile){
+    public void init(File vertFile, File fragFile){
         uniforms = new HashMap<>();
 
         programId = glCreateProgram();
@@ -48,7 +48,7 @@ public class ShaderProgram {
         //读取文件
         StringBuilder builder = new StringBuilder();
         try {
-            FileInputStream fileInputStream = new FileInputStream(new File(Constant.DEFAULT_RESOURCES_DIR, vertFile));
+            FileInputStream fileInputStream = new FileInputStream(vertFile);
             BufferedReader reader = new BufferedReader(new InputStreamReader(fileInputStream));
             String line;
             while ((line = reader.readLine()) != null) {
@@ -73,7 +73,7 @@ public class ShaderProgram {
         //读文件
         builder.setLength(0);
         try {
-            FileInputStream fileInputStream = new FileInputStream(new File(Constant.DEFAULT_RESOURCES_DIR, fragFile));
+            FileInputStream fileInputStream = new FileInputStream(fragFile);
             BufferedReader reader = new BufferedReader(new InputStreamReader(fileInputStream));
             String line;
             while ((line = reader.readLine()) != null) {

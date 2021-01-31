@@ -1,10 +1,13 @@
 package gui.graphic;
 
+import gui.obj.GameObj;
 import gui.obj.Model;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.List;
+import java.util.function.Consumer;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL15.*;
@@ -36,11 +39,11 @@ public class Mesh {
 
     private Material material;
 
-    public Mesh(int shaderProgramId, Model model) {
+    public Mesh(Model model) {
         this.model = model;
-        this.vertexPosition = glGetAttribLocation(shaderProgramId, "vertexPosition");
-        this.textureCoordinate = glGetAttribLocation(shaderProgramId, "textureCoordinate");
-        this.vertexNormal = glGetAttribLocation(shaderProgramId, "vertexNormal");
+        this.vertexPosition = 0;
+        this.textureCoordinate = 1;
+        this.vertexNormal = 2;
         this.vertexCount = model.getIndices().length;
 
         vaoId = glGenVertexArrays();
@@ -53,6 +56,11 @@ public class Mesh {
 
         //解绑VAO
         glBindVertexArray(0);
+    }
+
+    public Mesh(Model model, Material material){
+        this(model);
+        this.material = material;
     }
 
     public void render() {
@@ -69,6 +77,28 @@ public class Mesh {
         glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, 0);
 
         glBindVertexArray(0);
+    }
+
+    public void render(List<GameObj> objects, Consumer<GameObj> consumer) {
+        Texture texture = material.getTexture();
+        if (texture != null) {
+            // Activate firs texture bank
+            glActiveTexture(GL_TEXTURE0);
+            // Bind the texture
+            glBindTexture(GL_TEXTURE_2D, texture.getTextureId());
+        }
+
+        glBindVertexArray(vaoId);
+
+        for (GameObj obj : objects) {
+            //计算坐标位置信息
+            consumer.accept(obj);
+            glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, 0);
+        }
+
+        glBindVertexArray(0);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
 
     public void cleanup() {

@@ -1,6 +1,10 @@
-package gui.obj;
+package gui;
 
+import engine.GameEngine;
 import gui.graphic.Mesh;
+import gui.obj.GameObj;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -11,7 +15,11 @@ import java.util.*;
  **/
 public class Scene {
 
+    private final Logger logger = LoggerFactory.getLogger(Scene.class);
+
     private final Map<Mesh, List<GameObj>> meshMap;
+
+    private SceneLight sceneLight;
 
     public Scene() {
         this.meshMap = new HashMap<>();
@@ -34,6 +42,7 @@ public class Scene {
         Mesh mesh = object.getMesh();
         List<GameObj> list = meshMap.computeIfAbsent(mesh, key -> new ArrayList<>());
         list.add(object);
+        logger.debug("mesh size: {}", meshMap.size());
     }
 
     public void setGameObj (Collection<GameObj> objects) {
@@ -51,6 +60,14 @@ public class Scene {
         for (Mesh mesh : meshMap.keySet()) {
             mesh.cleanup();
         }
+    }
+
+    public SceneLight getSceneLight() {
+        return sceneLight;
+    }
+
+    public void setSceneLight(SceneLight sceneLight) {
+        this.sceneLight = sceneLight;
     }
 
     public Map<Mesh, List<GameObj>> getAllMesh() {

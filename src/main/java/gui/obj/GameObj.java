@@ -31,7 +31,7 @@ public abstract class GameObj {
 
 //    public abstract void render(Window window, Camera camera);
 
-    public abstract void cleanup();
+//    public abstract void cleanup();
 
     public Vector3f getTranslation() {
         return translation;

@@ -24,8 +24,7 @@ public class Texture {
     private int width;
     private int height;
 
-    public Texture(String textureFile) {
-        File file = new File(textureFile);
+    public Texture(File file) {
         try {
             init(new FileInputStream(file));
         } catch (IOException e) {

@@ -65,6 +65,7 @@ public class GameEngine implements Runnable {
     }
 
     private void render(double alpha) {
+        window.clean();
         gameLogic.render(alpha);
 
         //TODO 渲染
@@ -74,6 +75,7 @@ public class GameEngine implements Runnable {
 
     private void cleanup(){
         gameLogic.cleanup();
+        window.cleanup();
     }
 
     protected void gameLoop() {
@@ -99,7 +101,7 @@ public class GameEngine implements Runnable {
 
             timer.update();
             //打印fps和ups
-            logger.info("FPS: {} | UPS: {}", timer.getFPS(), timer.getUPS());
+            logger.debug("FPS: {} | UPS: {}", timer.getFPS(), timer.getUPS());
 
             //如果没有开启垂直同步，通过sleep休眠CPU，控制刷新帧率
             if (!window.isvSync()) {
