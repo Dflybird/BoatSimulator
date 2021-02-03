@@ -1,11 +1,12 @@
-package core;
+package ams;
 
-import gui.obj.GameObj;
-import org.joml.Vector3f;
+import ams.agent.Agent;
+import physics.Entity;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.Objects;
 
 /**
  * @Author: gq
@@ -29,6 +30,14 @@ public class SimState {
         stateInfo.translation = translation;
         stateInfo.rotation = rotation;
         stateInfo.scale = scale;
+    }
+
+    public void collect(Agent agent) {
+        StateInfo stateInfo = stateMap.computeIfAbsent(agent.getAgentID(), key -> new StateInfo());
+        Entity entity = agent.getEntity();
+        stateInfo.translation = entity.getTranslation();
+        stateInfo.rotation = entity.getRotation();
+        stateInfo.scale = entity.getScale();
     }
 
     public StateInfo getState(String id) {
@@ -79,6 +88,19 @@ public class SimState {
         return dest.sub(state);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SimState simState = (SimState) o;
+        return stateMap.equals(simState.stateMap);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(stateMap);
+    }
+
     public static class StateInfo{
         protected float[] translation = new float[3];  //len = 3
         protected float[] rotation = new float[3]; //len = 3
@@ -97,7 +119,7 @@ public class SimState {
                 translation[i] *= num;
                 rotation[i] *= num;
             }
-            scale *= 3;
+            scale *= num;
             return this;
         }
 
@@ -129,6 +151,22 @@ public class SimState {
 
         public float getScale() {
             return scale;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            StateInfo stateInfo = (StateInfo) o;
+            return Float.compare(stateInfo.scale, scale) == 0 && Arrays.equals(translation, stateInfo.translation) && Arrays.equals(rotation, stateInfo.rotation);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = Objects.hash(scale);
+            result = 31 * result + Arrays.hashCode(translation);
+            result = 31 * result + Arrays.hashCode(rotation);
+            return result;
         }
     }
 }

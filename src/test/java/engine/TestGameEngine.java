@@ -1,8 +1,7 @@
 package engine;
 
-import core.Agent;
-import core.AgentManager;
-import gui.Window;
+import ams.agent.Agent;
+import ams.AgentManager;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

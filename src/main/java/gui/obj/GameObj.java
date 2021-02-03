@@ -12,7 +12,7 @@ import java.util.UUID;
  **/
 public abstract class GameObj {
 
-    private final String uuid;
+    private final String id;
 
     protected Vector3f translation;
     protected Vector3f rotation;
@@ -23,8 +23,8 @@ public abstract class GameObj {
         this(UUID.randomUUID().toString(), translation, rotation, scale);
     }
 
-    public GameObj(String uuid, Vector3f translation, Vector3f rotation, float scale) {
-        this.uuid = uuid;
+    public GameObj(String id, Vector3f translation, Vector3f rotation, float scale) {
+        this.id = id;
         this.translation = translation;
         this.rotation = rotation;
         this.scale = scale;
@@ -63,6 +63,6 @@ public abstract class GameObj {
     }
 
     public String getID() {
-        return uuid;
+        return id;
     }
 }

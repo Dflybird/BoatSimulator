@@ -1,6 +1,6 @@
 package gui;
 
-import core.SimState;
+import ams.SimState;
 import gui.graphic.Mesh;
 import gui.graphic.Transformation;
 import gui.graphic.light.DirectionalLight;
@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 import static conf.Constant.RESOURCES_SHADERS_DIR;
-import static org.lwjgl.opengl.GL11.glViewport;
 
 /**
  * 全局渲染，在此类中编辑环境渲染，实体渲染调用{@link GUIState}
@@ -110,7 +109,6 @@ public class GUIRenderer {
     }
 
     private void renderMeshes() {
-        SimState renderState = guiState.getRenderState();
         Matrix4f viewMatrix = transformation.viewMatrix();
 
         sceneProgram.setUniform("texture_sampler", 0);
@@ -118,17 +116,7 @@ public class GUIRenderer {
         for (Mesh mesh : meshMap.keySet()) {
             sceneProgram.setUniform("material", mesh.getMaterial());
             List<GameObj> objList = meshMap.get(mesh);
-            for (GameObj obj : objList) {
-                SimState.StateInfo stateInfo = renderState.getState(obj.getID());
-                if (stateInfo != null) {
-                    float[] t = stateInfo.getTranslation();
-                    float[] r = stateInfo.getRotation();
-                    float s = stateInfo.getScale();
-                    obj.setTranslation(new Vector3f(t[0], t[1], t[2]));
-                    obj.setRotation(new Vector3f(r[0], r[1], r[2]));
-                    obj.setScale(s);
-                }
-            }
+            guiState.updateRenderState(objList);
             mesh.render(objList,
                     obj -> sceneProgram.setUniform("world", transformation.worldMatrix(obj, viewMatrix)));
         }

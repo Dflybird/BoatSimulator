@@ -1,7 +1,11 @@
 package gui;
 
-import core.SimState;
-import core.StateUpdateListener;
+import ams.SimState;
+import ams.StateUpdateListener;
+import gui.obj.GameObj;
+import org.joml.Vector3f;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -11,6 +15,8 @@ import java.util.List;
  * @Date: 2021/1/22 13:02
  */
 public class GUIState implements StateUpdateListener {
+
+    private final Logger logger = LoggerFactory.getLogger(GUIState.class);
 
     private SyncedCacheBuffer<SimState> simStateBuffer;
     private SimState renderState;
@@ -22,7 +28,10 @@ public class GUIState implements StateUpdateListener {
 
         //不改变缓存
         //guiState = (currentSimState - previousSimState) * alpha + previousSimState;
-        renderState = currentState.zero().sub(previousState).mul(alpha).add(previousState);
+        renderState = renderState.zero().add(currentState).sub(previousState).mul(alpha).add(previousState);
+        float[] pre = renderState.getState("test1").getTranslation();
+        float[] cur = currentState.getState("test1").getTranslation();
+        logger.debug("pre.p: {}, {}, {} | cur.p: {}, {}, {}", pre[0], pre[1], pre[2], cur[0], cur[1], cur[2]);
     }
 
     @Override
@@ -33,10 +42,27 @@ public class GUIState implements StateUpdateListener {
 
     @Override
     public void stateUpdated(SimState simState) {
+//        if ( renderState.getState("test1") != null) {
+//            float[] pre = renderState.getState("test1").getTranslation();
+//            float[] cur = simState.getState("test1").getTranslation();
+//            logger.debug("pre.p: {}, {}, {} | cur.p: {}, {}, {}", pre[0], pre[1], pre[2], cur[0], cur[1], cur[2]);
+//        } else {
+//            logger.debug("nul");
+//        }
         simStateBuffer.update(simState);
     }
 
-    public SimState getRenderState() {
-        return renderState;
+    public void updateRenderState(List<GameObj> objList) {
+        for (GameObj obj : objList) {
+            SimState.StateInfo stateInfo = renderState.getState(obj.getID());
+            if (stateInfo != null) {
+                float[] t = stateInfo.getTranslation();
+                float[] r = stateInfo.getRotation();
+                float s = stateInfo.getScale();
+                obj.setTranslation(new Vector3f(t[0], t[1], t[2]));
+                obj.setRotation(new Vector3f(r[0], r[1], r[2]));
+                obj.setScale(s);
+            }
+        }
     }
 }

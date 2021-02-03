@@ -1,7 +1,9 @@
-package core;
+package ams.agent;
 
+import ams.AgentManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import physics.Entity;
 
 /**
  * @Author: gq
@@ -11,7 +13,8 @@ public abstract class Agent implements Runnable {
 
     private final Logger logger = LoggerFactory.getLogger(Agent.class);
 
-    private final String agentID;
+    protected final String agentID;
+    protected Entity entity;
 
     public Agent(String agentID) {
         this.agentID = agentID;
@@ -25,11 +28,23 @@ public abstract class Agent implements Runnable {
 
     protected abstract void update();
 
-    public void send() {
+    protected void send() {
+
+    }
+
+    protected void receive(){
 
     }
 
     public String getAgentID() {
         return agentID;
+    }
+
+    public Entity getEntity() {
+        return entity;
+    }
+
+    public void setEntity(Entity entity) {
+        this.entity = entity;
     }
 }

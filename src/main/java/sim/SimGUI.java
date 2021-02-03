@@ -1,16 +1,18 @@
 package sim;
 
+import ams.agent.Agent;
+import ams.agent.USVAgent;
 import conf.Config;
-import core.AgentManager;
+import ams.AgentManager;
 import engine.GameEngine;
 import engine.GameLogic;
 import gui.*;
 import gui.obj.Camera;
-import gui.obj.geom.Cube;
 import gui.obj.usv.Boat;
 import org.joml.Vector3f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import physics.Entity;
 
 /**
  * @Author Gq
@@ -54,7 +56,10 @@ public class SimGUI implements GameLogic {
 
         scene.setSceneLight(sceneLight);
 
-        scene.setGameObj(new Boat(new Vector3f(0,-1,0), new Vector3f(-90,0,0), 0.5f));
+        scene.setGameObj(new Boat("test1", new Vector3f(0,0,-2), new Vector3f(-90,0,0), 0.5f));
+        Agent agent = new USVAgent("test1");
+        agent.setEntity(new Entity(new float[]{0,0,-2}, new float[]{-90,0,0}, 0.5f));
+        AgentManager.addAgent(agent);
     }
 
     @Override

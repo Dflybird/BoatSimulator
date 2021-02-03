@@ -119,7 +119,10 @@ public class Mesh {
 
         glBindTexture(GL_TEXTURE_2D, 0);
 
-        material.getTexture().cleanup();
+        Texture texture = material.getTexture();
+        if (texture != null) {
+            material.getTexture().cleanup();
+        }
     }
 
     private void initPositionBuffer(float[] positions){

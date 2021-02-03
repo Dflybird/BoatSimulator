@@ -17,7 +17,7 @@ public class GameEngine implements Runnable {
     /** 渲染频率 **/
     private int FPS = 60;
     /** 更新频率 **/
-    private int UPS = 200;
+    private int UPS = 100;
     /** Agent系统每周期时间步长，单位毫秒 **/
     private double secsPreUpdate = 1.0d / UPS;
     /** 每帧渲染时间，单位毫秒 **/
@@ -76,6 +76,7 @@ public class GameEngine implements Runnable {
     private void cleanup(){
         gameLogic.cleanup();
         window.cleanup();
+        //TODO 关闭AgentManager
     }
 
     protected void gameLoop() {

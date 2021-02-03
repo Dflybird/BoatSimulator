@@ -1,5 +1,6 @@
-package core;
+package ams;
 
+import ams.agent.Agent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,9 +53,7 @@ public class AgentManager {
 
         //收集所有Agent状态
         simState = new SimState();
-        agentMap.forEach((agentID, agent) -> {
-
-        });
+        agentMap.values().forEach( agent -> simState.collect(agent));
 
         listeners.forEach(listener -> listener.stateUpdated(simState));
     }
