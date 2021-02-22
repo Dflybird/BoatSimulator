@@ -25,11 +25,11 @@ public class Transformation {
         Vector3f rotation = obj.getRotation();
         float scale = obj.getScale();
         return modelMatrix.identity()
+                .scale(scale)
                 .translate(translation)
                 .rotateX((float) Math.toRadians(rotation.x))
                 .rotateY((float) Math.toRadians(rotation.y))
-                .rotateZ((float) Math.toRadians(rotation.z))
-                .scale(scale);
+                .rotateZ((float) Math.toRadians(rotation.z));
     }
 
     public Matrix4f worldMatrix(GameObj obj, Matrix4f viewMatrix) {

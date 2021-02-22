@@ -1,9 +1,11 @@
 package gui.shader;
 
 import conf.Constant;
+import environment.Fog;
 import gui.graphic.light.DirectionalLight;
 import gui.graphic.Material;
 import gui.graphic.light.PointLight;
+import gui.graphic.light.SpotLight;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -102,16 +104,7 @@ public class ShaderProgram {
         uniforms.put(uniform, glGetUniformLocation(programId, uniform));
     }
 
-    public void createPointLightUniforms(String uniform) {
-        createUniform(uniform + ".colour");
-        createUniform(uniform + ".position");
-        createUniform(uniform + ".intensity");
-        createUniform(uniform + ".att.constant");
-        createUniform(uniform + ".att.linear");
-        createUniform(uniform + ".att.exponent");
-    }
-
-    public void createMaterialUniforms(String uniform) {
+    public void createMaterialUniform(String uniform) {
         createUniform(uniform + ".ambient");
         createUniform(uniform + ".diffuse");
         createUniform(uniform + ".specular");
@@ -123,6 +116,41 @@ public class ShaderProgram {
         createUniform(uniform + ".colour");
         createUniform(uniform + ".direction");
         createUniform(uniform + ".intensity");
+    }
+
+    public void createPointLightUniform(String uniform) {
+        createUniform(uniform + ".colour");
+        createUniform(uniform + ".position");
+        createUniform(uniform + ".intensity");
+        createUniform(uniform + ".att.constant");
+        createUniform(uniform + ".att.linear");
+        createUniform(uniform + ".att.exponent");
+    }
+
+
+    public void createPointLightsUniform(String uniform, int size) {
+        for (int i = 0; i < size; i++) {
+            createPointLightUniform(uniform + "[" + i + "]");
+        }
+    }
+
+    public void createSpotLightUniform(String uniform) {
+        createPointLightUniform(uniform + ".pointLight");
+        createUniform(uniform + ".coneDirection");
+        createUniform(uniform + ".cosAngle");
+    }
+
+    public void createSpotLightsUniform(String uniform, int size) {
+        for (int i = 0; i < size; i++) {
+            createSpotLightUniform(uniform + "[" + i + "]");
+        }
+    }
+
+    public void createFogUniform(String uniform) {
+        createUniform(uniform + ".activeFog");
+        createUniform(uniform + ".colour");
+        createUniform(uniform + ".density");
+        createUniform(uniform + ".visibility");
     }
 
     public void setUniform(String uniform, Matrix4f value){
@@ -155,17 +183,6 @@ public class ShaderProgram {
         glUniform4f(uniformIndex, value.x, value.y, value.z, value.w);
     }
 
-    public void setUniform(String uniform, PointLight pointLight){
-        setUniform(uniform + ".colour", pointLight.getColour());
-        setUniform(uniform + ".position", pointLight.getPosition());
-        setUniform(uniform + ".intensity", pointLight.getIntensity());
-        PointLight.Attenuation att = pointLight.getAtt();
-        setUniform(uniform + ".att.constant", att.getConstant());
-        setUniform(uniform + ".att.linear", att.getLinear());
-        setUniform(uniform + ".att.exponent", att.getExponent());
-
-    }
-
     public void setUniform(String uniform, Material material) {
         setUniform(uniform + ".ambient", material.getAmbient());
         setUniform(uniform + ".diffuse", material.getDiffuse());
@@ -179,6 +196,50 @@ public class ShaderProgram {
         setUniform(uniform + ".direction", directionalLight.getDirection());
         setUniform(uniform + ".intensity", directionalLight.getIntensity());
     }
+
+    public void setUniform(String uniform, PointLight pointLight){
+        setUniform(uniform + ".colour", pointLight.getColour());
+        setUniform(uniform + ".position", pointLight.getPosition());
+        setUniform(uniform + ".intensity", pointLight.getIntensity());
+        PointLight.Attenuation att = pointLight.getAtt();
+        setUniform(uniform + ".att.constant", att.getConstant());
+        setUniform(uniform + ".att.linear", att.getLinear());
+        setUniform(uniform + ".att.exponent", att.getExponent());
+
+    }
+
+    public void setUniform(String uniform, SpotLight spotLight){
+        setUniform(uniform + ".pointLight", spotLight.getPointLight());
+        setUniform(uniform + ".coneDirection", spotLight.getConeDirection());
+        setUniform(uniform + ".cosAngle", spotLight.getCosAngle());
+
+    }
+
+    public void setUniform(String uniform, PointLight pointLight, int index) {
+        setUniform(uniform + "[" + index + "]", pointLight);
+    }
+
+    public void setUniform(String uniform, PointLight[] pointLights) {
+        int len = pointLights != null ? pointLights.length : 0;
+        for (int i = 0; i < len; i++) {
+            setUniform(uniform, pointLights[i], i);
+        }
+    }
+
+    public void setUniform(String uniform, SpotLight[] spotLights) {
+        int len = spotLights != null ? spotLights.length : 0;
+        for (int i = 0; i < len; i++) {
+            setUniform(uniform + "[" + i + "]", spotLights[i]);
+        }
+    }
+
+    public void setUniform(String uniform, Fog fog) {
+        setUniform(uniform + ".activeFog", fog.isActive() ? 1 : 0);
+        setUniform(uniform + ".colour", fog.getColour());
+        setUniform(uniform + ".density", fog.getDensity());
+        setUniform(uniform + ".visibility", fog.getVisibility());
+    }
+
 
     public void bind() {
         //使用着色器程序

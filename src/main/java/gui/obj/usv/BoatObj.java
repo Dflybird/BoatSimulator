@@ -17,14 +17,14 @@ import static conf.Constant.*;
  * @Date 2021/1/30 15:26
  * @Version 1.0
  **/
-public class Boat extends GameObj {
+public class BoatObj extends GameObj {
 
-    public Boat(Vector3f position, Vector3f rotation, float scale) {
+    public BoatObj(Vector3f position, Vector3f rotation, float scale) {
         super(position, rotation, scale);
         init(position, rotation, scale);
     }
 
-    public Boat(String id, Vector3f position, Vector3f rotation, float scale) {
+    public BoatObj(String id, Vector3f position, Vector3f rotation, float scale) {
         super(id, position, rotation, scale);
         init(position, rotation, scale);
     }

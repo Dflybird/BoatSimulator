@@ -1,9 +1,7 @@
 package gui;
 
-import ams.SimState;
 import gui.graphic.Mesh;
 import gui.graphic.Transformation;
-import gui.graphic.light.DirectionalLight;
 import gui.graphic.light.PointLight;
 import gui.obj.Camera;
 import gui.obj.GameObj;
@@ -11,10 +9,14 @@ import gui.shader.ShaderProgram;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import state.GUIState;
 
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static conf.Constant.RESOURCES_SHADERS_DIR;
 
@@ -25,6 +27,7 @@ import static conf.Constant.RESOURCES_SHADERS_DIR;
  * @Version 1.0
  **/
 public class GUIRenderer {
+    private final Logger logger = LoggerFactory.getLogger(GUIRenderer.class);
 
     private Window window;
     private Scene scene;
@@ -32,6 +35,7 @@ public class GUIRenderer {
     private  Camera camera;
 
     private ShaderProgram sceneProgram;
+    private ShaderProgram oceanProgram;
 
     private final float specularPower = 10f;
     private final Transformation transformation = new Transformation();
@@ -41,6 +45,8 @@ public class GUIRenderer {
         this.camera = camera;
         this.scene = scene;
         this.guiState = guiState;
+
+        setupOceanShader();
         setupSceneShader();
     }
 
@@ -51,8 +57,23 @@ public class GUIRenderer {
         }
         transformation.updateViewMatrix(camera);
 
+        renderOcean();
         renderScene();
         renderHud();
+    }
+
+    private void setupOceanShader() {
+        oceanProgram = new ShaderProgram();
+        oceanProgram.init(new File(RESOURCES_SHADERS_DIR, "ocean.vert"),
+                new File(RESOURCES_SHADERS_DIR, "ocean.frag"));
+        oceanProgram.createUniform("world");
+        oceanProgram.createUniform("view");
+        oceanProgram.createUniform("projection");
+        oceanProgram.createUniform("ambientLight");
+        oceanProgram.createUniform("specularPower");
+        oceanProgram.createMaterialUniform("material");
+        oceanProgram.createFogUniform("fog");
+        oceanProgram.createPointLightsUniform("pointLights", 5);
     }
 
     private void setupSceneShader(){
@@ -65,15 +86,51 @@ public class GUIRenderer {
 
         sceneProgram.createUniform("texture_sampler");
         sceneProgram.createUniform("specularPower");
-        sceneProgram.createMaterialUniforms("material");
+        sceneProgram.createMaterialUniform("material");
         sceneProgram.createUniform("ambientLight");
-        sceneProgram.createPointLightUniforms("pointLight");
+        sceneProgram.createPointLightUniform("pointLight");
         sceneProgram.createDirectionalLightUniform("directionalLight");
     }
 
-    PointLight.Attenuation att = new PointLight.Attenuation(0.6f, 0.2f, 0.2f);
-    PointLight pointLight = new PointLight(new Vector3f(1, 1, 1), new Vector3f(0, 0, 3), 1.0f, att);
-    DirectionalLight directionalLight = new DirectionalLight(new Vector3f(1, 1, 1), new Vector3f(-1, 0, 0), 1.0f);
+    private void renderOcean() {
+        oceanProgram.bind();
+        Matrix4f viewMatrix = transformation.viewMatrix();
+
+        oceanProgram.setUniform("projection", window.getProjectionMatrix());
+        //渲染光
+        SceneLight sceneLight = scene.getSceneLight();
+        oceanProgram.setUniform("ambientLight", sceneLight.getAmbientLight());
+        oceanProgram.setUniform("specularPower", 10f);
+        oceanProgram.setUniform("fog", scene.getFog());
+//            program.setUniform("directionalLight", directionalLight);
+//        oceanProgram.setUniform("pointLights", sceneLight.getPointLightList());
+        PointLight[] pointLightList = sceneLight.getPointLightList();
+        int numLights = pointLightList != null ? pointLightList.length : 0;
+        for (int i = 0; i < numLights; i++) {
+            // Get a copy of the point light object and transform its position to view coordinates
+            PointLight currPointLight = new PointLight(pointLightList[i]);
+            Vector3f lightPos = currPointLight.getPosition();
+            Vector4f aux = new Vector4f(lightPos, 1);
+            aux.mul(viewMatrix);
+            lightPos.x = aux.x;
+            lightPos.y = aux.y;
+            lightPos.z = aux.z;
+            oceanProgram.setUniform("pointLights", currPointLight, i);
+        }
+
+        //更新海浪mesh
+        Map<Mesh, List<GameObj>> oceanMap = scene.getOceanMap();
+        for (Mesh mesh : oceanMap.keySet()) {
+            mesh.updateModel();
+            oceanProgram.setUniform("material", mesh.getMaterial());
+            List<GameObj> objList = oceanMap.get(mesh);
+            mesh.render(objList,
+                    obj -> oceanProgram.setUniform("world", transformation.worldMatrix(obj, viewMatrix)));
+        }
+
+        oceanProgram.unbind();
+    }
+
     private void renderScene() {
         sceneProgram.bind();
         sceneProgram.setUniform("projection", window.getProjectionMatrix());
@@ -81,24 +138,7 @@ public class GUIRenderer {
         SceneLight sceneLight = scene.getSceneLight();
         sceneProgram.setUniform("ambientLight", sceneLight.getAmbientLight());
         sceneProgram.setUniform("specularPower", specularPower);
-        //TODO 渲染多个点光源
-        PointLight currentPointLight = new PointLight(pointLight);
-        Vector3f lightPos = currentPointLight.getPosition();
-        Vector4f lightPosInWord = new Vector4f(lightPos, 1);
-        lightPosInWord.mul(transformation.viewMatrix());
-        lightPos.x = lightPosInWord.x;
-        lightPos.y = lightPosInWord.y;
-        lightPos.z = lightPosInWord.z;
-        sceneProgram.setUniform("pointLight", currentPointLight);
-
-        DirectionalLight currentDirectionalLight = new DirectionalLight(directionalLight);
-        Vector3f lightDirection = currentDirectionalLight.getDirection();
-        Vector4f lightDirectionInWord = new Vector4f(lightDirection, 0);
-        lightDirectionInWord.mul(transformation.viewMatrix());
-        lightDirection.x = lightDirectionInWord.x;
-        lightDirection.y = lightDirectionInWord.y;
-        lightDirection.z = lightDirectionInWord.z;
-        sceneProgram.setUniform("directionalLight", currentDirectionalLight);
+        sceneProgram.setUniform("pointLight", new PointLight[]{});
 
 
 
@@ -112,11 +152,13 @@ public class GUIRenderer {
         Matrix4f viewMatrix = transformation.viewMatrix();
 
         sceneProgram.setUniform("texture_sampler", 0);
-        Map<Mesh, List<GameObj>> meshMap = scene.getAllMesh();
+        Map<Mesh, List<GameObj>> meshMap = scene.getObjMesh();
         for (Mesh mesh : meshMap.keySet()) {
             sceneProgram.setUniform("material", mesh.getMaterial());
             List<GameObj> objList = meshMap.get(mesh);
+            //更新obj姿态
             guiState.updateRenderState(objList);
+
             mesh.render(objList,
                     obj -> sceneProgram.setUniform("world", transformation.worldMatrix(obj, viewMatrix)));
         }

@@ -6,6 +6,7 @@ package ams.agent;
  * @Version 1.0
  **/
 public class USVAgent extends Agent{
+
     public USVAgent(String agentID) {
         super(agentID);
     }

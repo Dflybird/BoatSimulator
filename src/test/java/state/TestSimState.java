@@ -1,7 +1,9 @@
-package ams;
+package state;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @Author Gq
@@ -9,6 +11,7 @@ import org.junit.Test;
  * @Version 1.0
  **/
 public class TestSimState {
+    private final Logger logger = LoggerFactory.getLogger(TestSimState.class);
 
     @Test
     public void testClone(){
@@ -87,5 +90,40 @@ public class TestSimState {
 
         SimState r = a.mul(10);
         Assert.assertEquals(r, a);
+    }
+
+    @Test
+    public void testArr() {
+        int[] a = new int[1];
+        logger.debug("init: {}", a[0]);
+        changeArr(a);
+        logger.debug("end: {}", a[0]);
+    }
+
+    @Test
+    public void testClazzArr(){
+        int[] a = new int[1];
+        TA ta = new TA();
+        ta.setA(a);
+        a[0] = 1;
+        logger.debug("1: {}", ta.getA()[0]);
+        changeArr(a);
+        logger.debug("2: {}", ta.getA()[0]);
+    }
+
+    public void changeArr(int[] a) {
+        a[0] = 2;
+    }
+
+    public static class TA{
+        int[] a;
+
+        public int[] getA() {
+            return a;
+        }
+
+        public void setA(int[] a) {
+            this.a = a;
+        }
     }
 }

@@ -1,6 +1,7 @@
 package engine;
 
 import conf.Config;
+import gui.MouseEvent;
 import gui.Window;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,9 +16,9 @@ public class GameEngine implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(GameEngine.class);
 
     /** 渲染频率 **/
-    private int FPS = 60;
+    private int FPS = 30;
     /** 更新频率 **/
-    private int UPS = 100;
+    private int UPS = 30;
     /** Agent系统每周期时间步长，单位毫秒 **/
     private double secsPreUpdate = 1.0d / UPS;
     /** 每帧渲染时间，单位毫秒 **/
@@ -30,6 +31,7 @@ public class GameEngine implements Runnable {
 
     private Window window;
     private SimTimer timer;
+    private final MouseEvent mouseEvent;
 
     private final GameLogic gameLogic;
     private final Config config;
@@ -41,6 +43,7 @@ public class GameEngine implements Runnable {
         this.gameLogic = gameLogic;
         this.config = config;
         this.timer = new SimTimer();
+        this.mouseEvent = new MouseEvent();
     }
 
     @Override
@@ -53,11 +56,12 @@ public class GameEngine implements Runnable {
         window.init();
         timer.init();
         gameLogic.init(window);
+        mouseEvent.init(window);
         running = true;
     }
 
     private void input() {
-        gameLogic.input();
+        gameLogic.input(window, mouseEvent);
     }
 
     private void update() {
@@ -81,19 +85,23 @@ public class GameEngine implements Runnable {
 
     protected void gameLoop() {
         //可以用来更新逻辑的时间
+        double frameTime;
         double accumulator = 0;
 
         while (running && !window.isClosed()) {
-            double frameTime = timer.getDelta();
+            frameTime = timer.getDelta();
 
             accumulator += frameTime;
 
             input();
 
             while (accumulator >= secsPreUpdate) {
+                double st = timer.getTime();
                 update();
+                double et = timer.getTime();
                 timer.updateUPS();
                 accumulator-= secsPreUpdate;
+                logger.debug("secsPreUpdate: {} | useTime: {}", secsPreUpdate, et-st);
             }
 
             double alpha = accumulator / secsPreUpdate;

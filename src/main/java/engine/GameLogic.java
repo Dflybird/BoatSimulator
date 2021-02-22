@@ -1,5 +1,6 @@
 package engine;
 
+import gui.MouseEvent;
 import gui.Window;
 
 /**
@@ -11,7 +12,7 @@ public interface GameLogic {
 
     void init(Window window);
 
-    void input();
+    void input(Window window, MouseEvent mouseEvent);
 
     void update(double stepTime);
 

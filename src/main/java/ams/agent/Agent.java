@@ -14,7 +14,6 @@ public abstract class Agent implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(Agent.class);
 
     protected final String agentID;
-    protected Entity entity;
 
     public Agent(String agentID) {
         this.agentID = agentID;
@@ -39,6 +38,9 @@ public abstract class Agent implements Runnable {
     public String getAgentID() {
         return agentID;
     }
+
+
+    protected Entity entity;
 
     public Entity getEntity() {
         return entity;

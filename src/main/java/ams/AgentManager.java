@@ -3,6 +3,7 @@ package ams;
 import ams.agent.Agent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import state.SimState;
 
 import java.util.ArrayList;
 import java.util.List;

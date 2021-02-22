@@ -19,6 +19,8 @@ public class Model {
     private float[] textures;
     private float[] normals;
 
+    public Model() {}
+
     public Model(int[] indices, float[] vertices, float[] textures, float[] normals) {
         this.indices = indices;
         this.vertices = vertices;
@@ -118,6 +120,22 @@ public class Model {
 
     public float[] getNormals() {
         return normals;
+    }
+
+    public void setIndices(int[] indices) {
+        this.indices = indices;
+    }
+
+    public void setVertices(float[] vertices) {
+        this.vertices = vertices;
+    }
+
+    public void setTextures(float[] textures) {
+        this.textures = textures;
+    }
+
+    public void setNormals(float[] normals) {
+        this.normals = normals;
     }
 
     private static class Face{

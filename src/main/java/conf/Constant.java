@@ -17,4 +17,7 @@ public class Constant {
     public static final String BOAT_OBJ_NAME = "boat.obj";
 
     public static final String BOAT_MTL_NAME = "boat.mtl";
+
+    /** 环境相关参数 */
+    public static final float g = 9.81f;
 }
