@@ -5,8 +5,9 @@ package ams.agent;
  * @Date 2021/2/1 17:31
  * @Version 1.0
  **/
-public class BuoyAgent extends Agent {
-    public BuoyAgent(String agentID) {
+public class TestCubeAgent extends Agent {
+
+    public TestCubeAgent(String agentID) {
         super(agentID);
     }
 

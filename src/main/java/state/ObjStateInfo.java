@@ -6,7 +6,7 @@ import java.util.Objects;
 public class ObjStateInfo {
     private float[] translation = new float[3];  //len = 3
     private float[] rotation = new float[3]; //len = 3
-    private float scale = 0;
+    private float[] scale = new float[3];
 
     public ObjStateInfo() {
     }
@@ -21,8 +21,8 @@ public class ObjStateInfo {
         for (int i = 0; i < 3; i++) {
             translation[i] *= num;
             rotation[i] *= num;
+            scale[i] *= num;
         }
-        scale *= num;
         return this;
     }
 
@@ -30,8 +30,8 @@ public class ObjStateInfo {
         for (int i = 0; i < 3; i++) {
             translation[i] += info.translation[i];
             rotation[i] += info.rotation[i];
+            scale[i] += info.scale[i];
         }
-        scale += info.scale;
         return this;
     }
 
@@ -39,8 +39,8 @@ public class ObjStateInfo {
         for (int i = 0; i < 3; i++) {
             translation[i] -= info.translation[i];
             rotation[i] -= info.rotation[i];
+            scale[i] -= info.scale[i];
         }
-        scale -= info.scale;
         return this;
     }
 
@@ -52,7 +52,7 @@ public class ObjStateInfo {
         return rotation;
     }
 
-    public float getScale() {
+    public float[] getScale() {
         return scale;
     }
 
@@ -64,7 +64,7 @@ public class ObjStateInfo {
         this.rotation = rotation;
     }
 
-    public void setScale(float scale) {
+    public void setScale(float[] scale) {
         this.scale = scale;
     }
 
@@ -72,15 +72,15 @@ public class ObjStateInfo {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ObjStateInfo objStateInfo = (ObjStateInfo) o;
-        return Float.compare(objStateInfo.scale, scale) == 0 && Arrays.equals(translation, objStateInfo.translation) && Arrays.equals(rotation, objStateInfo.rotation);
+        ObjStateInfo that = (ObjStateInfo) o;
+        return Arrays.equals(translation, that.translation) && Arrays.equals(rotation, that.rotation) && Arrays.equals(scale, that.scale);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(scale);
-        result = 31 * result + Arrays.hashCode(translation);
+        int result = Arrays.hashCode(translation);
         result = 31 * result + Arrays.hashCode(rotation);
+        result = 31 * result + Arrays.hashCode(scale);
         return result;
     }
 }

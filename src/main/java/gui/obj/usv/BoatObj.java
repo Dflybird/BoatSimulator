@@ -19,17 +19,17 @@ import static conf.Constant.*;
  **/
 public class BoatObj extends GameObj {
 
-    public BoatObj(Vector3f position, Vector3f rotation, float scale) {
+    public BoatObj(Vector3f position, Vector3f rotation, Vector3f scale) {
         super(position, rotation, scale);
         init(position, rotation, scale);
     }
 
-    public BoatObj(String id, Vector3f position, Vector3f rotation, float scale) {
+    public BoatObj(String id, Vector3f position, Vector3f rotation, Vector3f scale) {
         super(id, position, rotation, scale);
         init(position, rotation, scale);
     }
 
-    private void init(Vector3f position, Vector3f rotation, float scale) {
+    private void init(Vector3f position, Vector3f rotation, Vector3f scale) {
         Model model = Model.loadObj(new File(RESOURCES_MODELS_DIR, BOAT_OBJ_NAME));
 //        Texture texture = new Texture(new File(RESOURCES_MODELS_DIR, BOAT_MTL_NAME));
 //        Material material = new Material(texture);

@@ -21,6 +21,10 @@
             <AppenderRef ref="Console"/>
         </Logger>
 
+        <Logger name="physics" level="DEBUG" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+
         <Root level="INFO">
             <AppenderRef ref="Console"/>
         </Root>

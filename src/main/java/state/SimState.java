@@ -1,7 +1,9 @@
 package state;
 
 import ams.agent.Agent;
-import physics.Entity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import physics.entity.Entity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +14,7 @@ import java.util.Objects;
  * @Date: 2021/1/22 13:01
  */
 public class SimState {
+    private final Logger logger = LoggerFactory.getLogger(SimState.class);
 
     //<agent的ID, obj状态对象>
     private final Map<String, ObjStateInfo> stateMap = new HashMap<>();
@@ -25,7 +28,7 @@ public class SimState {
         state.stateMap.forEach((key, value) -> stateMap.put(key, new ObjStateInfo(value)));
     }
 
-    public void collect(String id, float[] translation, float[] rotation, float scale) {
+    public void collect(String id, float[] translation, float[] rotation, float[] scale) {
         ObjStateInfo objStateInfo = stateMap.computeIfAbsent(id, key -> new ObjStateInfo());
         objStateInfo.setTranslation(translation);
         objStateInfo.setRotation(rotation);
@@ -66,12 +69,8 @@ public class SimState {
 
     public SimState add(SimState state) {
         state.stateMap.forEach((key, value) -> {
-            if (stateMap.containsKey(key)) {
-                ObjStateInfo objStateInfo = stateMap.get(key);
-                objStateInfo.add(value);
-            } else {
-                stateMap.put(key, new ObjStateInfo(value));
-            }
+            ObjStateInfo objStateInfo = stateMap.computeIfAbsent(key, k -> new ObjStateInfo());
+            objStateInfo.add(value);
         });
         return this;
     }

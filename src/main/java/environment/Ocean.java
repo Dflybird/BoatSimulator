@@ -1,13 +1,11 @@
-package ams.agent;
+package environment;
 
 import conf.Constant;
-import environment.Wind;
 import gui.obj.Model;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import util.Complex;
 import util.FFT;
-import util.TimeUtil;
 
 import java.util.Random;
 

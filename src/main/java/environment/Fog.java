@@ -14,7 +14,8 @@ public class Fog {
     private float visibility;
 
     public static Fog NO_FLOG = new Fog(false, new Vector3f(0,0,0), 0, 0);
-    public static Fog OCEAN_FLOG = new Fog(true, new Vector3f(0.25f, 0.75f, 0.65f), 0.5f, 100);
+//    public static Fog OCEAN_FLOG = new Fog(true, new Vector3f(0.25f, 0.75f, 0.65f), 0.5f, 100);
+    public static Fog OCEAN_FLOG = new Fog(true, new Vector3f(0.7f, 0.7f, 0.7f), 0.4f, 100);
 
     public Fog(boolean active, Vector3f colour, float density, float visibility) {
         this.active = active;

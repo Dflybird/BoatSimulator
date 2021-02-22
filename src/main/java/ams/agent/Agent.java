@@ -3,7 +3,7 @@ package ams.agent;
 import ams.AgentManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import physics.Entity;
+import physics.entity.Entity;
 
 /**
  * @Author: gq
@@ -14,6 +14,8 @@ public abstract class Agent implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(Agent.class);
 
     protected final String agentID;
+    //对象实体，用于物理引擎计算
+    protected Entity entity;
 
     public Agent(String agentID) {
         this.agentID = agentID;
@@ -38,9 +40,6 @@ public abstract class Agent implements Runnable {
     public String getAgentID() {
         return agentID;
     }
-
-
-    protected Entity entity;
 
     public Entity getEntity() {
         return entity;

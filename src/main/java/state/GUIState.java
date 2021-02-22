@@ -50,10 +50,11 @@ public class GUIState implements StateUpdateListener {
             if (objStateInfo != null) {
                 float[] t = objStateInfo.getTranslation();
                 float[] r = objStateInfo.getRotation();
-                float s = objStateInfo.getScale();
+                float[] s = objStateInfo.getScale();
+
                 obj.setTranslation(new Vector3f(t[0], t[1], t[2]));
                 obj.setRotation(new Vector3f(r[0], r[1], r[2]));
-                obj.setScale(s);
+                obj.setScale(new Vector3f(s[0], s[1], s[2]));
             }
         }
     }

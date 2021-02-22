@@ -1,9 +1,10 @@
 package sim;
 
-import ams.agent.Ocean;
+import ams.agent.Agent;
+import ams.agent.TestCubeAgent;
+import environment.Ocean;
 import conf.Config;
 import ams.AgentManager;
-import conf.Constant;
 import engine.GameEngine;
 import engine.GameLogic;
 import environment.Fog;
@@ -14,13 +15,16 @@ import gui.graphic.Mesh;
 import gui.graphic.light.PointLight;
 import gui.obj.Camera;
 import gui.obj.GameObj;
-import gui.obj.Model;
 import gui.obj.OceanObj;
+import gui.obj.geom.CubeObj;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import physics.PhysicsEngine;
+import physics.entity.Entity;
+import physics.entity.geom.CubeEntity;
 import state.GUIState;
 import util.TimeUtil;
 
@@ -45,6 +49,7 @@ public class SimGUI implements GameLogic {
     private final GUIState guiState;
     private final Scene scene;
     private final GUIRenderer renderer;
+    private final PhysicsEngine physicsEngine;
 
     private Ocean ocean;
 
@@ -62,6 +67,7 @@ public class SimGUI implements GameLogic {
         guiState = new GUIState();
         renderer = new GUIRenderer();
         scene = new Scene();
+        physicsEngine = new PhysicsEngine();
     }
 
     @Override
@@ -69,6 +75,7 @@ public class SimGUI implements GameLogic {
         camera.setPosition(0,50,0);
         AgentManager.registerSimStateListener(guiState);
         renderer.init(window, camera, scene, guiState);
+        physicsEngine.init();
 
         SceneLight sceneLight = new SceneLight();
         sceneLight.setAmbientLight(new Vector3f(0.3f, 0.3f, 0.3f));
@@ -81,7 +88,7 @@ public class SimGUI implements GameLogic {
         //雾
         scene.setFog(Fog.OCEAN_FLOG);
 
-        //TODO 海洋平铺
+        //海洋平铺
         float Lx = 256;
         float Lz = 256;
         ocean = new Ocean(Lx, Lx, 128, 128, new Wind(30, new Vector2f(1,0)), 0.000005f);
@@ -94,13 +101,24 @@ public class SimGUI implements GameLogic {
         List<GameObj> oceanBlocks = new ArrayList<>();
         for (int i = -2; i < 2; i++) {
             for (int j = -2; j < 2; j++) {
-                OceanObj obj = new OceanObj(new Vector3f(Lx * i, 0, Lz * -j), new Vector3f(0,0,0), 1);
+                OceanObj obj = new OceanObj(new Vector3f(Lx * i, 0, Lz * -j), new Vector3f(0,0,0), new Vector3f(1,1,1));
                 obj.setMesh(mesh);
                 oceanBlocks.add(obj);
             }
         }
         scene.setOceanBlock(oceanBlocks);
 
+        //初始化Agent
+        Agent cubeAgent = new TestCubeAgent("cube");
+        Vector3f cubePos = new Vector3f(10,200,-100);
+        Vector3f cubeRot = new Vector3f();
+        Vector3f cubeSca = new Vector3f(10,10,10);
+        GameObj cube = new CubeObj("cube", cubePos, cubeRot, cubeSca);
+        Entity cubeEntity = new CubeEntity(physicsEngine.getWorld(), physicsEngine.getSpace(),
+                new float[]{10,200,-100}, new float[]{0,0,0}, new float[]{10,10,10});
+        cubeAgent.setEntity(cubeEntity);
+        AgentManager.addAgent(cubeAgent);
+        scene.setGameObj(cube);
 //        scene.setGameObj(new Boat("test1", new Vector3f(0,0,-2), new Vector3f(-90,0,0), 0.5f));
 //        Agent agent = new USVAgent("test1");
 //        agent.setEntity(new Entity(new float[]{0,0,-2}, new float[]{-90,0,0}, 0.5f));
@@ -149,6 +167,7 @@ public class SimGUI implements GameLogic {
         ocean.evaluateWavesFFT((float) TimeUtil.currentTime());
         //Agent系统周期更新
         agentManager.update(stepTime);
+        physicsEngine.update(stepTime);
     }
 
     @Override
@@ -161,11 +180,12 @@ public class SimGUI implements GameLogic {
     public void cleanup() {
         renderer.cleanup();
         scene.cleanup();
+        physicsEngine.cleanup();
     }
 
     public void start(){
         config = Config.loadConfig();
-        Window window = new Window("BoatSimulator", 300, 300, false);
+        Window window = new Window("BoatSimulator", 300, 300, true);
         GameEngine engine = new GameEngine(window, this, config);
         engine.run();
     }

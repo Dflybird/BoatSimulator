@@ -16,14 +16,14 @@ public abstract class GameObj {
 
     protected Vector3f translation;
     protected Vector3f rotation;
-    protected float scale;
+    protected Vector3f scale;
     protected Mesh mesh;
 
-    public GameObj(Vector3f translation, Vector3f rotation, float scale) {
+    public GameObj(Vector3f translation, Vector3f rotation, Vector3f scale) {
         this(UUID.randomUUID().toString(), translation, rotation, scale);
     }
 
-    public GameObj(String id, Vector3f translation, Vector3f rotation, float scale) {
+    public GameObj(String id, Vector3f translation, Vector3f rotation, Vector3f scale) {
         this.id = id;
         this.translation = translation;
         this.rotation = rotation;
@@ -46,11 +46,11 @@ public abstract class GameObj {
         this.rotation = rotation;
     }
 
-    public float getScale() {
+    public Vector3f getScale() {
         return scale;
     }
 
-    public void setScale(float scale) {
+    public void setScale(Vector3f scale) {
         this.scale = scale;
     }
 

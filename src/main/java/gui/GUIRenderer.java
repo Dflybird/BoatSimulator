@@ -72,8 +72,8 @@ public class GUIRenderer {
         oceanProgram.createUniform("ambientLight");
         oceanProgram.createUniform("specularPower");
         oceanProgram.createMaterialUniform("material");
-        oceanProgram.createFogUniform("fog");
         oceanProgram.createPointLightsUniform("pointLights", 5);
+        oceanProgram.createFogUniform("fog");
     }
 
     private void setupSceneShader(){
@@ -85,11 +85,13 @@ public class GUIRenderer {
         sceneProgram.createUniform("projection");
 
         sceneProgram.createUniform("texture_sampler");
+        sceneProgram.createUniform("ambientLight");
         sceneProgram.createUniform("specularPower");
         sceneProgram.createMaterialUniform("material");
-        sceneProgram.createUniform("ambientLight");
-        sceneProgram.createPointLightUniform("pointLight");
         sceneProgram.createDirectionalLightUniform("directionalLight");
+        sceneProgram.createPointLightsUniform("pointLights", 5);
+        sceneProgram.createSpotLightsUniform("spotLights", 5);
+        sceneProgram.createFogUniform("fog");
     }
 
     private void renderOcean() {
@@ -138,9 +140,24 @@ public class GUIRenderer {
         SceneLight sceneLight = scene.getSceneLight();
         sceneProgram.setUniform("ambientLight", sceneLight.getAmbientLight());
         sceneProgram.setUniform("specularPower", specularPower);
-        sceneProgram.setUniform("pointLight", new PointLight[]{});
 
 
+        Matrix4f viewMatrix = transformation.viewMatrix();
+        PointLight[] pointLightList = sceneLight.getPointLightList();
+        int numLights = pointLightList != null ? pointLightList.length : 0;
+        for (int i = 0; i < numLights; i++) {
+            // Get a copy of the point light object and transform its position to view coordinates
+            PointLight currPointLight = new PointLight(pointLightList[i]);
+            Vector3f lightPos = currPointLight.getPosition();
+            Vector4f aux = new Vector4f(lightPos, 1);
+            aux.mul(viewMatrix);
+            lightPos.x = aux.x;
+            lightPos.y = aux.y;
+            lightPos.z = aux.z;
+            sceneProgram.setUniform("pointLights", currPointLight, i);
+        }
+
+        sceneProgram.setUniform("fog", scene.getFog());
 
         //渲染对象实体
         renderMeshes();

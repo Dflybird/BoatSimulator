@@ -1,18 +1,17 @@
-package physics;
+package physics.entity;
 
 /**
  * @Author Gq
  * @Date 2021/2/3 17:20
  * @Version 1.0
  **/
-public class Entity {
+public abstract class Entity {
 
+    protected float[] translation;
+    protected float[] rotation;
+    protected float[] scale;
 
-    private float[] translation;
-    private float[] rotation;
-    private float scale;
-
-    public Entity(float[] translation, float[] rotation, float scale) {
+    public Entity(float[] translation, float[] rotation, float[] scale) {
         this.translation = translation;
         this.rotation = rotation;
         this.scale = scale;
@@ -26,7 +25,7 @@ public class Entity {
         return rotation;
     }
 
-    public float getScale() {
+    public float[] getScale() {
         return scale;
     }
 
@@ -38,7 +37,7 @@ public class Entity {
         this.rotation = rotation;
     }
 
-    public void setScale(float scale) {
+    public void setScale(float[] scale) {
         this.scale = scale;
     }
 }

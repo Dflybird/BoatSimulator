@@ -23,10 +23,10 @@ public class Transformation {
     public Matrix4f modelMatrix(GameObj obj) {
         Vector3f translation = obj.getTranslation();
         Vector3f rotation = obj.getRotation();
-        float scale = obj.getScale();
+        Vector3f scale = obj.getScale();
         return modelMatrix.identity()
-                .scale(scale)
                 .translate(translation)
+                .scale(scale)
                 .rotateX((float) Math.toRadians(rotation.x))
                 .rotateY((float) Math.toRadians(rotation.y))
                 .rotateZ((float) Math.toRadians(rotation.z));
