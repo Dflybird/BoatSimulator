@@ -2,7 +2,7 @@ package sim;
 
 import ams.agent.Agent;
 import ams.agent.TestCubeAgent;
-import environment.Ocean;
+import environment.Wave;
 import conf.Config;
 import ams.AgentManager;
 import engine.GameEngine;
@@ -51,7 +51,7 @@ public class SimGUI implements GameLogic {
     private final GUIRenderer renderer;
     private final PhysicsEngine physicsEngine;
 
-    private Ocean ocean;
+    private Wave wave;
 
     public static void main(String[] args) {
         main(args, new SimGUI());
@@ -91,13 +91,13 @@ public class SimGUI implements GameLogic {
         //海洋平铺
         float Lx = 256;
         float Lz = 256;
-        ocean = new Ocean(Lx, Lx, 128, 128, new Wind(30, new Vector2f(1,0)), 0.000005f);
+        wave = new Wave(Lx, Lx, 128, 128, new Wind(30, new Vector2f(1,0)), 0.000005f);
         Material material = new Material(
                 new Vector4f(0.0f, 0.65f, 0.75f, 1.0f),
                 new Vector4f(0.5f, 0.65f, 0.75f, 1.0f),
                 new Vector4f(1.0f, 0.25f, 0.0f,  1.0f),
                 1, null);
-        Mesh mesh = new Mesh(ocean.getModel(), material);
+        Mesh mesh = new Mesh(wave.getModel(), material);
         List<GameObj> oceanBlocks = new ArrayList<>();
         for (int i = -2; i < 2; i++) {
             for (int j = -2; j < 2; j++) {
@@ -109,16 +109,16 @@ public class SimGUI implements GameLogic {
         scene.setOceanBlock(oceanBlocks);
 
         //初始化Agent
-        Agent cubeAgent = new TestCubeAgent("cube");
-        Vector3f cubePos = new Vector3f(10,200,-100);
-        Vector3f cubeRot = new Vector3f();
-        Vector3f cubeSca = new Vector3f(10,10,10);
-        GameObj cube = new CubeObj("cube", cubePos, cubeRot, cubeSca);
-        Entity cubeEntity = new CubeEntity(physicsEngine.getWorld(), physicsEngine.getSpace(),
-                new float[]{10,200,-100}, new float[]{0,0,0}, new float[]{10,10,10});
-        cubeAgent.setEntity(cubeEntity);
-        AgentManager.addAgent(cubeAgent);
-        scene.setGameObj(cube);
+//        Agent cubeAgent = new TestCubeAgent("cube");
+//        Vector3f cubePos = new Vector3f(10,200,-100);
+//        Vector3f cubeRot = new Vector3f();
+//        Vector3f cubeSca = new Vector3f(10,10,10);
+//        GameObj cube = new CubeObj("cube", cubePos, cubeRot, cubeSca);
+//        Entity cubeEntity = new CubeEntity(physicsEngine.getWorld(), physicsEngine.getSpace(),
+//                new float[]{10,200,-100}, new float[]{0,0,0}, new float[]{10,10,10});
+//        cubeAgent.setEntity(cubeEntity);
+//        AgentManager.addAgent(cubeAgent);
+//        scene.setGameObj(cube);
 //        scene.setGameObj(new Boat("test1", new Vector3f(0,0,-2), new Vector3f(-90,0,0), 0.5f));
 //        Agent agent = new USVAgent("test1");
 //        agent.setEntity(new Entity(new float[]{0,0,-2}, new float[]{-90,0,0}, 0.5f));
@@ -159,12 +159,27 @@ public class SimGUI implements GameLogic {
             Vector2f rotVec = mouseEvent.getDisplVec();
             camera.moveRotation(rotVec.x * MOUSE_SENSITIVITY, rotVec.y * MOUSE_SENSITIVITY, 0);
         }
+
+        //点击加入方块
+        if (mouseEvent.isLeftButtonPressed()) {
+            String id = "cube" + TimeUtil.currentTime();
+            Agent cubeAgent = new TestCubeAgent(id);
+            Vector3f cubePos = new Vector3f(10,100,-100);
+            Vector3f cubeRot = new Vector3f();
+            Vector3f cubeSca = new Vector3f(1,1,1);
+            GameObj cube = new CubeObj(id, cubePos, cubeRot, cubeSca);
+            Entity cubeEntity = new CubeEntity(physicsEngine.getWorld(), physicsEngine.getSpace(),
+                    new float[]{10,100,-100}, new float[]{0,0,0}, new float[]{1,1,1});
+            cubeAgent.setEntity(cubeEntity);
+            AgentManager.addAgent(cubeAgent);
+            scene.setGameObj(cube);
+        }
     }
 
     @Override
     public void update(double stepTime) {
         //海浪等环境更新
-        ocean.evaluateWavesFFT((float) TimeUtil.currentTime());
+        wave.evaluateWavesFFT((float) TimeUtil.currentTime());
         //Agent系统周期更新
         agentManager.update(stepTime);
         physicsEngine.update(stepTime);

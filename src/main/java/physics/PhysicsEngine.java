@@ -27,8 +27,8 @@ public class PhysicsEngine {
         world.setAngularDampingThreshold(0);
         world.setLinearDampingThreshold(0);
         world.setLinearDamping(0.6 * 0.002);
-        /** xyz*/
-        OdeHelper.createPlane( space, 0, 0, 0, -10 );
+        //平面方程
+        OdeHelper.createPlane( space, 0, 1, 0, 30 );
     }
 
     public void update(double stepTime) {

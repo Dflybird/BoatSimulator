@@ -23,6 +23,8 @@ public class MouseEvent {
 
     private boolean rightButtonPressed = false;
 
+    private boolean leftButtonRelease = false;
+
     public MouseEvent() {
         previousPos = new Vector2d(-1, -1);
         currentPos = new Vector2d(0, 0);
@@ -45,6 +47,7 @@ public class MouseEvent {
         glfwSetMouseButtonCallback(window.getWindowID(), (windowNum, button, action, mode) -> {
             leftButtonPressed = button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS;
             rightButtonPressed = button == GLFW_MOUSE_BUTTON_2 && action == GLFW_PRESS;
+            leftButtonRelease = button == GLFW_MOUSE_BUTTON_1 && action == GLFW_RELEASE;
         });
     }
 
@@ -78,5 +81,9 @@ public class MouseEvent {
 
     public boolean isRightButtonPressed() {
         return rightButtonPressed;
+    }
+
+    public boolean isLeftButtonRelease() {
+        return leftButtonRelease;
     }
 }
