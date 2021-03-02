@@ -2,6 +2,8 @@ package gui.obj;
 
 import gui.graphic.Mesh;
 import org.joml.Vector3f;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 
@@ -11,6 +13,7 @@ import java.util.UUID;
  * @Version 1.0
  **/
 public abstract class GameObj {
+    private static final Logger logger = LoggerFactory.getLogger(GameObj.class);
 
     private final String id;
 
@@ -25,9 +28,9 @@ public abstract class GameObj {
 
     public GameObj(String id, Vector3f translation, Vector3f rotation, Vector3f scale) {
         this.id = id;
-        this.translation = translation;
-        this.rotation = rotation;
-        this.scale = scale;
+        this.translation = new Vector3f(translation);
+        this.rotation = new Vector3f(rotation);
+        this.scale = new Vector3f(scale);
     }
 
     public Vector3f getTranslation() {

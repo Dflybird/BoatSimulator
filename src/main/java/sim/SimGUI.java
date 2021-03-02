@@ -2,6 +2,7 @@ package sim;
 
 import ams.agent.Agent;
 import ams.agent.TestCubeAgent;
+import ams.agent.USVAgent;
 import environment.Wave;
 import conf.Config;
 import ams.AgentManager;
@@ -17,6 +18,7 @@ import gui.obj.Camera;
 import gui.obj.GameObj;
 import gui.obj.OceanObj;
 import gui.obj.geom.CubeObj;
+import gui.obj.usv.BoatObj;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -109,6 +111,15 @@ public class SimGUI implements GameLogic {
         scene.setOceanBlock(oceanBlocks);
 
         //初始化Agent
+//        Agent usvAgent = new USVAgent("usv0");
+//        Vector3f usvPos = new Vector3f(100,2,-100);
+//        Vector3f usvRot = new Vector3f(-90,0,0);
+//        Vector3f usvSca = new Vector3f(5,5,5);
+//        GameObj usvObj = new BoatObj("usv0", usvPos, usvRot, usvSca);
+//        scene.setGameObj(usvObj);
+//        scene.setGameObj(new BoatObj("usv1", new Vector3f(50,2,-150), new Vector3f(-90,0,30), usvSca));
+//        scene.setGameObj(new BoatObj("usv2", new Vector3f(25,2,-75), usvRot, usvSca));
+//        scene.setGameObj(new BoatObj("usv3", new Vector3f(150,2,0), usvRot, usvSca));
 //        Agent cubeAgent = new TestCubeAgent("cube");
 //        Vector3f cubePos = new Vector3f(10,200,-100);
 //        Vector3f cubeRot = new Vector3f();
@@ -124,6 +135,7 @@ public class SimGUI implements GameLogic {
 //        agent.setEntity(new Entity(new float[]{0,0,-2}, new float[]{-90,0,0}, 0.5f));
 //        AgentManager.addAgent(agent);
     }
+
     private final Vector3f cameraInc = new Vector3f();
     private static final float CAMERA_POS_STEP = 0.05f;
     private static final float MOUSE_SENSITIVITY = 0.2f;
@@ -164,12 +176,12 @@ public class SimGUI implements GameLogic {
         if (mouseEvent.isLeftButtonPressed()) {
             String id = "cube" + TimeUtil.currentTime();
             Agent cubeAgent = new TestCubeAgent(id);
-            Vector3f cubePos = new Vector3f(10,100,-100);
+            Vector3f cubePos = new Vector3f(10,100,-10);
             Vector3f cubeRot = new Vector3f();
             Vector3f cubeSca = new Vector3f(1,1,1);
             GameObj cube = new CubeObj(id, cubePos, cubeRot, cubeSca);
             Entity cubeEntity = new CubeEntity(physicsEngine.getWorld(), physicsEngine.getSpace(),
-                    new float[]{10,100,-100}, new float[]{0,0,0}, new float[]{1,1,1});
+                    new float[]{10,100,-10}, new float[]{0,0,0}, new float[]{1,1,1});
             cubeAgent.setEntity(cubeEntity);
             AgentManager.addAgent(cubeAgent);
             scene.setGameObj(cube);
@@ -179,7 +191,7 @@ public class SimGUI implements GameLogic {
     @Override
     public void update(double stepTime) {
         //海浪等环境更新
-        wave.evaluateWavesFFT((float) TimeUtil.currentTime());
+//        wave.evaluateWavesFFT((float) TimeUtil.currentTime());
         //Agent系统周期更新
         agentManager.update(stepTime);
         physicsEngine.update(stepTime);

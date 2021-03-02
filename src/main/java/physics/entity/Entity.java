@@ -7,14 +7,16 @@ package physics.entity;
  **/
 public abstract class Entity {
 
-    protected float[] translation;
-    protected float[] rotation;
-    protected float[] scale;
+    protected float[] translation = new float[3];
+    protected float[] rotation = new float[3];
+    protected float[] scale = new float[3];
 
     public Entity(float[] translation, float[] rotation, float[] scale) {
-        this.translation = translation;
-        this.rotation = rotation;
-        this.scale = scale;
+        for (int i = 0; i < 3; i++) {
+            this.translation[i] = translation[i];
+            this.rotation[i] = rotation[i];
+            this.scale[i] = scale[i];
+        }
     }
 
     public float[] getTranslation() {

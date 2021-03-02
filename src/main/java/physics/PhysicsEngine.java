@@ -3,12 +3,18 @@ package physics;
 import conf.Constant;
 import org.ode4j.ode.*;
 
+import static org.ode4j.ode.OdeConstants.dContactBounce;
+import static org.ode4j.ode.OdeConstants.dContactRolling;
+import static org.ode4j.ode.OdeHelper.areConnectedExcluding;
+
 /**
  * @Author Gq
  * @Date 2021/2/22 15:45
  * @Version 1.0
  **/
 public class PhysicsEngine {
+
+    private static final int MAX_CONTACTS = 36;
 
     private DWorld world;
     private DSpace space;
@@ -17,7 +23,7 @@ public class PhysicsEngine {
     public void init() {
         OdeHelper.initODE2(0);
         world = OdeHelper.createWorld();
-        space = OdeHelper.createHashSpace();
+        space = OdeHelper.createHashSpace(null);
         contactGroup = OdeHelper.createJointGroup();
 
         world.setGravity(0, -Constant.g, 0);
@@ -51,27 +57,50 @@ public class PhysicsEngine {
         assert(o1!=null);
         assert(o2!=null);
 
-        int max_contacts = 36;
+        DBody b1 = o1.getBody();
+        DBody b2 = o2.getBody();
+        if (b1!=null && b2!=null && areConnectedExcluding (b1,b2,DContactJoint.class)) return;
 
-        DContactBuffer contacts = new DContactBuffer(max_contacts);
-        int contacts_num = OdeHelper.collide(o1,o2,max_contacts,contacts.getGeomBuffer());
+        DContactBuffer contacts = new DContactBuffer(MAX_CONTACTS);
+        for (int i = 0; i < MAX_CONTACTS; i++) {
+            DContact contact = contacts.get(i);
+            contact.surface.mode = OdeConstants.dContactSlip1 | OdeConstants.dContactSlip2 |
+                    OdeConstants.dContactSoftERP | OdeConstants.dContactSoftCFM | OdeConstants.dContactApprox1;
+            contact.surface.mu = OdeConstants.dInfinity;
+            contact.surface.slip1 = 0.7;
+            contact.surface.slip2 = 0.7;
+            contact.surface.soft_erp = 0.96;
+            contact.surface.soft_cfm = 0.04;
+        }
+        int contacts_num = OdeHelper.collide(o1,o2,MAX_CONTACTS,contacts.getGeomBuffer());
         if (contacts_num!=0){
             for (int i = 0; i < contacts_num; i++) {
                 DContact contact = contacts.get(i);
 
-
-                contact.surface.mode = OdeConstants.dContactSlip1 | OdeConstants.dContactSlip2 |
-                        OdeConstants.dContactSoftERP | OdeConstants.dContactSoftCFM | OdeConstants.dContactApprox1;
-                contact.surface.mu = OdeConstants.dInfinity;
-                contact.surface.slip1 = 0.1;
-                contact.surface.slip2 = 0.1;
-                contact.surface.soft_erp = 0.5;
-                contact.surface.soft_cfm = 0.3;
-
                 DJoint c = OdeHelper.createContactJoint (world,contactGroup,contact);
-                c.attach(contact.geom.g1.getBody(), contact.geom.g2.getBody());
+                c.attach(b1, b2);
             }
         }
+//        DBody b1 = o1.getBody();
+//        DBody b2 = o2.getBody();
+//        if (b1!=null && b2!=null && areConnectedExcluding (b1,b2,DContactJoint.class)) return;
+//
+//        DContactBuffer contacts = new DContactBuffer(MAX_CONTACTS);   // up to MAX_CONTACTS contacts per box-box
+//        for (int i=0; i<MAX_CONTACTS; i++) {
+//            DContact contact = contacts.get(i);
+//            contact.surface.mode = dContactBounce | dContactRolling;
+//            contact.surface.mu = 250;
+//            contact.surface.rho = 0.2;
+//            contact.surface.bounce = 0.2;
+//        }
+//        int numc = OdeHelper.collide (o1,o2,MAX_CONTACTS,contacts.getGeomBuffer() );
+//        if (numc != 0) {
+//            for (int i=0; i<numc; i++) {
+//                DContact contact = contacts.get(i);
+//                DJoint c = OdeHelper.createContactJoint (world,contactGroup,contact );
+//                c.attach (b1,b2);
+//            }
+//        }
     }
 
     public DWorld getWorld() {

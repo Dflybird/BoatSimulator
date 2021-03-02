@@ -4,8 +4,12 @@ import gui.obj.Camera;
 import gui.obj.GameObj;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Transformation {
+
+    private static final Logger logger = LoggerFactory.getLogger(Transformation.class);
 
     private final Matrix4f modelMatrix;
     
@@ -26,10 +30,10 @@ public class Transformation {
         Vector3f scale = obj.getScale();
         return modelMatrix.identity()
                 .translate(translation)
-                .scale(scale)
                 .rotateX((float) Math.toRadians(rotation.x))
                 .rotateY((float) Math.toRadians(rotation.y))
-                .rotateZ((float) Math.toRadians(rotation.z));
+                .rotateZ((float) Math.toRadians(rotation.z))
+                .scale(scale);
     }
 
     public Matrix4f worldMatrix(GameObj obj, Matrix4f viewMatrix) {
