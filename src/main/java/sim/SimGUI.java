@@ -1,7 +1,7 @@
 package sim;
 
 import ams.agent.Agent;
-import ams.agent.TestCubeAgent;
+import ams.agent.CubeAgent;
 import ams.agent.USVAgent;
 import environment.Wave;
 import conf.Config;
@@ -16,9 +16,11 @@ import gui.graphic.Mesh;
 import gui.graphic.light.PointLight;
 import gui.obj.Camera;
 import gui.obj.GameObj;
+import gui.obj.Model;
 import gui.obj.OceanObj;
 import gui.obj.geom.CubeObj;
 import gui.obj.usv.BoatObj;
+import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -27,12 +29,16 @@ import org.slf4j.LoggerFactory;
 import physics.PhysicsEngine;
 import physics.entity.Entity;
 import physics.entity.geom.CubeEntity;
+import physics.entity.usv.BoatEntity;
 import state.GUIState;
 import util.TimeUtil;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import static conf.Constant.BOAT_OBJ_NAME;
+import static conf.Constant.RESOURCES_MODELS_DIR;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 
@@ -54,6 +60,8 @@ public class SimGUI implements GameLogic {
     private final PhysicsEngine physicsEngine;
 
     private Wave wave;
+
+    private Model boatModel;
 
     public static void main(String[] args) {
         main(args, new SimGUI());
@@ -79,6 +87,8 @@ public class SimGUI implements GameLogic {
         renderer.init(window, camera, scene, guiState);
         physicsEngine.init();
 
+        boatModel = Model.loadObj(new File(RESOURCES_MODELS_DIR, BOAT_OBJ_NAME));
+
         SceneLight sceneLight = new SceneLight();
         sceneLight.setAmbientLight(new Vector3f(0.3f, 0.3f, 0.3f));
         PointLight pointLight = new PointLight(new Vector3f(1, 1, 1),
@@ -103,7 +113,7 @@ public class SimGUI implements GameLogic {
         List<GameObj> oceanBlocks = new ArrayList<>();
         for (int i = -2; i < 2; i++) {
             for (int j = -2; j < 2; j++) {
-                OceanObj obj = new OceanObj(new Vector3f(Lx * i, 0, Lz * -j), new Vector3f(0,0,0), new Vector3f(1,1,1));
+                OceanObj obj = new OceanObj(new Vector3f(Lx * i, 0, Lz * -j), new Quaternionf(), new Vector3f(1,1,1));
                 obj.setMesh(mesh);
                 oceanBlocks.add(obj);
             }
@@ -112,11 +122,12 @@ public class SimGUI implements GameLogic {
 
         //初始化Agent
 //        Agent usvAgent = new USVAgent("usv0");
-//        Vector3f usvPos = new Vector3f(100,2,-100);
-//        Vector3f usvRot = new Vector3f(-90,0,0);
-//        Vector3f usvSca = new Vector3f(5,5,5);
-//        GameObj usvObj = new BoatObj("usv0", usvPos, usvRot, usvSca);
-//        scene.setGameObj(usvObj);
+        //长5m 宽2m
+        Vector3f usvPos = new Vector3f(20,30,0);
+        Quaternionf usvRot = new Quaternionf();
+        Vector3f usvSca = new Vector3f(1,1,1);
+        GameObj usvObj = new BoatObj("usv0", usvPos, usvRot, usvSca, boatModel);
+        scene.setGameObj(usvObj);
 //        scene.setGameObj(new BoatObj("usv1", new Vector3f(50,2,-150), new Vector3f(-90,0,30), usvSca));
 //        scene.setGameObj(new BoatObj("usv2", new Vector3f(25,2,-75), usvRot, usvSca));
 //        scene.setGameObj(new BoatObj("usv3", new Vector3f(150,2,0), usvRot, usvSca));
@@ -173,18 +184,39 @@ public class SimGUI implements GameLogic {
         }
 
         //点击加入方块
-        if (mouseEvent.isLeftButtonPressed()) {
+        if (glfwGetKey(window.getWindowID(), GLFW_KEY_C) == GLFW_PRESS) {
             String id = "cube" + TimeUtil.currentTime();
-            Agent cubeAgent = new TestCubeAgent(id);
-            Vector3f cubePos = new Vector3f(10,100,-10);
-            Vector3f cubeRot = new Vector3f();
+            Agent cubeAgent = new CubeAgent(id);
+            float x, y, z;
+            x = (float) (10+Math.random()*10);
+            y = 100;
+            z = (float) (-10+Math.random()*10);
+            Vector3f cubePos = new Vector3f(x, y, z);
+            Quaternionf cubeRot = new Quaternionf();
             Vector3f cubeSca = new Vector3f(1,1,1);
             GameObj cube = new CubeObj(id, cubePos, cubeRot, cubeSca);
             Entity cubeEntity = new CubeEntity(physicsEngine.getWorld(), physicsEngine.getSpace(),
-                    new float[]{10,100,-10}, new float[]{0,0,0}, new float[]{1,1,1});
+                    new float[]{x,y,z}, new float[]{0,0,0,0}, new float[]{1,1,1});
             cubeAgent.setEntity(cubeEntity);
             AgentManager.addAgent(cubeAgent);
             scene.setGameObj(cube);
+        }
+        if (glfwGetKey(window.getWindowID(), GLFW_KEY_B) == GLFW_PRESS) {
+            String id = "boat" + TimeUtil.currentTime();
+            Agent boatAgent = new USVAgent(id);
+            float x, y, z;
+            x = (float) (10+Math.random()*10);
+            y = 100;
+            z = (float) (-10+Math.random()*10);
+            Vector3f boatPos = new Vector3f(x, y, z);
+            Quaternionf boatRot = new Quaternionf();
+            Vector3f boatSca = new Vector3f(1,1,1);
+            GameObj boat = new BoatObj(id, boatPos, boatRot, boatSca, boatModel);
+            Entity boatEntity = new BoatEntity(physicsEngine.getWorld(), physicsEngine.getSpace(),
+                    new float[]{x,y,z}, new float[]{0,0,0,0}, new float[]{1,1,1}, boatModel);
+            boatAgent.setEntity(boatEntity);
+            AgentManager.addAgent(boatAgent);
+            scene.setGameObj(boat);
         }
     }
 

@@ -1,0 +1,221 @@
+# Blender MTL File: 'boat.blend'
+# Material Count: 20
+
+newmtl Blue.000_NONE.001
+Ns 900.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.062764 0.079847 0.800000
+Ks 0.622368 0.622368 0.622368
+Ke 0.012553 0.015969 0.160000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd D:\\毕设相关\\code\\usv_sim_lsa-master\\usv_sim\\meshes\\simpleHull3\\images\\whiteBlue.jpg
+
+newmtl Blue.001
+Ns 900.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.062764 0.079847 0.800000
+Ks 0.622368 0.622368 0.622368
+Ke 0.012553 0.015969 0.160000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd D:\\毕设相关\\code\\usv_sim_lsa-master\\usv_sim\\meshes\\simpleHull3\\images\\whiteBlue.jpg
+
+newmtl Blue.002
+Ns 900.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.062764 0.079847 0.800000
+Ks 0.622368 0.622368 0.622368
+Ke 0.010042 0.012776 0.128000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd D:\\毕设相关\\code\\usv_sim_lsa-master\\usv_sim\\meshes\\simpleHull3\\images\\whiteBlue.jpg
+
+newmtl Blue.003
+Ns 900.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.062764 0.079847 0.800000
+Ks 0.622368 0.622368 0.622368
+Ke 0.012553 0.015969 0.160000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd D:\\毕设相关\\code\\usv_sim_lsa-master\\usv_sim\\meshes\\simpleHull3\\images\\whiteBlue.jpg
+
+newmtl Blue.003_NONE
+Ns 900.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.062764 0.079847 0.800000
+Ks 0.622368 0.622368 0.622368
+Ke 0.010042 0.012776 0.128000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Blue.004
+Ns 900.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.062764 0.079847 0.800000
+Ks 0.622368 0.622368 0.622368
+Ke 0.009415 0.011977 0.120000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd D:\\毕设相关\\code\\usv_sim_lsa-master\\usv_sim\\meshes\\simpleHull3\\images\\whiteBlue.jpg
+
+newmtl Blue.005
+Ns 900.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.062764 0.079847 0.800000
+Ks 0.622368 0.622368 0.622368
+Ke 0.010042 0.012776 0.128000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd D:\\毕设相关\\code\\usv_sim_lsa-master\\usv_sim\\meshes\\simpleHull3\\images\\whiteBlue.jpg
+
+newmtl Blue.007
+Ns 900.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.062764 0.079847 0.800000
+Ks 0.622368 0.622368 0.622368
+Ke 0.010042 0.012776 0.128000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd D:\\毕设相关\\code\\usv_sim_lsa-master\\usv_sim\\meshes\\simpleHull3\\images\\whiteBlue.jpg
+
+newmtl WhiteBase.000_whiteBlue.jpg.002
+Ns 94.117748
+Ka 1.000000 1.000000 1.000000
+Kd 0.910557 1.000000 0.960399
+Ks 0.251000 0.251000 0.251000
+Ke 0.145689 0.160000 0.153664
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd D:\\毕设相关\\code\\usv_sim_lsa-master\\usv_sim\\meshes\\simpleHull3\\images\\white.jpg
+
+newmtl WhiteBase.001
+Ns 17.647057
+Ka 1.000000 1.000000 1.000000
+Kd 0.910557 1.000000 0.960399
+Ks 0.251000 0.251000 0.251000
+Ke 0.145689 0.160000 0.153664
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd D:\\毕设相关\\code\\usv_sim_lsa-master\\usv_sim\\meshes\\simpleHull3\\images\\whiteBlue.jpg
+
+newmtl WhiteBase.002
+Ns 17.647057
+Ka 1.000000 1.000000 1.000000
+Kd 0.910557 1.000000 0.960399
+Ks 0.251000 0.251000 0.251000
+Ke 0.145689 0.160000 0.153664
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd D:\\毕设相关\\code\\usv_sim_lsa-master\\usv_sim\\meshes\\simpleHull3\\images\\white.jpg
+
+newmtl WhiteBase.003
+Ns 17.647057
+Ka 1.000000 1.000000 1.000000
+Kd 0.910557 1.000000 0.960399
+Ks 0.251000 0.251000 0.251000
+Ke 0.145689 0.160000 0.153664
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd D:\\毕设相关\\code\\usv_sim_lsa-master\\usv_sim\\meshes\\simpleHull3\\images\\white.jpg
+
+newmtl WhiteBase.004
+Ns 17.647057
+Ka 1.000000 1.000000 1.000000
+Kd 0.910557 1.000000 0.960399
+Ks 0.251000 0.251000 0.251000
+Ke 0.136584 0.150000 0.144060
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd D:\\毕设相关\\code\\usv_sim_lsa-master\\usv_sim\\meshes\\simpleHull3\\images\\white.jpg
+
+newmtl WhiteBase.007
+Ns 17.647057
+Ka 1.000000 1.000000 1.000000
+Kd 0.910557 1.000000 0.960399
+Ks 0.251000 0.251000 0.251000
+Ke 0.145689 0.160000 0.153664
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd D:\\毕设相关\\code\\usv_sim_lsa-master\\usv_sim\\meshes\\simpleHull3\\images\\white.jpg
+
+newmtl Wood_woodhighquality1.jpg.000_NONE.001
+Ns 815.686277
+Ka 1.000000 1.000000 1.000000
+Kd 0.457610 0.399730 0.325615
+Ks 0.600736 0.600736 0.600736
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd D:\\毕设相关\\code\\usv_sim_lsa-master\\usv_sim\\meshes\\simpleHull3\\images\\woodhighquality1.jpg
+
+newmtl Wood_woodhighquality1.jpg.000_NONE.002
+Ns 815.686277
+Ka 1.000000 1.000000 1.000000
+Kd 0.457610 0.399730 0.325615
+Ks 0.600736 0.600736 0.600736
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd D:\\毕设相关\\code\\usv_sim_lsa-master\\usv_sim\\meshes\\simpleHull3\\images\\woodhighquality1.jpg
+
+newmtl Wood_woodhighquality1.jpg.001
+Ns 815.686277
+Ka 1.000000 1.000000 1.000000
+Kd 0.457610 0.399730 0.325615
+Ks 0.600736 0.600736 0.600736
+Ke 0.177694 0.155219 0.126439
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd D:\\毕设相关\\code\\usv_sim_lsa-master\\usv_sim\\meshes\\simpleHull3\\images\\woodhighquality1.jpg
+
+newmtl Wood_woodhighquality1.jpg.002
+Ns 815.686277
+Ka 1.000000 1.000000 1.000000
+Kd 0.457610 0.399730 0.325615
+Ks 0.600736 0.600736 0.600736
+Ke 0.145689 0.160000 0.153664
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd D:\\毕设相关\\code\\usv_sim_lsa-master\\usv_sim\\meshes\\simpleHull3\\images\\woodhighquality1.jpg
+
+newmtl white
+Ns 94.117748
+Ka 1.000000 1.000000 1.000000
+Kd 0.910557 1.000000 0.960399
+Ks 0.251000 0.251000 0.251000
+Ke 0.145689 0.160000 0.153664
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd D:\\毕设相关\\code\\usv_sim_lsa-master\\usv_sim\\meshes\\simpleHull3\\images\\white.jpg
+
+newmtl white.001
+Ns 96.078443
+Ka 1.000000 1.000000 1.000000
+Kd 0.910557 1.000000 0.960399
+Ks 0.251000 0.251000 0.251000
+Ke 0.145689 0.160000 0.153664
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd D:\\毕设相关\\code\\usv_sim_lsa-master\\usv_sim\\meshes\\simpleHull3\\images\\white.jpg

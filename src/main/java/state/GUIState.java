@@ -6,6 +6,7 @@ import gui.SyncedCacheBuffer;
 import gui.graphic.Mesh;
 import gui.obj.GameObj;
 import gui.obj.Model;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +54,7 @@ public class GUIState implements StateUpdateListener {
                 float[] s = objStateInfo.getScale();
 
                 obj.setTranslation(new Vector3f(t[0], t[1], t[2]));
-                obj.setRotation(new Vector3f(r[0], r[1], r[2]));
+                obj.setRotation(new Quaternionf(r[1], r[2], r[3], r[0]));
                 obj.setScale(new Vector3f(s[0], s[1], s[2]));
             }
         }

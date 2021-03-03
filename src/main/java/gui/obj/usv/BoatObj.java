@@ -5,6 +5,7 @@ import gui.graphic.Mesh;
 import gui.graphic.Texture;
 import gui.obj.GameObj;
 import gui.obj.Model;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.io.File;
@@ -19,18 +20,20 @@ import static conf.Constant.*;
  **/
 public class BoatObj extends GameObj {
 
-    public BoatObj(Vector3f position, Vector3f rotation, Vector3f scale) {
+    private Model model;
+
+    public BoatObj(Vector3f position, Quaternionf rotation, Vector3f scale, Model model) {
         super(position, rotation, scale);
-        init(position, rotation, scale);
+        init();
     }
 
-    public BoatObj(String id, Vector3f position, Vector3f rotation, Vector3f scale) {
+    public BoatObj(String id, Vector3f position, Quaternionf rotation, Vector3f scale, Model model) {
         super(id, position, rotation, scale);
-        init(position, rotation, scale);
+        this.model = model;
+        init();
     }
 
-    private void init(Vector3f position, Vector3f rotation, Vector3f scale) {
-        Model model = Model.loadObj(new File(RESOURCES_MODELS_DIR, BOAT_OBJ_NAME));
+    private void init() {
 //        Texture texture = new Texture(new File(RESOURCES_MODELS_DIR, BOAT_MTL_NAME));
 //        Material material = new Material(texture);
         Material material = new Material();

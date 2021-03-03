@@ -4,6 +4,7 @@ import gui.graphic.Material;
 import gui.graphic.Mesh;
 import gui.obj.GameObj;
 import gui.obj.Model;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,12 +22,12 @@ import static conf.Constant.RESOURCES_MODELS_DIR;
 public class CubeObj extends GameObj {
     private static Logger logger = LoggerFactory.getLogger(CubeObj.class);
 
-    public CubeObj(Vector3f position, Vector3f rotation, Vector3f scale) {
+    public CubeObj(Vector3f position, Quaternionf rotation, Vector3f scale) {
         super(position, rotation, scale);
         init();
     }
 
-    public CubeObj(String id, Vector3f position, Vector3f rotation, Vector3f scale) {
+    public CubeObj(String id, Vector3f position, Quaternionf rotation, Vector3f scale) {
         super(id, position, rotation, scale);
         init();
     }

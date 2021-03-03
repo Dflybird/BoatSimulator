@@ -247,7 +247,7 @@ public class Wave {
      * @param m
      * @return
      */
-    public float dispersion(int n, int m) {
+    private float dispersion(int n, int m) {
         float w0 = 2 * PI / T;
         float kx = PI * (2 * n - N) / Lx;
         float kz = PI * (2 * m - M) / Lz;
@@ -260,7 +260,7 @@ public class Wave {
      * 计算菲利普斯波谱
      * @return
      */
-    public float phillips(int n, int m) {
+    private float phillips(int n, int m) {
         float kx = PI * (2 * n - N) / Lx;
         float kz = PI * (2 * m - M) / Lz;
         Vector2f k = new Vector2f(kx, kz);
@@ -284,7 +284,7 @@ public class Wave {
         return (float) (A* Math.exp(-1f / (k2 * L2)) / k4 * kw2 * Math.exp(-k2 * l2));
     }
 
-    public Complex hTilde0(int n, int m) {
+    private Complex hTilde0(int n, int m) {
         Random random = new Random();
         double re = random.nextGaussian();
         double im = random.nextGaussian();
@@ -299,7 +299,7 @@ public class Wave {
      * @param m
      * @return
      */
-    public Complex hTilde(float t, int n, int m) {
+    private Complex hTilde(float t, int n, int m) {
         //计算具体的点
         int index = m * NPlus1 + n;
 

@@ -34,7 +34,7 @@ public class PhysicsEngine {
         world.setLinearDampingThreshold(0);
         world.setLinearDamping(0.6 * 0.002);
         //平面方程
-        OdeHelper.createPlane( space, 0, 1, 0, 30 );
+        OdeHelper.createPlane( space, 0, 1, 0, 20 );
     }
 
     public void update(double stepTime) {
@@ -64,13 +64,18 @@ public class PhysicsEngine {
         DContactBuffer contacts = new DContactBuffer(MAX_CONTACTS);
         for (int i = 0; i < MAX_CONTACTS; i++) {
             DContact contact = contacts.get(i);
-            contact.surface.mode = OdeConstants.dContactSlip1 | OdeConstants.dContactSlip2 |
-                    OdeConstants.dContactSoftERP | OdeConstants.dContactSoftCFM | OdeConstants.dContactApprox1;
+//            contact.surface.mode = OdeConstants.dContactSlip1 | OdeConstants.dContactSlip2 |
+//                    OdeConstants.dContactSoftERP | OdeConstants.dContactSoftCFM | OdeConstants.dContactApprox1;
+            contact.surface.mode = OdeConstants.dContactBounce | OdeConstants.dContactSoftCFM;
             contact.surface.mu = OdeConstants.dInfinity;
-            contact.surface.slip1 = 0.7;
-            contact.surface.slip2 = 0.7;
-            contact.surface.soft_erp = 0.96;
-            contact.surface.soft_cfm = 0.04;
+//            contact.surface.slip1 = 0.7;
+//            contact.surface.slip2 = 0.7;
+//            contact.surface.soft_erp = 0.96;
+//            contact.surface.soft_cfm = 0.04;
+            contact.surface.mu2 = 0;
+            contact.surface.bounce = 0.1;
+            contact.surface.bounce_vel = 0.1;
+            contact.surface.soft_cfm = 0.01;
         }
         int contacts_num = OdeHelper.collide(o1,o2,MAX_CONTACTS,contacts.getGeomBuffer());
         if (contacts_num!=0){

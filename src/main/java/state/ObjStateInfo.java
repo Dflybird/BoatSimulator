@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class ObjStateInfo {
     private float[] translation = new float[3];  //len = 3
-    private float[] rotation = new float[3]; //len = 3
+    private float[] rotation = new float[4]; //len = 4
     private float[] scale = new float[3];
 
     public ObjStateInfo() {
@@ -23,6 +23,7 @@ public class ObjStateInfo {
             rotation[i] *= num;
             scale[i] *= num;
         }
+        rotation[3] *= num;
         return this;
     }
 
@@ -32,6 +33,7 @@ public class ObjStateInfo {
             rotation[i] += info.rotation[i];
             scale[i] += info.scale[i];
         }
+        rotation[3] += info.rotation[3];
         return this;
     }
 
@@ -41,6 +43,7 @@ public class ObjStateInfo {
             rotation[i] -= info.rotation[i];
             scale[i] -= info.scale[i];
         }
+        rotation[3] -= info.rotation[3];
         return this;
     }
 

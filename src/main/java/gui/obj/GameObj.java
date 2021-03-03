@@ -1,6 +1,7 @@
 package gui.obj;
 
 import gui.graphic.Mesh;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,18 +19,18 @@ public abstract class GameObj {
     private final String id;
 
     protected Vector3f translation;
-    protected Vector3f rotation;
+    protected Quaternionf rotation;
     protected Vector3f scale;
     protected Mesh mesh;
 
-    public GameObj(Vector3f translation, Vector3f rotation, Vector3f scale) {
+    public GameObj(Vector3f translation, Quaternionf rotation, Vector3f scale) {
         this(UUID.randomUUID().toString(), translation, rotation, scale);
     }
 
-    public GameObj(String id, Vector3f translation, Vector3f rotation, Vector3f scale) {
+    public GameObj(String id, Vector3f translation, Quaternionf rotation, Vector3f scale) {
         this.id = id;
         this.translation = new Vector3f(translation);
-        this.rotation = new Vector3f(rotation);
+        this.rotation = new Quaternionf(rotation);
         this.scale = new Vector3f(scale);
     }
 
@@ -41,11 +42,11 @@ public abstract class GameObj {
         this.translation = translation;
     }
 
-    public Vector3f getRotation() {
+    public Quaternionf getRotation() {
         return rotation;
     }
 
-    public void setRotation(Vector3f rotation) {
+    public void setRotation(Quaternionf rotation) {
         this.rotation = rotation;
     }
 

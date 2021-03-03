@@ -3,6 +3,7 @@ package gui.graphic;
 import gui.obj.Camera;
 import gui.obj.GameObj;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,13 +27,13 @@ public class Transformation {
     
     public Matrix4f modelMatrix(GameObj obj) {
         Vector3f translation = obj.getTranslation();
-        Vector3f rotation = obj.getRotation();
+        Quaternionf rotation = obj.getRotation();
         Vector3f scale = obj.getScale();
+        //四元数 w是实部
+        Quaternionf quaternion  = new Quaternionf();
         return modelMatrix.identity()
                 .translate(translation)
-                .rotateX((float) Math.toRadians(rotation.x))
-                .rotateY((float) Math.toRadians(rotation.y))
-                .rotateZ((float) Math.toRadians(rotation.z))
+                .rotate(rotation)
                 .scale(scale);
     }
 
