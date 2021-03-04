@@ -117,6 +117,20 @@ public class Wave {
             }
         }
 
+        //先延X轴再延Z轴
+        // ┌ ┬ ┐├ ─ ┤└ ┴ ┘ ┼ │
+        //
+        // m
+        // 4 ┌───┬───┬───┬───┐
+        //   │12 │13 │14 │15 │
+        // 3 ├───┼───┼───┼───┤
+        //   │ 8 │ 9 │10 │11 │
+        // 2 ├───┼───┼───┼───┤
+        //   │ 4 │ 5 │ 6 │ 7 │
+        // 1 ├───┼───┼───┼───┤
+        //   │ 0 │ 1 │ 2 │ 3 │
+        // 0 └───┴───┴───┴───┘
+        //   0   1   2   3   4   n
         int count = 0;
         for (int m = 0; m < M; m++) {
             for (int n = 0; n < N; n++) {
@@ -198,8 +212,8 @@ public class Wave {
                 //x处海浪水平位移
                 hTildeDx[indexH] = hTildeDx[indexH].scale(sign);
                 hTildeDz[indexH] = hTildeDz[indexH].scale(sign);
-                vertices[indexV * 3] = originalVertices[indexV * 3] + lambda * (float) hTildeDx[indexH].re();
-                vertices[indexV * 3 + 2] = originalVertices[indexV * 3 + 2] + lambda * (float) hTildeDz[indexH].re();
+//                vertices[indexV * 3] = originalVertices[indexV * 3] + lambda * (float) hTildeDx[indexH].re();
+//                vertices[indexV * 3 + 2] = originalVertices[indexV * 3 + 2] + lambda * (float) hTildeDz[indexH].re();
 
                 //法向量
                 hTildeSlopeX[indexH] = hTildeSlopeX[indexH].scale(sign);
@@ -212,8 +226,8 @@ public class Wave {
                 //将最后一个边界点赋值为当前点，平滑N*M海面范围边界
                 if (n == 0 && m == 0) {
                     vertices[(indexV + M * NPlus1 + N) * 3 + 1] = (float) hTildes[indexH].re();
-                    vertices[(indexV + M * NPlus1 + N) * 3] = originalVertices[(indexV + M * NPlus1 + N) * 3] + lambda * (float) hTildeDx[indexH].re();
-                    vertices[(indexV + M * NPlus1 + N) * 3 + 2] = originalVertices[(indexV + M * NPlus1 + N) * 3 + 2] + lambda * (float) hTildeDz[indexH].re();
+//                    vertices[(indexV + M * NPlus1 + N) * 3] = originalVertices[(indexV + M * NPlus1 + N) * 3] + lambda * (float) hTildeDx[indexH].re();
+//                    vertices[(indexV + M * NPlus1 + N) * 3 + 2] = originalVertices[(indexV + M * NPlus1 + N) * 3 + 2] + lambda * (float) hTildeDz[indexH].re();
 
                     normals[(indexV + M * NPlus1 + N) * 3] = normal.x;
                     normals[(indexV + M * NPlus1 + N) * 3 + 1] = normal.y;
@@ -221,8 +235,8 @@ public class Wave {
                 }
                 if (n == 0) {
                     vertices[(indexV + N) * 3 + 1] = (float) hTildes[indexH].re();
-                    vertices[(indexV + N) * 3] = originalVertices[(indexV + N) * 3] + lambda * (float) hTildeDx[indexH].re();
-                    vertices[(indexV + N) * 3 + 2] = originalVertices[(indexV + N) * 3 + 2] + lambda * (float) hTildeDz[indexH].re();
+//                    vertices[(indexV + N) * 3] = originalVertices[(indexV + N) * 3] + lambda * (float) hTildeDx[indexH].re();
+//                    vertices[(indexV + N) * 3 + 2] = originalVertices[(indexV + N) * 3 + 2] + lambda * (float) hTildeDz[indexH].re();
 
                     normals[(indexV + N) * 3] = normal.x;
                     normals[(indexV + N) * 3 + 1] = normal.y;
@@ -230,8 +244,8 @@ public class Wave {
                 }
                 if (m == 0) {
                     vertices[(indexV + M * NPlus1) * 3 + 1] = (float) hTildes[indexH].re();
-                    vertices[(indexV + M * NPlus1) * 3] = originalVertices[(indexV + M * NPlus1) * 3] + lambda * (float) hTildeDx[indexH].re();
-                    vertices[(indexV + M * NPlus1) * 3 + 2] = originalVertices[(indexV + M * NPlus1) * 3 + 2] + lambda * (float) hTildeDz[indexH].re();
+//                    vertices[(indexV + M * NPlus1) * 3] = originalVertices[(indexV + M * NPlus1) * 3] + lambda * (float) hTildeDx[indexH].re();
+//                    vertices[(indexV + M * NPlus1) * 3 + 2] = originalVertices[(indexV + M * NPlus1) * 3 + 2] + lambda * (float) hTildeDz[indexH].re();
 
                     normals[(indexV + M * NPlus1) * 3] = normal.x;
                     normals[(indexV + M * NPlus1) * 3 + 1] = normal.y;
@@ -343,6 +357,10 @@ public class Wave {
 
     public float[] getTextures() {
         return textures;
+    }
+
+    public float[] getOriginalVertices() {
+        return originalVertices;
     }
 
     public Model getModel() {

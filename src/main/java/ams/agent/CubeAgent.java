@@ -1,6 +1,6 @@
 package ams.agent;
 
-import physics.BuoyHelper;
+import physics.buoy.BuoyHelper;
 
 /**
  * @Author Gq
@@ -9,13 +9,19 @@ import physics.BuoyHelper;
  **/
 public class CubeAgent extends Agent {
 
-    BuoyHelper buoyHelper = new BuoyHelper();
+    BuoyHelper buoyHelper;
     public CubeAgent(String agentID) {
         super(agentID);
     }
 
     @Override
     protected void update() {
-        buoyHelper.handleBuoyancy(entity);
+        if (buoyHelper != null) {
+            buoyHelper.handleBuoyancy(entity);
+        }
+    }
+
+    public void setBuoyHelper(BuoyHelper buoyHelper) {
+        this.buoyHelper = buoyHelper;
     }
 }

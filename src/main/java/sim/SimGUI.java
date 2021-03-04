@@ -3,29 +3,25 @@ package sim;
 import ams.agent.Agent;
 import ams.agent.CubeAgent;
 import ams.agent.USVAgent;
-import environment.Wave;
+import environment.Ocean;
 import conf.Config;
 import ams.AgentManager;
 import engine.GameEngine;
 import engine.GameLogic;
-import environment.Fog;
-import environment.Wind;
 import gui.*;
-import gui.graphic.Material;
-import gui.graphic.Mesh;
+import gui.graphic.light.DirectionalLight;
 import gui.graphic.light.PointLight;
 import gui.obj.Camera;
 import gui.obj.GameObj;
 import gui.obj.Model;
-import gui.obj.OceanObj;
 import gui.obj.geom.CubeObj;
 import gui.obj.usv.BoatObj;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import physics.buoy.BuoyHelper;
 import physics.PhysicsEngine;
 import physics.entity.Entity;
 import physics.entity.geom.CubeEntity;
@@ -34,8 +30,6 @@ import state.GUIState;
 import util.TimeUtil;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import static conf.Constant.BOAT_OBJ_NAME;
 import static conf.Constant.RESOURCES_MODELS_DIR;
@@ -59,9 +53,10 @@ public class SimGUI implements GameLogic {
     private final GUIRenderer renderer;
     private final PhysicsEngine physicsEngine;
 
-    private Wave wave;
+    private Ocean ocean;
 
     private Model boatModel;
+    private BuoyHelper buoyHelper;
 
     public static void main(String[] args) {
         main(args, new SimGUI());
@@ -78,6 +73,8 @@ public class SimGUI implements GameLogic {
         renderer = new GUIRenderer();
         scene = new Scene();
         physicsEngine = new PhysicsEngine();
+        ocean = new Ocean(128, 128, 4, 4, new Vector3f());
+        buoyHelper = new BuoyHelper(ocean);
     }
 
     @Override
@@ -86,43 +83,45 @@ public class SimGUI implements GameLogic {
         AgentManager.registerSimStateListener(guiState);
         renderer.init(window, camera, scene, guiState);
         physicsEngine.init();
+        ocean.init(scene);
 
         boatModel = Model.loadObj(new File(RESOURCES_MODELS_DIR, BOAT_OBJ_NAME));
+
 
         SceneLight sceneLight = new SceneLight();
         sceneLight.setAmbientLight(new Vector3f(0.3f, 0.3f, 0.3f));
         PointLight pointLight = new PointLight(new Vector3f(1, 1, 1),
                 new Vector3f(1000,100,-1000), 1);
-        sceneLight.setPointLightList(new PointLight[]{pointLight});
+//        sceneLight.setPointLightList(new PointLight[]{pointLight});
+        DirectionalLight directionalLight = new DirectionalLight(new Vector3f(1.0f, 0.6f, 0.3f), new Vector3f(1, 0.1f, -1),  1.0f);
+        sceneLight.setDirectionalLight(directionalLight);
 
         scene.setSceneLight(sceneLight);
 
-        //雾
-        scene.setFog(Fog.OCEAN_FLOG);
 
         //海洋平铺
-        float Lx = 256;
-        float Lz = 256;
-        wave = new Wave(Lx, Lx, 128, 128, new Wind(30, new Vector2f(1,0)), 0.000005f);
-        Material material = new Material(
-                new Vector4f(0.0f, 0.65f, 0.75f, 1.0f),
-                new Vector4f(0.5f, 0.65f, 0.75f, 1.0f),
-                new Vector4f(1.0f, 0.25f, 0.0f,  1.0f),
-                1, null);
-        Mesh mesh = new Mesh(wave.getModel(), material);
-        List<GameObj> oceanBlocks = new ArrayList<>();
-        for (int i = -2; i < 2; i++) {
-            for (int j = -2; j < 2; j++) {
-                OceanObj obj = new OceanObj(new Vector3f(Lx * i, 0, Lz * -j), new Quaternionf(), new Vector3f(1,1,1));
-                obj.setMesh(mesh);
-                oceanBlocks.add(obj);
-            }
-        }
-        scene.setOceanBlock(oceanBlocks);
+//        float Lx = 256;
+//        float Lz = 256;
+//        wave = new Wave(Lx, Lx, 128, 128, new Wind(30, new Vector2f(1,0)), 0.000005f);
+//        Material material = new Material(
+//                new Vector4f(0.0f, 0.65f, 0.75f, 1.0f),
+//                new Vector4f(0.5f, 0.65f, 0.75f, 1.0f),
+//                new Vector4f(1.0f, 0.25f, 0.0f,  1.0f),
+//                1, null);
+//        Mesh mesh = new Mesh(wave.getModel(), material);
+//        List<GameObj> oceanBlocks = new ArrayList<>();
+//        for (int i = -2; i < 2; i++) {
+//            for (int j = -2; j < 2; j++) {
+//                OceanObj obj = new OceanObj(new Vector3f(Lx * i, 0, Lz * -j), new Quaternionf(), new Vector3f(1,1,1));
+//                obj.setMesh(mesh);
+//                oceanBlocks.add(obj);
+//            }
+//        }
+//        scene.setOceanBlock(oceanBlocks);
 
         //初始化Agent
 //        Agent usvAgent = new USVAgent("usv0");
-        //长5m 宽2m
+//        长5m 宽2m
         Vector3f usvPos = new Vector3f(20,30,0);
         Quaternionf usvRot = new Quaternionf();
         Vector3f usvSca = new Vector3f(1,1,1);
@@ -145,6 +144,22 @@ public class SimGUI implements GameLogic {
 //        Agent agent = new USVAgent("test1");
 //        agent.setEntity(new Entity(new float[]{0,0,-2}, new float[]{-90,0,0}, 0.5f));
 //        AgentManager.addAgent(agent);
+        String id = "cube" + TimeUtil.currentTime();
+        CubeAgent cubeAgent = new CubeAgent(id);
+        cubeAgent.setBuoyHelper(buoyHelper);
+        float x, y, z;
+        x = 10;
+        y = 100;
+        z = 10;
+        Vector3f cubePos = new Vector3f(x, y, z);
+        Quaternionf cubeRot = new Quaternionf();
+        Vector3f cubeSca = new Vector3f(1,1,1);
+        GameObj cube = new CubeObj(id, cubePos, cubeRot, cubeSca);
+        Entity cubeEntity = new CubeEntity(physicsEngine.getWorld(), physicsEngine.getSpace(),
+                new float[]{x,y,z}, new float[]{0,0,0,0}, new float[]{10,10,10});
+        cubeAgent.setEntity(cubeEntity);
+        AgentManager.addAgent(cubeAgent);
+        scene.setGameObj(cube);
     }
 
     private final Vector3f cameraInc = new Vector3f();
@@ -186,7 +201,8 @@ public class SimGUI implements GameLogic {
         //点击加入方块
         if (glfwGetKey(window.getWindowID(), GLFW_KEY_C) == GLFW_PRESS) {
             String id = "cube" + TimeUtil.currentTime();
-            Agent cubeAgent = new CubeAgent(id);
+            CubeAgent cubeAgent = new CubeAgent(id);
+            cubeAgent.setBuoyHelper(buoyHelper);
             float x, y, z;
             x = (float) (10+Math.random()*10);
             y = 100;
@@ -196,7 +212,7 @@ public class SimGUI implements GameLogic {
             Vector3f cubeSca = new Vector3f(1,1,1);
             GameObj cube = new CubeObj(id, cubePos, cubeRot, cubeSca);
             Entity cubeEntity = new CubeEntity(physicsEngine.getWorld(), physicsEngine.getSpace(),
-                    new float[]{x,y,z}, new float[]{0,0,0,0}, new float[]{1,1,1});
+                    new float[]{x,y,z}, new float[]{0,0,0,0}, new float[]{10,10,10});
             cubeAgent.setEntity(cubeEntity);
             AgentManager.addAgent(cubeAgent);
             scene.setGameObj(cube);
@@ -223,7 +239,7 @@ public class SimGUI implements GameLogic {
     @Override
     public void update(double stepTime) {
         //海浪等环境更新
-//        wave.evaluateWavesFFT((float) TimeUtil.currentTime());
+        ocean.update();
         //Agent系统周期更新
         agentManager.update(stepTime);
         physicsEngine.update(stepTime);

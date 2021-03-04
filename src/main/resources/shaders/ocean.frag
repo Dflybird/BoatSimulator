@@ -47,6 +47,7 @@ in vec3 exVertexNormal;
 
 out vec4 fragColor;
 
+uniform DirectionalLight directionalLight;
 uniform sampler2D texture_sampler;
 uniform PointLight pointLights[MAX_POINT_LIGHT_NUM];
 uniform vec3 ambientLight;
@@ -101,6 +102,10 @@ vec4 calcPointLight(PointLight pointLight, vec3 vertexPosition, vec3 vertexNorma
     return lightColour / attenuation;
 }
 
+vec4 calcDirectionalLight(DirectionalLight directionalLight, vec3 vertexPosition, vec3 vertexNormal) {
+    return calcLightColour(directionalLight.colour, directionalLight.intensity, normalize(directionalLight.direction), vertexPosition, vertexNormal);
+}
+
 vec4 calcFog(vec3 position, vec4 fragColor, Fog fog) {
     //计算雾时没有考虑环境光照，因此就算环境光为0时 雾依旧是发光的
     //    vec3 fogColor = fog.colour * (ambientLight + directionalLight.colour * directionalLight.intensity);
@@ -115,7 +120,8 @@ vec4 calcFog(vec3 position, vec4 fragColor, Fog fog) {
 
 void main() {
     setColour(material, exTextureCoordinate);
-    vec4 componentColour = vec4(0,0,0,0);
+    vec4 componentColour = calcDirectionalLight(directionalLight, exWorldPos, exVertexNormal);
+//    vec4 componentColour = vec4(0,0,0,0);
 
     for(int i = 0; i < MAX_POINT_LIGHT_NUM; i++) {
         if(pointLights[i].intensity > 0) {
@@ -128,4 +134,5 @@ void main() {
     if (fog.activeFog == 1) {
         fragColor = calcFog(exWorldPos, fragColor, fog);
     }
+    fragColor.a = 0.9;
 }

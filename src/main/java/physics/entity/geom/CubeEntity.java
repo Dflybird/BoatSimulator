@@ -25,7 +25,7 @@ public class CubeEntity extends Entity {
 
     private void init() {
         DMass mass = OdeHelper.createMass();
-        float density = 0.9f;
+        float density = 0.8f;
         //立方体大小
         mass.setBox(density, scale[0],scale[1],scale[2]);
         body = OdeHelper.createBody(world);

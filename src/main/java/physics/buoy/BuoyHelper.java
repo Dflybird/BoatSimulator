@@ -1,5 +1,6 @@
-package physics;
+package physics.buoy;
 
+import environment.Ocean;
 import org.ode4j.math.DVector3;
 import org.ode4j.math.DVector3C;
 import org.ode4j.ode.*;
@@ -11,24 +12,25 @@ import physics.entity.Entity;
 public class BuoyHelper {
     private static final Logger logger = LoggerFactory.getLogger(BuoyHelper.class);
 
+    private Ocean ocean;
+
+    public BuoyHelper(Ocean ocean) {
+        this.ocean = ocean;
+    }
+
     public void handleBuoyancy(Entity entity) {
         DWorld world = entity.getWorld();
         DGeom geom = entity.getGeom();
 
         if (geom instanceof DBox) {
-            logger.debug("==============Processing box geom=============");
             processBuoys(geom, generateBuoys(3, (DBox) geom), getVolume((DBox) geom), getArea((DBox) geom),world);
         } else if (geom instanceof DSphere) {
-            logger.debug("==============Processing sphere geom=============");
             processBuoys(geom, generateBuoys((DSphere) geom), getVolume((DSphere) geom),getArea((DSphere) geom),world);
         } else if (geom instanceof DCapsule) {
-            logger.debug("==============Processing capsule geom=============");
             processBuoys(geom, generateBuoys(2, (DCapsule) geom), getVolume((DCapsule) geom), getArea((DCapsule) geom),world);
         } else if (geom instanceof DCylinder) {
-            logger.debug("==============Processing cylinder geom=============");
             processBuoys(geom, generateBuoys(5, (DCylinder) geom), getVolume((DCylinder) geom), getArea((DCylinder) geom),world);
         }else if (geom instanceof DTriMesh) {
-            logger.debug("==============Processing mesh geom=============");
             processBuoys(geom, generateBuoys(5, (DCylinder) geom),getVolume((DCylinder) geom), getArea((DCylinder) geom),world);
         }
     }
@@ -41,16 +43,16 @@ public class BuoyHelper {
                 Buoy[] buoys = generateBuoys(3, (DBox) geom);
                 processBuoys(geom, buoys, getVolume((DBox) geom), getArea((DBox) geom),world);
             } else if (geom instanceof DSphere) {
-                System.out.println("==============Processing sphere geom=============");
+//                System.out.println("==============Processing sphere geom=============");
                 processBuoys(geom, generateBuoys((DSphere) geom), getVolume((DSphere) geom),getArea((DSphere) geom),world);
             } else if (geom instanceof DCapsule) {
-                System.out.println("==============Processing capsule geom=============");
+//                System.out.println("==============Processing capsule geom=============");
                 processBuoys(geom, generateBuoys(2, (DCapsule) geom), getVolume((DCapsule) geom), getArea((DCapsule) geom),world);
             } else if (geom instanceof DCylinder) {
-                System.out.println("==============Processing cylinder geom=============");
+//                System.out.println("==============Processing cylinder geom=============");
                 processBuoys(geom, generateBuoys(5, (DCylinder) geom), getVolume((DCylinder) geom), getArea((DCylinder) geom),world);
             }else if (geom instanceof DTriMesh) {
-                System.out.println("==============Processing mesh geom=============");
+//                System.out.println("==============Processing mesh geom=============");
                 processBuoys(geom, generateBuoys(5, (DCylinder) geom),getVolume((DCylinder) geom), getArea((DCylinder) geom),world);
             }
         }
@@ -58,7 +60,7 @@ public class BuoyHelper {
     }
 
     private double getWaterLevel(DVector3 position) {
-        return 40; // Waves can be simulated here
+        return ocean.getWaveHeight((float) position.get0(), (float) position.get2()); // Waves can be simulated here
     }
 
     private void processBuoys(DGeom geom, Buoy[] buoys, double totalVolume, double totalArea, DWorld world) {

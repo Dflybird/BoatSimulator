@@ -1,4 +1,4 @@
-package physics;
+package physics.buoy;
 
 public class Buoy {
 

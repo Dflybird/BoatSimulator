@@ -2,6 +2,7 @@ package gui;
 
 import gui.graphic.Mesh;
 import gui.graphic.Transformation;
+import gui.graphic.light.DirectionalLight;
 import gui.graphic.light.PointLight;
 import gui.obj.Camera;
 import gui.obj.GameObj;
@@ -57,8 +58,8 @@ public class GUIRenderer {
         }
         transformation.updateViewMatrix(camera);
 
-        renderOcean();
         renderScene();
+        renderOcean();
         renderHud();
     }
 
@@ -72,6 +73,7 @@ public class GUIRenderer {
         oceanProgram.createUniform("ambientLight");
         oceanProgram.createUniform("specularPower");
         oceanProgram.createMaterialUniform("material");
+        oceanProgram.createDirectionalLightUniform("directionalLight");
         oceanProgram.createPointLightsUniform("pointLights", 5);
         oceanProgram.createFogUniform("fog");
     }
@@ -102,9 +104,8 @@ public class GUIRenderer {
         //渲染光
         SceneLight sceneLight = scene.getSceneLight();
         oceanProgram.setUniform("ambientLight", sceneLight.getAmbientLight());
-        oceanProgram.setUniform("specularPower", 10f);
+        oceanProgram.setUniform("specularPower", specularPower);
         oceanProgram.setUniform("fog", scene.getFog());
-//            program.setUniform("directionalLight", directionalLight);
 //        oceanProgram.setUniform("pointLights", sceneLight.getPointLightList());
         PointLight[] pointLightList = sceneLight.getPointLightList();
         int numLights = pointLightList != null ? pointLightList.length : 0;
@@ -119,6 +120,14 @@ public class GUIRenderer {
             lightPos.z = aux.z;
             oceanProgram.setUniform("pointLights", currPointLight, i);
         }
+        DirectionalLight currentDirectionalLight = new DirectionalLight(sceneLight.getDirectionalLight());
+        Vector3f lightDirection = currentDirectionalLight.getDirection();
+        Vector4f lightDirectionInWord = new Vector4f(lightDirection, 0);
+        lightDirectionInWord.mul(viewMatrix);
+        lightDirection.x = lightDirectionInWord.x;
+        lightDirection.y = lightDirectionInWord.y;
+        lightDirection.z = lightDirectionInWord.z;
+        oceanProgram.setUniform("directionalLight", currentDirectionalLight);
 
         //更新海浪mesh
         Map<Mesh, List<GameObj>> oceanMap = scene.getOceanMap();
@@ -141,7 +150,6 @@ public class GUIRenderer {
         sceneProgram.setUniform("ambientLight", sceneLight.getAmbientLight());
         sceneProgram.setUniform("specularPower", specularPower);
 
-
         Matrix4f viewMatrix = transformation.viewMatrix();
         PointLight[] pointLightList = sceneLight.getPointLightList();
         int numLights = pointLightList != null ? pointLightList.length : 0;
@@ -156,6 +164,15 @@ public class GUIRenderer {
             lightPos.z = aux.z;
             sceneProgram.setUniform("pointLights", currPointLight, i);
         }
+
+        DirectionalLight currentDirectionalLight = new DirectionalLight(sceneLight.getDirectionalLight());
+        Vector3f lightDirection = currentDirectionalLight.getDirection();
+        Vector4f lightDirectionInWord = new Vector4f(lightDirection, 0);
+        lightDirectionInWord.mul(viewMatrix);
+        lightDirection.x = lightDirectionInWord.x;
+        lightDirection.y = lightDirectionInWord.y;
+        lightDirection.z = lightDirectionInWord.z;
+        sceneProgram.setUniform("directionalLight", currentDirectionalLight);
 
         sceneProgram.setUniform("fog", scene.getFog());
 

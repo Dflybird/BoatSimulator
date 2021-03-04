@@ -18,7 +18,7 @@ public class GameEngine implements Runnable {
     /** 渲染频率 **/
     private int FPS = 30;
     /** 更新频率 **/
-    private int UPS = 20;
+    private int UPS = 30;
     /** Agent系统每周期时间步长，单位毫秒 **/
     private double secsPreUpdate = 1.0d / UPS;
     /** 每帧渲染时间，单位毫秒 **/
