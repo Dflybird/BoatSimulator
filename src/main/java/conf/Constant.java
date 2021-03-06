@@ -19,5 +19,8 @@ public class Constant {
     public static final String BOAT_MTL_NAME = "boat.mtl";
 
     /** 环境相关参数 */
+    //重力系数
     public static final float g = 9.81f;
+    //海水密度
+    public static final float rho = 9.81f;
 }

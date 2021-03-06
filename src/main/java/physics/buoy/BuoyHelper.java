@@ -1,62 +1,80 @@
 package physics.buoy;
 
 import environment.Ocean;
+import org.joml.Vector3f;
 import org.ode4j.math.DVector3;
 import org.ode4j.math.DVector3C;
 import org.ode4j.ode.*;
-import org.ode4j.ode.internal.DxGeom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import physics.entity.Entity;
+
+import java.util.List;
+
+import static conf.Constant.*;
+import static util.StructTransform.*;
 
 public class BuoyHelper {
     private static final Logger logger = LoggerFactory.getLogger(BuoyHelper.class);
 
     private Ocean ocean;
+    private final DWorld world;
+    private final DGeom geom;
+    private final ModifyBoatMesh modifyBoatMesh;
 
-    public BuoyHelper(Ocean ocean) {
+    public BuoyHelper(Ocean ocean, Entity entity) {
         this.ocean = ocean;
+        this.world = entity.getWorld();
+        this.geom = entity.getGeom();
+        this.modifyBoatMesh = new ModifyBoatMesh(entity, ocean);
     }
 
-    public void handleBuoyancy(Entity entity) {
-        DWorld world = entity.getWorld();
-        DGeom geom = entity.getGeom();
+    public void handleBuoyancy() {
+        modifyBoatMesh.generateUnderwaterMesh();
 
-        if (geom instanceof DBox) {
-            processBuoys(geom, generateBuoys(3, (DBox) geom), getVolume((DBox) geom), getArea((DBox) geom),world);
-        } else if (geom instanceof DSphere) {
-            processBuoys(geom, generateBuoys((DSphere) geom), getVolume((DSphere) geom),getArea((DSphere) geom),world);
-        } else if (geom instanceof DCapsule) {
-            processBuoys(geom, generateBuoys(2, (DCapsule) geom), getVolume((DCapsule) geom), getArea((DCapsule) geom),world);
-        } else if (geom instanceof DCylinder) {
-            processBuoys(geom, generateBuoys(5, (DCylinder) geom), getVolume((DCylinder) geom), getArea((DCylinder) geom),world);
-        }else if (geom instanceof DTriMesh) {
-            processBuoys(geom, generateBuoys(5, (DCylinder) geom),getVolume((DCylinder) geom), getArea((DCylinder) geom),world);
+        if (modifyBoatMesh.getUnderSurfaceTriangleData().size() > 0) {
+            addUnderWaterForce();
+        }
+
+//        if (geom instanceof DBox) {
+//            processBuoys(geom, generateBuoys(3, (DBox) geom), getVolume((DBox) geom), getArea((DBox) geom),world);
+//        } else if (geom instanceof DSphere) {
+//            processBuoys(geom, generateBuoys((DSphere) geom), getVolume((DSphere) geom),getArea((DSphere) geom),world);
+//        } else if (geom instanceof DCapsule) {
+//            processBuoys(geom, generateBuoys(2, (DCapsule) geom), getVolume((DCapsule) geom), getArea((DCapsule) geom),world);
+//        } else if (geom instanceof DCylinder) {
+//            processBuoys(geom, generateBuoys(5, (DCylinder) geom), getVolume((DCylinder) geom), getArea((DCylinder) geom),world);
+//        }else if (geom instanceof DTriMesh) {
+//            processBuoys(geom, generateBuoys(5, (DCylinder) geom),getVolume((DCylinder) geom), getArea((DCylinder) geom),world);
+//        }
+    }
+
+    public ModifyBoatMesh getModifyBoatMesh() {
+        return modifyBoatMesh;
+    }
+
+    private void addUnderWaterForce() {
+        List<TriangleData> underSurfaceTriangleData = modifyBoatMesh.getUnderSurfaceTriangleData();
+        DBody body = geom.getBody();
+        for (TriangleData triangleData : underSurfaceTriangleData) {
+            Vector3f center = triangleData.getCenter();
+            DVector3 buoyancyForce = transformFromVector3f(buoyancyForce(triangleData));
+            DVector3 forcePos = transformFromVector3f(center);
+            body.addForceAtPos(buoyancyForce, forcePos);
         }
     }
 
-    public void handleBuoyancy(Iterable<DxGeom> geoms, DWorld world) {
-        // List<DGeom> floatingGeoms = new ArrayList<>();
-        for (DGeom geom : geoms) {
-            if (geom instanceof DBox) {
-                //    System.out.println("==============Processing box geom=============");
-                Buoy[] buoys = generateBuoys(3, (DBox) geom);
-                processBuoys(geom, buoys, getVolume((DBox) geom), getArea((DBox) geom),world);
-            } else if (geom instanceof DSphere) {
-//                System.out.println("==============Processing sphere geom=============");
-                processBuoys(geom, generateBuoys((DSphere) geom), getVolume((DSphere) geom),getArea((DSphere) geom),world);
-            } else if (geom instanceof DCapsule) {
-//                System.out.println("==============Processing capsule geom=============");
-                processBuoys(geom, generateBuoys(2, (DCapsule) geom), getVolume((DCapsule) geom), getArea((DCapsule) geom),world);
-            } else if (geom instanceof DCylinder) {
-//                System.out.println("==============Processing cylinder geom=============");
-                processBuoys(geom, generateBuoys(5, (DCylinder) geom), getVolume((DCylinder) geom), getArea((DCylinder) geom),world);
-            }else if (geom instanceof DTriMesh) {
-//                System.out.println("==============Processing mesh geom=============");
-                processBuoys(geom, generateBuoys(5, (DCylinder) geom),getVolume((DCylinder) geom), getArea((DCylinder) geom),world);
-            }
-        }
-        // floatingGeoms.clear();
+    private Vector3f buoyancyForce(TriangleData data) {
+        // F_buoyancy = rho * g * V
+        // rho - density of the mediaum you are in
+        // g - gravity
+        // V - volume of fluid directly above the curved surface
+        // V = z * S * n
+        // z - distance to surface
+        // S - surface area
+        // n - normal to the surface
+        float y = -g*rho*data.getDistanceToSurface()*data.getArea()*data.getNormal().y;
+        return new Vector3f(0,y,0);
     }
 
     private double getWaterLevel(DVector3 position) {

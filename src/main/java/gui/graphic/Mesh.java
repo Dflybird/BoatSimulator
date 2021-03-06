@@ -225,4 +225,8 @@ public class Mesh {
     public void setMaterial(Material material) {
         this.material = material;
     }
+
+    public Model getModel() {
+        return model;
+    }
 }

@@ -1,6 +1,8 @@
 package state;
 
 import ams.agent.Agent;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import physics.entity.Entity;
@@ -28,7 +30,7 @@ public class SimState {
         state.stateMap.forEach((key, value) -> stateMap.put(key, new ObjStateInfo(value)));
     }
 
-    public void collect(String id, float[] translation, float[] rotation, float[] scale) {
+    public void collect(String id, Vector3f translation, Quaternionf rotation, Vector3f scale) {
         ObjStateInfo objStateInfo = stateMap.computeIfAbsent(id, key -> new ObjStateInfo());
         objStateInfo.setTranslation(translation);
         objStateInfo.setRotation(rotation);
@@ -56,12 +58,12 @@ public class SimState {
         return this;
     }
 
-    public SimState mul(double num) {
+    public SimState mul(float num) {
         stateMap.forEach((key, value) -> value.mul(num));
         return this;
     }
 
-    public SimState mul(double num, SimState dest) {
+    public SimState mul(float num, SimState dest) {
         dest.zero();
         dest.clone(this);
         return dest.mul(num);

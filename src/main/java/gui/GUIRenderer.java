@@ -1,13 +1,16 @@
 package gui;
 
+import gui.graphic.Material;
 import gui.graphic.Mesh;
 import gui.graphic.Transformation;
 import gui.graphic.light.DirectionalLight;
 import gui.graphic.light.PointLight;
 import gui.obj.Camera;
 import gui.obj.GameObj;
+import gui.obj.Model;
 import gui.shader.ShaderProgram;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.slf4j.Logger;
@@ -37,6 +40,7 @@ public class GUIRenderer {
 
     private ShaderProgram sceneProgram;
     private ShaderProgram oceanProgram;
+    private ShaderProgram meshProgram;
 
     private final float specularPower = 10f;
     private final Transformation transformation = new Transformation();
@@ -49,6 +53,7 @@ public class GUIRenderer {
 
         setupOceanShader();
         setupSceneShader();
+        setupMeshShader();
     }
 
     public void render() {
@@ -94,6 +99,14 @@ public class GUIRenderer {
         sceneProgram.createPointLightsUniform("pointLights", 5);
         sceneProgram.createSpotLightsUniform("spotLights", 5);
         sceneProgram.createFogUniform("fog");
+    }
+
+    private void setupMeshShader() {
+        meshProgram = new ShaderProgram();
+        meshProgram.init(new File(RESOURCES_SHADERS_DIR, "mesh.vert"),
+                new File(RESOURCES_SHADERS_DIR, "mesh.frag"));
+        meshProgram.createUniform("world");
+        meshProgram.createUniform("projection");
     }
 
     private void renderOcean() {
@@ -177,14 +190,6 @@ public class GUIRenderer {
         sceneProgram.setUniform("fog", scene.getFog());
 
         //渲染对象实体
-        renderMeshes();
-
-        sceneProgram.unbind();
-    }
-
-    private void renderMeshes() {
-        Matrix4f viewMatrix = transformation.viewMatrix();
-
         sceneProgram.setUniform("texture_sampler", 0);
         Map<Mesh, List<GameObj>> meshMap = scene.getObjMesh();
         for (Mesh mesh : meshMap.keySet()) {
@@ -195,7 +200,25 @@ public class GUIRenderer {
 
             mesh.render(objList,
                     obj -> sceneProgram.setUniform("world", transformation.worldMatrix(obj, viewMatrix)));
+
         }
+
+        sceneProgram.unbind();
+    }
+
+    public void renderMeshes(Model model, Vector3f translation, Quaternionf rotation, Vector3f scale) {
+        meshProgram.bind();
+        meshProgram.setUniform("projection", window.getProjectionMatrix());
+        Matrix4f modelMatrix = new Matrix4f();
+        modelMatrix.translate(translation)
+                .rotate(rotation)
+                .scale(scale);
+        Matrix4f viewMatrix = transformation.viewMatrix();
+        meshProgram.setUniform("world", transformation.worldMatrix(modelMatrix, viewMatrix));
+        Mesh mesh = new Mesh(model, new Material());
+        mesh.render();
+        mesh.cleanup();
+        meshProgram.unbind();
     }
 
     private void renderHud(){
@@ -205,6 +228,12 @@ public class GUIRenderer {
     public void cleanup() {
         if (sceneProgram != null) {
             sceneProgram.cleanup();
+        }
+        if (oceanProgram != null) {
+            oceanProgram.cleanup();
+        }
+        if (meshProgram != null) {
+            meshProgram.cleanup();
         }
     }
 

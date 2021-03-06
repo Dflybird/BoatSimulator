@@ -9,15 +9,16 @@ import physics.buoy.BuoyHelper;
  **/
 public class CubeAgent extends Agent {
 
-    BuoyHelper buoyHelper;
+    private BuoyHelper buoyHelper;
     public CubeAgent(String agentID) {
         super(agentID);
     }
 
     @Override
     protected void update() {
+        entity.updateState();
         if (buoyHelper != null) {
-            buoyHelper.handleBuoyancy(entity);
+            buoyHelper.handleBuoyancy();
         }
     }
 

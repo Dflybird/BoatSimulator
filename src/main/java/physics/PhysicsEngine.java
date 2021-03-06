@@ -1,7 +1,15 @@
 package physics;
 
 import conf.Constant;
+import environment.Ocean;
 import org.ode4j.ode.*;
+import physics.entity.Entity;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.ode4j.ode.OdeConstants.dContactBounce;
 import static org.ode4j.ode.OdeConstants.dContactRolling;
@@ -64,14 +72,8 @@ public class PhysicsEngine {
         DContactBuffer contacts = new DContactBuffer(MAX_CONTACTS);
         for (int i = 0; i < MAX_CONTACTS; i++) {
             DContact contact = contacts.get(i);
-//            contact.surface.mode = OdeConstants.dContactSlip1 | OdeConstants.dContactSlip2 |
-//                    OdeConstants.dContactSoftERP | OdeConstants.dContactSoftCFM | OdeConstants.dContactApprox1;
             contact.surface.mode = OdeConstants.dContactBounce | OdeConstants.dContactSoftCFM;
             contact.surface.mu = OdeConstants.dInfinity;
-//            contact.surface.slip1 = 0.7;
-//            contact.surface.slip2 = 0.7;
-//            contact.surface.soft_erp = 0.96;
-//            contact.surface.soft_cfm = 0.04;
             contact.surface.mu2 = 0;
             contact.surface.bounce = 0.1;
             contact.surface.bounce_vel = 0.1;
@@ -86,26 +88,6 @@ public class PhysicsEngine {
                 c.attach(b1, b2);
             }
         }
-//        DBody b1 = o1.getBody();
-//        DBody b2 = o2.getBody();
-//        if (b1!=null && b2!=null && areConnectedExcluding (b1,b2,DContactJoint.class)) return;
-//
-//        DContactBuffer contacts = new DContactBuffer(MAX_CONTACTS);   // up to MAX_CONTACTS contacts per box-box
-//        for (int i=0; i<MAX_CONTACTS; i++) {
-//            DContact contact = contacts.get(i);
-//            contact.surface.mode = dContactBounce | dContactRolling;
-//            contact.surface.mu = 250;
-//            contact.surface.rho = 0.2;
-//            contact.surface.bounce = 0.2;
-//        }
-//        int numc = OdeHelper.collide (o1,o2,MAX_CONTACTS,contacts.getGeomBuffer() );
-//        if (numc != 0) {
-//            for (int i=0; i<numc; i++) {
-//                DContact contact = contacts.get(i);
-//                DJoint c = OdeHelper.createContactJoint (world,contactGroup,contact );
-//                c.attach (b1,b2);
-//            }
-//        }
     }
 
     public DWorld getWorld() {

@@ -96,6 +96,11 @@ public class Ocean {
         return pos[1] - h;
     }
 
+    public float distanceToWave(Vector3f pos) {
+        float h = getWaveHeight(pos.x, pos.z);
+        return pos.y - h;
+    }
+
     /**
      * 获得海面上(x,z)处海浪的高度y
      * @param x

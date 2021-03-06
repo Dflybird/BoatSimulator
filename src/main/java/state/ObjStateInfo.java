@@ -1,14 +1,20 @@
 package state;
 
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+
 import java.util.Arrays;
 import java.util.Objects;
 
 public class ObjStateInfo {
-    private float[] translation = new float[3];  //len = 3
-    private float[] rotation = new float[4]; //len = 4
-    private float[] scale = new float[3];
+    private Vector3f translation;  //len = 3
+    private Quaternionf rotation; //len = 4
+    private Vector3f scale;
 
     public ObjStateInfo() {
+        this.translation = new Vector3f();
+        this.rotation = new Quaternionf();
+        this.scale = new Vector3f();
     }
 
     public ObjStateInfo(ObjStateInfo objStateInfo) {
@@ -17,58 +23,49 @@ public class ObjStateInfo {
         this.scale = objStateInfo.scale;
     }
 
-    public ObjStateInfo mul(double num) {
-        for (int i = 0; i < 3; i++) {
-            translation[i] *= num;
-            rotation[i] *= num;
-            scale[i] *= num;
-        }
-        rotation[3] *= num;
+    public ObjStateInfo mul(float num) {
+        translation.mul(num);
+//        rotation.scale(num);
+        scale.mul(num);
         return this;
     }
 
     public ObjStateInfo add(ObjStateInfo info) {
-        for (int i = 0; i < 3; i++) {
-            translation[i] += info.translation[i];
-            rotation[i] += info.rotation[i];
-            scale[i] += info.scale[i];
-        }
-        rotation[3] += info.rotation[3];
+        translation.add(info.translation);
+//        rotation.add(info.rotation);
+        scale.add(info.scale);
         return this;
     }
 
     public ObjStateInfo sub(ObjStateInfo info) {
-        for (int i = 0; i < 3; i++) {
-            translation[i] -= info.translation[i];
-            rotation[i] -= info.rotation[i];
-            scale[i] -= info.scale[i];
-        }
-        rotation[3] -= info.rotation[3];
+        translation.sub(info.translation);
+//        rotation.sub(info.rotation);
+        scale.sub(info.scale);
         return this;
     }
 
-    public float[] getTranslation() {
+    public Vector3f getTranslation() {
         return translation;
     }
 
-    public float[] getRotation() {
+    public void setTranslation(Vector3f translation) {
+        this.translation.set(translation);
+    }
+
+    public Quaternionf getRotation() {
         return rotation;
     }
 
-    public float[] getScale() {
+    public void setRotation(Quaternionf rotation) {
+        this.rotation.set(rotation);
+    }
+
+    public Vector3f getScale() {
         return scale;
     }
 
-    public void setTranslation(float[] translation) {
-        this.translation = translation;
-    }
-
-    public void setRotation(float[] rotation) {
-        this.rotation = rotation;
-    }
-
-    public void setScale(float[] scale) {
-        this.scale = scale;
+    public void setScale(Vector3f scale) {
+        this.scale.set(scale);
     }
 
     @Override
@@ -76,14 +73,11 @@ public class ObjStateInfo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ObjStateInfo that = (ObjStateInfo) o;
-        return Arrays.equals(translation, that.translation) && Arrays.equals(rotation, that.rotation) && Arrays.equals(scale, that.scale);
+        return Objects.equals(translation, that.translation) && Objects.equals(rotation, that.rotation) && Objects.equals(scale, that.scale);
     }
 
     @Override
     public int hashCode() {
-        int result = Arrays.hashCode(translation);
-        result = 31 * result + Arrays.hashCode(rotation);
-        result = 31 * result + Arrays.hashCode(scale);
-        return result;
+        return Objects.hash(translation, rotation, scale);
     }
 }

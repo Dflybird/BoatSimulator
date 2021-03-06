@@ -29,8 +29,6 @@ public class Transformation {
         Vector3f translation = obj.getTranslation();
         Quaternionf rotation = obj.getRotation();
         Vector3f scale = obj.getScale();
-        //四元数 w是实部
-        Quaternionf quaternion  = new Quaternionf();
         return modelMatrix.identity()
                 .translate(translation)
                 .rotate(rotation)

@@ -25,13 +25,14 @@ public class GUIState implements StateUpdateListener {
     private SyncedCacheBuffer<SimState> simStateBuffer;
     private SimState renderState;
 
-    public void computeRenderState(double alpha) {
+    public void computeRenderState(float alpha) {
         List<SimState> bufferList = simStateBuffer.getLatest();
         SimState currentState = bufferList.get(0);
         SimState previousState = bufferList.get(1);
 
         //不改变缓存 | guiState = (currentSimState - previousSimState) * alpha + previousSimState;
-        renderState = renderState.zero().add(currentState).sub(previousState).mul(alpha).add(previousState);
+//        renderState = renderState.zero().add(currentState).sub(previousState).mul(alpha).add(previousState);
+        renderState = currentState;
     }
 
     @Override
@@ -49,13 +50,10 @@ public class GUIState implements StateUpdateListener {
         for (GameObj obj : objList) {
             ObjStateInfo objStateInfo = renderState.getStateInfo(obj.getID());
             if (objStateInfo != null) {
-                float[] t = objStateInfo.getTranslation();
-                float[] r = objStateInfo.getRotation();
-                float[] s = objStateInfo.getScale();
-
-                obj.setTranslation(new Vector3f(t[0], t[1], t[2]));
-                obj.setRotation(new Quaternionf(r[1], r[2], r[3], r[0]));
-                obj.setScale(new Vector3f(s[0], s[1], s[2]));
+                //FIXME 同一引用
+                obj.setTranslation(objStateInfo.getTranslation());
+                obj.setRotation(objStateInfo.getRotation());
+                obj.setScale(objStateInfo.getScale());
             }
         }
     }

@@ -1,11 +1,16 @@
 package physics.entity;
 
+import gui.obj.Model;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import org.ode4j.math.DQuaternionC;
 import org.ode4j.math.DVector3C;
 import org.ode4j.ode.DBody;
 import org.ode4j.ode.DGeom;
 import org.ode4j.ode.DSpace;
 import org.ode4j.ode.DWorld;
+
+import static util.StructTransform.*;
 
 /**
  * @Author Gq
@@ -17,12 +22,12 @@ import org.ode4j.ode.DWorld;
  **/
 public abstract class Entity {
 
-    protected float[] translation = new float[3];
+    protected Vector3f translation;
     /*朝向 可以转换为纯四元数v=(0,x,y,z) 实部为0*/
-    protected float[] orientation = new float[4];
+    protected Quaternionf orientation;
     /*旋转 四元数*/
-    protected float[] rotation = new float[4];
-    protected float[] scale = new float[3];
+    protected Quaternionf rotation;
+    protected Vector3f scale;
 
     protected DWorld world;
     protected DSpace space;
@@ -30,55 +35,41 @@ public abstract class Entity {
     protected DBody body;
     protected DGeom geom;
 
-    public Entity(DWorld world, DSpace space, float[] translation, float[] rotation, float[] scale) {
+    protected final Model model;
+
+    public Entity(DWorld world, DSpace space, Vector3f translation, Quaternionf rotation, Vector3f scale, Model model) {
         this.world = world;
         this.space = space;
-        for (int i = 0; i < 3; i++) {
-            this.translation[i] = translation[i];
-            this.rotation[i] = rotation[i];
-            this.scale[i] = scale[i];
-        }
-        this.rotation[3] = rotation[3];
+        this.model = model;
+        this.translation = new Vector3f(translation);
+        this.rotation = new Quaternionf(rotation);
+        this.scale = new Vector3f(scale);
     }
 
-    public float[] getTranslation() {
+    public void updateState() {
         if (geom == null) {
-            return translation;
+            return;
         }
+        //更新位移变化
         DVector3C position = geom.getPosition();
-        translation[0] = (float) position.get0();
-        translation[1] = (float) position.get1();
-        translation[2] = (float) position.get2();
+        transformToVector3f(position, translation);
+        //更新选择变化
+        DQuaternionC quaternion = geom.getQuaternion();
+        transformToQuaternionf(quaternion, rotation);
+    }
+
+//    protected abstract void update();
+
+    public Vector3f getTranslation() {
         return translation;
     }
 
-    public float[] getRotation() {
-        if (geom == null) {
-            return rotation;
-        }
-        //四元数var0是实部
-        DQuaternionC quaternion = geom.getQuaternion();
-        rotation[0] = (float) quaternion.get0();
-        rotation[1] = (float) quaternion.get1();
-        rotation[2] = (float) quaternion.get2();
-        rotation[3] = (float) quaternion.get3();
+    public Quaternionf getRotation() {
         return rotation;
     }
 
-    public float[] getScale() {
+    public Vector3f getScale() {
         return scale;
-    }
-
-    public void setTranslation(float[] translation) {
-        this.translation = translation;
-    }
-
-    public void setRotation(float[] rotation) {
-        this.rotation = rotation;
-    }
-
-    public void setScale(float[] scale) {
-        this.scale = scale;
     }
 
     public DBody getBody() {
@@ -91,5 +82,9 @@ public abstract class Entity {
 
     public DWorld getWorld() {
         return world;
+    }
+
+    public Model getModel() {
+        return model;
     }
 }

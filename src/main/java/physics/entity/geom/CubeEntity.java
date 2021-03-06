@@ -1,5 +1,8 @@
 package physics.entity.geom;
 
+import gui.obj.Model;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import org.ode4j.math.DMatrix3C;
 import org.ode4j.math.DQuaternionC;
 import org.ode4j.math.DVector3;
@@ -9,6 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import physics.entity.Entity;
 
+import static util.StructTransform.*;
+import static util.StructTransform.transformFromVector3f;
+
 /**
  * @Author Gq
  * @Date 2021/2/22 18:30
@@ -17,8 +23,8 @@ import physics.entity.Entity;
 public class CubeEntity extends Entity {
     private final Logger logger = LoggerFactory.getLogger(CubeEntity.class);
 
-    public CubeEntity(DWorld world, DSpace space, float[] translation, float[] rotation, float[] scale) {
-        super(world, space, translation, rotation, scale);
+    public CubeEntity(DWorld world, DSpace space, Vector3f translation, Quaternionf rotation, Vector3f scale, Model model) {
+        super(world, space, translation, rotation, scale, model);
 
         init();
     }
@@ -27,12 +33,14 @@ public class CubeEntity extends Entity {
         DMass mass = OdeHelper.createMass();
         float density = 0.8f;
         //立方体大小
-        mass.setBox(density, scale[0],scale[1],scale[2]);
+        mass.setBox(density, transformFromVector3f(scale));
         body = OdeHelper.createBody(world);
-        body.setPosition(translation[0], translation[1], translation[2]);
+        body.setPosition(transformFromVector3f(translation));
         body.setMass(mass);
-        geom = OdeHelper.createBox(space,  scale[0],scale[1],scale[2]);
+        geom = OdeHelper.createBox(space, transformFromVector3f(scale));
         geom.setBody(body);
     }
+
+
 
 }
