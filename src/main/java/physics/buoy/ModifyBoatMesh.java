@@ -6,6 +6,7 @@ import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import org.ode4j.ode.DBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import physics.entity.Entity;
@@ -13,6 +14,8 @@ import physics.entity.Entity;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static util.PhysicsMath.triangleArea;
 
 /**
  * @Author Gq
@@ -23,31 +26,55 @@ public class ModifyBoatMesh {
 
     private static final Logger logger = LoggerFactory.getLogger(ModifyBoatMesh.class);
 
-    private Ocean ocean;
-    private Transform transform;
-    private Entity entity;
+    private final Ocean ocean;
+    private final Transform transform;
+    private final Entity entity;
+    private final DBody body;
 
-    private float[] boatVertices;
-    private int[] boatIndices;
+    private final float[] boatVertices;
+    private final int[] boatIndices;
 
-    private Vector3f[] boatVerticesGlobal;
-    private float[] allDistancesToSurface;
+    private final Vector3f[] boatVerticesGlobal;
+    private final float[] allDistancesToSurface;
+    private final SlammingForceData[] slammingForceData;
 
-    private List<TriangleData> underSurfaceTriangleData = new ArrayList<>();
+    private final List<TriangleData> underSurfaceTriangleData = new ArrayList<>();
+    private final List<TriangleData> aboveSurfaceTriangleData = new ArrayList<>();
+    //切割后的水下三角形与原始三角形对应关系（原始三角形水下部分可能切成两个新的三角形）
+    private final List<Integer> indexOfOriginalTriangle = new ArrayList<>();
+
+    //物体表面积
+    private float totalArea;
 
     public ModifyBoatMesh(Entity entity, Ocean ocean) {
         this.ocean = ocean;
         this.entity = entity;
+        body = entity.getBody();
         transform = new Transform(entity.getTranslation(), entity.getRotation(), entity.getScale());
         boatVertices = entity.getModel().getVertices();
         boatIndices = entity.getModel().getIndices();
 
         boatVerticesGlobal = new Vector3f[boatVertices.length/3];
         allDistancesToSurface = new float[boatVertices.length/3];
+        slammingForceData = new SlammingForceData[boatIndices.length / 3];
+        for (int i = 0; i < boatIndices.length / 3; i++) {
+            slammingForceData[i] = new SlammingForceData();
+        }
+
+        //计算三角形面积和物体表面积
+        calcOriginalTrianglesArea();
     }
 
     public void generateUnderwaterMesh(){
         underSurfaceTriangleData.clear();
+        aboveSurfaceTriangleData.clear();
+
+        for (SlammingForceData slammingForceDatum : slammingForceData) {
+            slammingForceDatum.setPreviousSubmergeArea(slammingForceDatum.getSubmergeArea());
+        }
+
+        indexOfOriginalTriangle.clear();
+
         for (int i = 0; i < boatVertices.length / 3; i++) {
             //将模型坐标系的点转换到世界坐标系
             Vector3f globalPos = transform.transformPoint(boatVertices[i*3], boatVertices[i*3+1], boatVertices[i*3+2]);
@@ -55,8 +82,33 @@ public class ModifyBoatMesh {
 
             allDistancesToSurface[i] = ocean.distanceToWave(globalPos);
         }
+
         //收集在水下的三角形
         addTriangles();
+
+        logger.debug("= 3 =");
+    }
+
+    /**
+     *
+     * @param normal 速度方向
+     * @return
+     */
+    public float calcUnderwaterLength(Vector3f normal) {
+        Vector3f temp = new Vector3f();
+        float positiveLen = 0;
+        float negativeLen = 0;
+        float l;
+        for (SlammingForceData data : slammingForceData) {
+            temp.set(data.getTriangleCenter());
+            l = temp.dot(normal);
+            if (l > 0) {
+                positiveLen = Math.max(positiveLen, l);
+            } else if (l < 0) {
+                negativeLen = Math.min(negativeLen, l);
+            }
+        }
+        return positiveLen - negativeLen;
     }
 
     public Model getUnderwaterModel() {
@@ -115,6 +167,7 @@ public class ModifyBoatMesh {
         vertexData[2] = new VertexData();
 
         int count = 0;
+        int triangleCounter = -1;
         while (count < boatIndices.length) {
             for (int i = 0; i < 3; i++) {
                 vertexData[i].distance = allDistancesToSurface[boatIndices[count]];
@@ -122,9 +175,20 @@ public class ModifyBoatMesh {
                 vertexData[i].globalVertexPos = boatVerticesGlobal[boatIndices[count]];
                 count++;
             }
+            //三个顶点组成一个三角形
+            triangleCounter++;
 
             //三角形三个顶点都在水面上
             if (vertexData[0].distance > 0f && vertexData[1].distance > 0f && vertexData[2].distance > 0f) {
+                Vector3f p1 = vertexData[0].globalVertexPos;
+                Vector3f p2 = vertexData[1].globalVertexPos;
+                Vector3f p3 = vertexData[2].globalVertexPos;
+
+                TriangleData triangleData = new TriangleData(p1, p2, p3, ocean, body);
+                aboveSurfaceTriangleData.add(triangleData);
+
+                slammingForceData[triangleCounter].setSubmergeArea(0f);
+                slammingForceData[triangleCounter].setTriangleCenter(triangleData.getCenter());
                 continue;
             }
 
@@ -135,7 +199,13 @@ public class ModifyBoatMesh {
                 Vector3f p3 = vertexData[2].globalVertexPos;
 
                 //Save the triangle
-                underSurfaceTriangleData.add(new TriangleData(p1, p2, p3, ocean));
+                TriangleData triangleData = new TriangleData(p1, p2, p3, ocean, body);
+                underSurfaceTriangleData.add(triangleData);
+
+                slammingForceData[triangleCounter].setSubmergeArea(slammingForceData[triangleCounter].getOriginalArea());
+                slammingForceData[triangleCounter].setTriangleCenter(triangleData.getCenter());
+
+                indexOfOriginalTriangle.add(triangleCounter);
                 continue;
             }
 
@@ -144,18 +214,18 @@ public class ModifyBoatMesh {
 
             //一个顶点在水面上，两个顶点在水面下
             if (vertexData[0].distance > 0f && vertexData[1].distance < 0f && vertexData[2].distance < 0f) {
-                addTrianglesOneAboveSurface(vertexData);
+                addTrianglesOneAboveSurface(vertexData, triangleCounter);
                 continue;
             }
 
             //两个顶点在水面上，一个顶点在水面下
             if (vertexData[0].distance > 0f && vertexData[1].distance > 0f && vertexData[2].distance < 0f) {
-                addTrianglesTwoAboveSurface(vertexData);
+                addTrianglesTwoAboveSurface(vertexData, triangleCounter);
             }
         }
     }
 
-    private void addTrianglesOneAboveSurface(VertexData[] vertexData){
+    private void addTrianglesOneAboveSurface(VertexData[] vertexData, int triangleCounter){
         //vertexDate 已经从大到小排序，水面上的点是H，顺时针顶点顺序是H，L，M
         Vector3f H = vertexData[0].globalVertexPos;
 
@@ -201,11 +271,25 @@ public class ModifyBoatMesh {
         Vector3f LI_L = LH.mul(t_L);
         Vector3f I_L = LI_L.add(L);
 
-        underSurfaceTriangleData.add(new TriangleData(M, I_M, I_L, ocean));
-        underSurfaceTriangleData.add(new TriangleData(M, I_L, L, ocean));
+        TriangleData triangleData1 = new TriangleData(M, I_M, I_L, ocean, body);
+        underSurfaceTriangleData.add(triangleData1);
+        TriangleData triangleData2 = new TriangleData(M, I_L, L, ocean, body);
+        underSurfaceTriangleData.add(triangleData2);
+
+        aboveSurfaceTriangleData.add(new TriangleData(I_M, H, I_L, ocean, body));
+
+        //计算水下面积
+        float submergeArea = triangleData1.getArea() + triangleData2.getArea();
+        slammingForceData[triangleCounter].setSubmergeArea(submergeArea);
+        Vector3f center = new Vector3f();
+        center.add(triangleData1.getCenter()).add(triangleData2.getCenter()).div(2);
+        slammingForceData[triangleCounter].setTriangleCenter(center);
+        //两个水下三角形都对应同一个原始的三角形
+        indexOfOriginalTriangle.add(triangleCounter);
+        indexOfOriginalTriangle.add(triangleCounter);
     }
 
-    private void addTrianglesTwoAboveSurface(VertexData[] vertexData){
+    private void addTrianglesTwoAboveSurface(VertexData[] vertexData, int triangleCounter){
         //vertexDate 已经从大到小排序，水面下的点是L，顺时针顶点顺序是H，M，L
         Vector3f L = vertexData[2].globalVertexPos;
 
@@ -250,15 +334,68 @@ public class ModifyBoatMesh {
         Vector3f LJ_H = LH.mul(t_H);
         Vector3f J_H = LJ_H.add(L);
 
-        underSurfaceTriangleData.add(new TriangleData(L, J_H, J_M, ocean));
+        TriangleData triangleData = new TriangleData(L, J_H, J_M, ocean, body);
+        underSurfaceTriangleData.add(triangleData);
+
+        aboveSurfaceTriangleData.add(new TriangleData(J_H, H, J_M, ocean, body));
+        aboveSurfaceTriangleData.add(new TriangleData(J_M, H, M, ocean, body));
+
+        slammingForceData[triangleCounter].setSubmergeArea(triangleData.getArea());
+        slammingForceData[triangleCounter].setTriangleCenter(triangleData.getCenter());
+        indexOfOriginalTriangle.add(triangleCounter);
+    }
+
+    private void calcOriginalTrianglesArea() {
+        int i = 0;
+        int count = 0;
+        while (i < boatIndices.length) {
+            Vector3f p1 = new Vector3f(boatVertices[boatIndices[i]],
+                    boatVertices[boatIndices[i] + 1],
+                    boatVertices[boatIndices[i] + 2]);
+            i++;
+
+            Vector3f p2 = new Vector3f(boatVertices[boatIndices[i]],
+                    boatVertices[boatIndices[i] + 1],
+                    boatVertices[boatIndices[i] + 2]);
+            i++;
+
+            Vector3f p3 = new Vector3f(boatVertices[boatIndices[i]],
+                    boatVertices[boatIndices[i] + 1],
+                    boatVertices[boatIndices[i] + 2]);
+            i++;
+
+            float triangleArea = triangleArea(p1, p2, p3);
+
+            slammingForceData[count].setOriginalArea(triangleArea);
+
+            totalArea += triangleArea;
+
+            count++;
+        }
     }
 
     public Entity getEntity() {
         return entity;
     }
 
+    public SlammingForceData[] getSlammingForceData() {
+        return slammingForceData;
+    }
+
     public List<TriangleData> getUnderSurfaceTriangleData() {
         return underSurfaceTriangleData;
+    }
+
+    public List<TriangleData> getAboveSurfaceTriangleData() {
+        return aboveSurfaceTriangleData;
+    }
+
+    public List<Integer> getIndexOfOriginalTriangle() {
+        return indexOfOriginalTriangle;
+    }
+
+    public float getTotalArea() {
+        return totalArea;
     }
 
     public Transform getTransform() {

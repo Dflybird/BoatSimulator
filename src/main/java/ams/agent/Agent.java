@@ -23,11 +23,11 @@ public abstract class Agent implements Runnable {
 
     @Override
     public void run() {
-        update();
+        update(AgentManager.getStepTime());
         AgentManager.onDone();
     }
 
-    protected abstract void update();
+    protected abstract void update(double stepTime);
 
     protected void send() {
 

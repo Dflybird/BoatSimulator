@@ -1,18 +1,8 @@
 package physics;
 
 import conf.Constant;
-import environment.Ocean;
 import org.ode4j.ode.*;
-import physics.entity.Entity;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import static org.ode4j.ode.OdeConstants.dContactBounce;
-import static org.ode4j.ode.OdeConstants.dContactRolling;
 import static org.ode4j.ode.OdeHelper.areConnectedExcluding;
 
 /**

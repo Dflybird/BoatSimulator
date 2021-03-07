@@ -30,9 +30,12 @@ public class AgentManager {
     private static SimState simState = new SimState();
     private static final List<StateUpdateListener> listeners = new ArrayList<>();
 
+    private static double stepTime = 0;
+
     private AgentManager(){}
 
     public void update(double stepTime) {
+        AgentManager.stepTime = stepTime;
         while (!agentRemoveEven.isEmpty()) {
             agentMap.remove(agentRemoveEven.poll());
         }
@@ -78,5 +81,9 @@ public class AgentManager {
     public static void registerSimStateListener(StateUpdateListener listener) {
         listeners.add(listener);
         listener.stateInit(simState);
+    }
+
+    public static double getStepTime() {
+        return stepTime;
     }
 }

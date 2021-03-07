@@ -19,7 +19,7 @@ public class TestGameEngine {
     public void testEngine(){
         AgentManager.addAgent(new Agent("agent1") {
             @Override
-            protected void update() {
+            protected void update(double stepTime) {
                 int sum = 0;
                 for (int i = 0; i < 110; i++) {
                     sum += i;
@@ -29,7 +29,7 @@ public class TestGameEngine {
         });
         AgentManager.addAgent(new Agent("agent2") {
             @Override
-            protected void update() {
+            protected void update(double stepTime) {
                 int sum = 0;
                 for (int i = 0; i < 120; i++) {
                     sum += i;
@@ -39,7 +39,7 @@ public class TestGameEngine {
         });
         AgentManager.addAgent(new Agent("agent3") {
             @Override
-            protected void update() {
+            protected void update(double stepTime) {
                 int sum = 0;
                 for (int i = 0; i < 130; i++) {
                     sum += i;

@@ -8,11 +8,14 @@ import org.ode4j.ode.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import physics.entity.Entity;
+import util.PhysicsMath;
 
 import java.util.List;
 
 import static conf.Constant.*;
+import static util.PhysicsMath.*;
 import static util.StructTransform.*;
+import static util.StructTransform.transformFromVector3f;
 
 public class BuoyHelper {
     private static final Logger logger = LoggerFactory.getLogger(BuoyHelper.class);
@@ -20,20 +23,26 @@ public class BuoyHelper {
     private Ocean ocean;
     private final DWorld world;
     private final DGeom geom;
+    private final DBody body;
     private final ModifyBoatMesh modifyBoatMesh;
 
     public BuoyHelper(Ocean ocean, Entity entity) {
         this.ocean = ocean;
         this.world = entity.getWorld();
         this.geom = entity.getGeom();
+        this.body = entity.getBody();
         this.modifyBoatMesh = new ModifyBoatMesh(entity, ocean);
     }
 
-    public void handleBuoyancy() {
+    public void handleBuoyancy(float stepTime) {
         modifyBoatMesh.generateUnderwaterMesh();
 
         if (modifyBoatMesh.getUnderSurfaceTriangleData().size() > 0) {
-            addUnderWaterForce();
+            addUnderWaterForce(stepTime);
+        }
+
+        if (modifyBoatMesh.getAboveSurfaceTriangleData().size() > 0) {
+            addAboveWaterForce();
         }
 
 //        if (geom instanceof DBox) {
@@ -53,28 +62,68 @@ public class BuoyHelper {
         return modifyBoatMesh;
     }
 
-    private void addUnderWaterForce() {
+    private void addUnderWaterForce(float stepTime) {
+        Vector3f velocity = transformToVector3f(body.getLinearVel());
+        Vector3f normal = new Vector3f(velocity);
+        normal.normalize();
+        float len = modifyBoatMesh.calcUnderwaterLength(normal);
+        logger.debug("underwater len: {}", len);
+        float Cf = resistanceCoefficient(
+                RHO_OCEAN_WATER, velocity.length(),
+                len);
+
+        SlammingForceData[] slammingForceData = modifyBoatMesh.getSlammingForceData();
+
+        calcSlammingVelocities(slammingForceData);
+
+        float boatArea = modifyBoatMesh.getTotalArea();
+        float boatMass = (float) body.getMass().getMass();
+        logger.debug("boat mass: {}", boatMass);
+
+        List<Integer> indexOfOriginalTriangle = modifyBoatMesh.getIndexOfOriginalTriangle();
+
         List<TriangleData> underSurfaceTriangleData = modifyBoatMesh.getUnderSurfaceTriangleData();
-        DBody body = geom.getBody();
-        for (TriangleData triangleData : underSurfaceTriangleData) {
-            Vector3f center = triangleData.getCenter();
-            DVector3 buoyancyForce = transformFromVector3f(buoyancyForce(triangleData));
-            DVector3 forcePos = transformFromVector3f(center);
-            body.addForceAtPos(buoyancyForce, forcePos);
+
+        for (int i = 0; i < underSurfaceTriangleData.size(); i++) {
+
+            TriangleData triangleData = underSurfaceTriangleData.get(i);
+
+            int originalTriangleIndex = indexOfOriginalTriangle.get(i);
+            SlammingForceData slammingData = slammingForceData[originalTriangleIndex];
+            Vector3f force = new Vector3f();
+            Vector3f buoyancyForce = buoyancyForce(RHO_OCEAN_WATER, triangleData);
+            Vector3f viscousWaterResistanceForce = viscousWaterResistanceForce(RHO_OCEAN_WATER, triangleData, Cf);
+            Vector3f pressureDragForce = pressureDragForce(triangleData);
+            Vector3f slammingForce = slammingForce(slammingData, triangleData, boatArea, boatMass, stepTime);
+            force.add(buoyancyForce);
+            force.add(viscousWaterResistanceForce);
+            force.add(pressureDragForce);
+            force.add(slammingForce);
+            Vector3f forcePos = triangleData.getCenter();
+            body.addForceAtPos(transformFromVector3f(force), transformFromVector3f(forcePos));
         }
     }
 
-    private Vector3f buoyancyForce(TriangleData data) {
-        // F_buoyancy = rho * g * V
-        // rho - density of the mediaum you are in
-        // g - gravity
-        // V - volume of fluid directly above the curved surface
-        // V = z * S * n
-        // z - distance to surface
-        // S - surface area
-        // n - normal to the surface
-        float y = -g*rho*data.getDistanceToSurface()*data.getArea()*data.getNormal().y;
-        return new Vector3f(0,y,0);
+    private void addAboveWaterForce() {
+        List<TriangleData> aboveSurfaceTriangleData = modifyBoatMesh.getAboveSurfaceTriangleData();
+
+        for (int i = 0; i < aboveSurfaceTriangleData.size(); i++) {
+            TriangleData triangleData = aboveSurfaceTriangleData.get(i);
+
+            Vector3f force = new Vector3f();
+
+            Vector3f airResistanceForce = airResistanceForce(RHO_AIR, triangleData, C_AIR);
+            force.add(airResistanceForce);
+            Vector3f forcePos = triangleData.getCenter();
+            body.addForceAtPos(transformFromVector3f(force), transformFromVector3f(forcePos));
+        }
+    }
+
+    private void calcSlammingVelocities(SlammingForceData[] slammingForceData) {
+        for (SlammingForceData data : slammingForceData) {
+            data.setPreviousVelocity(data.getVelocity());
+            data.setVelocity(PhysicsMath.triangleVelocity(body, data.getTriangleCenter()));
+        }
     }
 
     private double getWaterLevel(DVector3 position) {

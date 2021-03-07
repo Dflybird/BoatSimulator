@@ -145,7 +145,7 @@ public class SimGUI implements GameLogic {
         z = 10;
         Vector3f cubePos = new Vector3f(x, y, z);
         Quaternionf cubeRot = new Quaternionf();
-        Vector3f cubeSca = new Vector3f(10,10,10);
+        Vector3f cubeSca = new Vector3f(5,5,5);
         GameObj cube = new CubeObj(id, cubePos, cubeRot, cubeSca);
         Entity cubeEntity = new CubeEntity(physicsEngine.getWorld(), physicsEngine.getSpace(),
                 cubePos, cubeRot, cubeSca, cube.getMesh().getModel());
