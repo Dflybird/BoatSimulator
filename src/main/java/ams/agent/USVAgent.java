@@ -14,7 +14,7 @@ public class USVAgent extends Agent{
     }
 
     @Override
-    protected void update(double stepTime) {
+    protected void update(double stepTime) throws Exception {
         entity.updateState();
         if (buoyHelper != null) {
             buoyHelper.handleBuoyancy((float) stepTime);

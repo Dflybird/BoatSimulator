@@ -34,16 +34,16 @@ public class BuoyHelper {
         this.modifyBoatMesh = new ModifyBoatMesh(entity, ocean);
     }
 
-    public void handleBuoyancy(float stepTime) {
+    public void handleBuoyancy(float stepTime) throws Exception{
         modifyBoatMesh.generateUnderwaterMesh();
 
         if (modifyBoatMesh.getUnderSurfaceTriangleData().size() > 0) {
             addUnderWaterForce(stepTime);
         }
 
-        if (modifyBoatMesh.getAboveSurfaceTriangleData().size() > 0) {
-            addAboveWaterForce();
-        }
+//        if (modifyBoatMesh.getAboveSurfaceTriangleData().size() > 0) {
+//            addAboveWaterForce();
+//        }
 
 //        if (geom instanceof DBox) {
 //            processBuoys(geom, generateBuoys(3, (DBox) geom), getVolume((DBox) geom), getArea((DBox) geom),world);
@@ -67,9 +67,8 @@ public class BuoyHelper {
         Vector3f normal = new Vector3f(velocity);
         normal.normalize();
         float len = modifyBoatMesh.calcUnderwaterLength(normal);
-        logger.debug("underwater len: {}", len);
         float Cf = resistanceCoefficient(
-                RHO_OCEAN_WATER, velocity.length(),
+                velocity.length(),
                 len);
 
         SlammingForceData[] slammingForceData = modifyBoatMesh.getSlammingForceData();
@@ -78,7 +77,6 @@ public class BuoyHelper {
 
         float boatArea = modifyBoatMesh.getTotalArea();
         float boatMass = (float) body.getMass().getMass();
-        logger.debug("boat mass: {}", boatMass);
 
         List<Integer> indexOfOriginalTriangle = modifyBoatMesh.getIndexOfOriginalTriangle();
 

@@ -98,7 +98,6 @@ public class Ocean {
 
     public float distanceToWave(Vector3f pos) {
         float h = getWaveHeight(pos.x, pos.z);
-        logger.debug("g_p {} | {} | {}", pos.x, pos.z, h);
         return pos.y - h;
     }
 
@@ -145,7 +144,6 @@ public class Ocean {
         int n = (int) ((localX - originX)/meshX);
         int m = (int) ((localZ - originZ)/meshZ);
         index = m * (N + 1) + n;
-        logger.debug("index {} | m {} | n {} | originX {} | originZ {}", index, m, n, originX, originZ);
         //index+NPlus1 -- index+NPlus1+1
         //    |          /      |
         //    |        /        |
@@ -166,28 +164,17 @@ public class Ocean {
                     vertices[(index + 1) * 3 + 1],
                     originalVertices[(index + 1) * 3 + 2]);
         } else {
-            logger.debug("= 0 =");
-
-
             //左上角三角形
             pointA = new Vector3f(originalVertices[index * 3],
                     vertices[index * 3 + 1],
                     originalVertices[index * 3 + 2]);
-            logger.debug("= 1 =");
-            logger.debug("size {} | index {} | N {}", originalVertices.length, index, N);
-            logger.debug("{} | {} | {}", originalVertices[(index + N + 1) * 3],
-                    vertices[(index + N + 1) * 3 + 1],
-                    originalVertices[(index + N + 1) * 3 + 2]);
             pointB = new Vector3f(originalVertices[(index + N + 1) * 3],
                     vertices[(index + N + 1) * 3 + 1],
                     originalVertices[(index + N + 1) * 3 + 2]);
-
-            logger.debug("= 2 =");
             pointC = new Vector3f(originalVertices[(index + N + 2) * 3],
                     vertices[(index + N + 2) * 3 + 1],
                     originalVertices[(index + N + 2) * 3 + 2]);
         }
-        logger.debug("= 3 =");
 
         Vector3f AB = new Vector3f();
         Vector3f AC = new Vector3f();

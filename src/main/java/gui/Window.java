@@ -34,6 +34,7 @@ public class Window {
     private int height;
     private boolean vSync;
     private boolean resize;
+    private boolean line;
 
     public Window(String title, int width, int height, boolean vSync) {
         this.title = title;
@@ -41,6 +42,7 @@ public class Window {
         this.height = height;
         this.vSync = vSync;
         this.resize = false;
+        this.line = false;
     }
     public void init(){
         GLFWErrorCallback.createPrint(System.err).set();
@@ -112,6 +114,20 @@ public class Window {
     public void render(){
         glfwSwapBuffers(windowID);
         glfwPollEvents();
+    }
+
+    public void drawLine() {
+        if (!line) {
+            line = true;
+            glPolygonMode( GL_FRONT_AND_BACK, GL_LINE);
+        }
+    }
+
+    public void drawFill() {
+        if (line) {
+            line = false;
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        }
     }
 
     public void cleanup(){

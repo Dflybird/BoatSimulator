@@ -14,9 +14,11 @@ public class Constant {
 
     public static final String CONFIG_FILE_NAME = "config.json";
 
-    public static final String BOAT_OBJ_NAME = "boat.obj";
+    //boat1 长5m 宽2m 高0.5m
+    //boat2 长5m 宽2m 高1m
+    public static final String BOAT_OBJ_NAME = "boat2.obj";
 
-    public static final String BOAT_MTL_NAME = "boat.mtl";
+    public static final String BOAT_MTL_NAME = "boat2.mtl";
 
     /** 环境相关参数 */
     //重力系数 m/s^2
@@ -43,7 +45,7 @@ public class Constant {
     public static final float P = 2f;
     public static final float ACC_MAX = 2 * g;
     //取值范围0~1，应用撞击力大小系数，0忽略撞击力
-    public static final float SLAMMING_CHEAT = 1f;
+    public static final float SLAMMING_CHEAT = 0.5f;
     //空气阻力系数，与物体材质和表面粗糙度有关，这里取0.4~0.6
     public static final float C_AIR = 0.4f;
 

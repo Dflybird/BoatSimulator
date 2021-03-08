@@ -1,5 +1,7 @@
 package ams.agent;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import physics.buoy.BuoyHelper;
 
 /**
@@ -9,20 +11,18 @@ import physics.buoy.BuoyHelper;
  **/
 public class CubeAgent extends Agent {
 
+    private static final Logger logger = LoggerFactory.getLogger(CubeAgent.class);
+
     private BuoyHelper buoyHelper;
     public CubeAgent(String agentID) {
         super(agentID);
     }
 
     @Override
-    protected void update(double stepTime) {
+    protected void update(double stepTime) throws Exception {
         entity.updateState();
         if (buoyHelper != null) {
-            try {
-                buoyHelper.handleBuoyancy((float) stepTime);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            buoyHelper.handleBuoyancy((float) stepTime);
         }
     }
 

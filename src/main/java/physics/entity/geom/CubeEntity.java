@@ -32,15 +32,14 @@ public class CubeEntity extends Entity {
     private void init() {
         DMass mass = OdeHelper.createMass();
         //900 kg/m^3 = 0.9 g/cm^3
-        float density = 9;
+        float weight = 200 * scale.x * scale.y * scale.z;
 
         DTriMeshData meshData = OdeHelper.createTriMeshData();
         meshData.build(model.getVertices(), model.getIndices());
 
         geom = OdeHelper.createTriMesh(space, meshData, null, null, null);
 
-        mass.setTrimesh(density, (DTriMesh) geom);
-        mass.setMass(scale.x*scale.y*scale.z*density);
+        mass.setTrimeshTotal(weight, (DTriMesh) geom);
 
         body = OdeHelper.createBody(world);
         body.setPosition(transformFromVector3f(translation));
@@ -53,6 +52,7 @@ public class CubeEntity extends Entity {
 //        body.setMass(mass);
 //        geom = OdeHelper.createBox(space, transformFromVector3f(scale));
 //        geom.setBody(body);
+
     }
 
 

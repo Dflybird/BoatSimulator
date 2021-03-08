@@ -36,6 +36,8 @@ import static conf.Constant.BOAT_OBJ_NAME;
 import static conf.Constant.RESOURCES_MODELS_DIR;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_FILL;
 
 /**
  * @Author Gq
@@ -121,42 +123,35 @@ public class SimGUI implements GameLogic {
         //初始化Agent
 //        Agent usvAgent = new USVAgent("usv0");
 //        长5m 宽2m
-        String id = "boat" + TimeUtil.currentTime();
-        USVAgent boatAgent = new USVAgent(id);
-        float x, y, z;
-        x = 10;
-        y = 100;
-        z = -10;
-//        Vector3f boatPos = new Vector3f(x, y, z);
-//        Quaternionf boatRot = new Quaternionf();
-//        Vector3f boatSca = new Vector3f(10,10,10);
-//        GameObj boat = new BoatObj(id, boatPos, boatRot, boatSca, boatModel);
-//        Entity boatEntity = new BoatEntity(physicsEngine.getWorld(), physicsEngine.getSpace(),
-//                boatPos, boatRot, boatSca, boatModel);
-//        boatAgent.setEntity(boatEntity);
-//        BuoyHelper boatBuoyHelper = new BuoyHelper(ocean, boatEntity);
-//        boatAgent.setBuoyHelper(boatBuoyHelper);
-//        AgentManager.addAgent(boatAgent);
-//        scene.setGameObj(boat);
+        String boatId = "boat" + TimeUtil.currentTime();
+        USVAgent boatAgent = new USVAgent(boatId);
+        Vector3f boatPos = new Vector3f(10, 100, -10);
+        Quaternionf boatRot = new Quaternionf();
+        Vector3f boatSca = new Vector3f(1,1,1);
+        GameObj boat = new BoatObj(boatId, boatPos, boatRot, boatSca, boatModel);
+        Entity boatEntity = new BoatEntity(physicsEngine.getWorld(), physicsEngine.getSpace(),
+                boatPos, boatRot, boatSca, boatModel);
+        boatAgent.setEntity(boatEntity);
+        BuoyHelper boatBuoyHelper = new BuoyHelper(ocean, boatEntity);
+        boatAgent.setBuoyHelper(boatBuoyHelper);
+        AgentManager.addAgent(boatAgent);
+        scene.setGameObj(boat);
 
-        id = "cube" + TimeUtil.currentTime();
-        x = 10;
-        y = 100;
-        z = 10;
-        Vector3f cubePos = new Vector3f(x, y, z);
+        String cubeId = "cube" + TimeUtil.currentTime();
+        Vector3f cubePos = new Vector3f(10, 100, 10);
         Quaternionf cubeRot = new Quaternionf();
-        Vector3f cubeSca = new Vector3f(10,10,10);
-        GameObj cube = new CubeObj(id, cubePos, cubeRot, cubeSca);
+        Vector3f cubeSca = new Vector3f(1,1,1);
+        GameObj cube = new CubeObj(cubeId, cubePos, cubeRot, cubeSca);
         Entity cubeEntity = new CubeEntity(physicsEngine.getWorld(), physicsEngine.getSpace(),
                 cubePos, cubeRot, cubeSca, cube.getMesh().getModel());
-        CubeAgent cubeAgent = new CubeAgent(id);
+        CubeAgent cubeAgent = new CubeAgent(cubeId);
         BuoyHelper cubeBuoyHelper = new BuoyHelper(ocean, cubeEntity);
         cubeAgent.setBuoyHelper(cubeBuoyHelper);
         cubeAgent.setEntity(cubeEntity);
         AgentManager.addAgent(cubeAgent);
         scene.setGameObj(cube);
 
-        modifyBoatMesh = cubeBuoyHelper.getModifyBoatMesh();
+//        modifyBoatMesh = cubeBuoyHelper.getModifyBoatMesh();
     }
     ModifyBoatMesh modifyBoatMesh;
 
@@ -182,6 +177,13 @@ public class SimGUI implements GameLogic {
             cameraInc.y = 10;
         }
 
+        if (glfwGetKey(window.getWindowID(), GLFW_KEY_O) == GLFW_PRESS) {
+            window.drawLine();
+        }
+
+        if (glfwGetKey(window.getWindowID(), GLFW_KEY_P) == GLFW_PRESS) {
+            window.drawFill();
+        }
 
         //修改相机
         camera.movePosition(
@@ -248,10 +250,10 @@ public class SimGUI implements GameLogic {
     public void render(double alpha) {
         guiState.computeRenderState((float) alpha);
         renderer.render();
-        renderer.renderMeshes(modifyBoatMesh.getUnderwaterModel(),
-                modifyBoatMesh.getEntity().getTranslation(),
-                modifyBoatMesh.getEntity().getRotation(),
-                modifyBoatMesh.getEntity().getScale());
+//        renderer.renderMeshes(modifyBoatMesh.getUnderwaterModel(),
+//                modifyBoatMesh.getEntity().getTranslation(),
+//                modifyBoatMesh.getEntity().getRotation(),
+//                modifyBoatMesh.getEntity().getScale());
     }
 
     @Override

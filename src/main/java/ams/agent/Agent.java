@@ -31,7 +31,7 @@ public abstract class Agent implements Runnable {
         AgentManager.onDone();
     }
 
-    protected abstract void update(double stepTime);
+    protected abstract void update(double stepTime) throws Exception;
 
     protected void send() {
 

@@ -67,7 +67,7 @@ public class PhysicsEngine {
             contact.surface.mu2 = 0;
             contact.surface.bounce = 0.1;
             contact.surface.bounce_vel = 0.1;
-            contact.surface.soft_cfm = 0.01;
+//            contact.surface.soft_cfm = 0;
         }
         int contacts_num = OdeHelper.collide(o1,o2,MAX_CONTACTS,contacts.getGeomBuffer());
         if (contacts_num!=0){

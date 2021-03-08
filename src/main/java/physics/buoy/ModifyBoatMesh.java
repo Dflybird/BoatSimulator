@@ -65,7 +65,7 @@ public class ModifyBoatMesh {
         calcOriginalTrianglesArea();
     }
 
-    public void generateUnderwaterMesh(){
+    public void generateUnderwaterMesh() throws Exception{
         underSurfaceTriangleData.clear();
         aboveSurfaceTriangleData.clear();
 
@@ -86,7 +86,6 @@ public class ModifyBoatMesh {
         //收集在水下的三角形
         addTriangles();
 
-        logger.debug("= 3 =");
     }
 
     /**

@@ -26,14 +26,14 @@ public class BoatEntity extends Entity {
 
     private void init() {
         DMass mass = OdeHelper.createMass();
-        float density = 0.8f;
+        float weight = 5f * scale.x * scale.y * scale.z * 5 * 2 *  1f;
 
         DTriMeshData meshData = OdeHelper.createTriMeshData();
         meshData.build(model.getVertices(), model.getIndices());
 
         geom = OdeHelper.createTriMesh(space, meshData, null, null, null);
 
-        mass.setTrimesh(density, (DTriMesh) geom);
+        mass.setTrimeshTotal(weight, (DTriMesh) geom);
 
         body = OdeHelper.createBody(world);
         body.setPosition(transformFromVector3f(translation));

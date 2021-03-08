@@ -56,8 +56,11 @@ public class PhysicsMath {
         // z - distance to surface
         // S - surface area
         // n - normal to the surface
-        float y = -g * rho * data.getDistanceToSurface() * data.getArea() * data.getNormal().y;
-        return checkForceIsValid(new Vector3f(0,y,0), "Buoyancy");
+        Vector3f buoyancyForce  = new Vector3f(data.getNormal());
+        buoyancyForce .mul(-g * rho * data.getDistanceToSurface() * data.getArea());
+        buoyancyForce.x = 0;
+        buoyancyForce.z = 0;
+        return checkForceIsValid(buoyancyForce, "Buoyancy");
     }
 
     //水面粘性阻力
@@ -67,9 +70,11 @@ public class PhysicsMath {
         // v - speed
         // S - surface area
         // Cf - 摩擦阻力系数
+        logger.debug("cf {}", Cf);
         Vector3f B = new Vector3f(data.getNormal());
         Vector3f A = new Vector3f(data.getVelocity());
 
+        logger.debug("t_v {}", A.length());
         float magnitudeB = B.length();
         Vector3f velocityTangent = new Vector3f();
         Vector3f temp = new Vector3f();
@@ -83,8 +88,8 @@ public class PhysicsMath {
         tangentialDirection.normalize().mul(-1f);
 
         //水流速度，垂直于三角形平面
-        Vector3f fluidVelocity = new Vector3f();
-        tangentialDirection.mul(A.length());
+        Vector3f fluidVelocity = new Vector3f(tangentialDirection);
+        fluidVelocity.mul(A.length());
 
         Vector3f resistanceForce = new Vector3f(fluidVelocity);
         resistanceForce.mul(0.5f * rho * fluidVelocity.length() * data.getArea() * Cf);
@@ -92,7 +97,7 @@ public class PhysicsMath {
     }
 
     //计算摩擦阻力系数
-    public static float resistanceCoefficient(float rho, float velocity, float length) {
+    public static float resistanceCoefficient(float velocity, float length) {
         // Rn = (V * L) / nu
         // V - 物体运动速度
         // L - 流体穿过表面的长度
@@ -103,7 +108,7 @@ public class PhysicsMath {
         float nu = 0.000001f;
 
         float Rn = (velocity * length) / nu;
-
+        logger.debug("v {}", velocity);
         return 0.075f / (float) (Math.pow(Math.log10(Rn) - 2, 2));
     }
 
