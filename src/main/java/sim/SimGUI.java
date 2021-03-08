@@ -127,17 +127,17 @@ public class SimGUI implements GameLogic {
         x = 10;
         y = 100;
         z = -10;
-        Vector3f boatPos = new Vector3f(x, y, z);
-        Quaternionf boatRot = new Quaternionf();
-        Vector3f boatSca = new Vector3f(10,10,10);
-        GameObj boat = new BoatObj(id, boatPos, boatRot, boatSca, boatModel);
-        Entity boatEntity = new BoatEntity(physicsEngine.getWorld(), physicsEngine.getSpace(),
-                boatPos, boatRot, boatSca, boatModel);
-        boatAgent.setEntity(boatEntity);
-        BuoyHelper boatBuoyHelper = new BuoyHelper(ocean, boatEntity);
+//        Vector3f boatPos = new Vector3f(x, y, z);
+//        Quaternionf boatRot = new Quaternionf();
+//        Vector3f boatSca = new Vector3f(10,10,10);
+//        GameObj boat = new BoatObj(id, boatPos, boatRot, boatSca, boatModel);
+//        Entity boatEntity = new BoatEntity(physicsEngine.getWorld(), physicsEngine.getSpace(),
+//                boatPos, boatRot, boatSca, boatModel);
+//        boatAgent.setEntity(boatEntity);
+//        BuoyHelper boatBuoyHelper = new BuoyHelper(ocean, boatEntity);
 //        boatAgent.setBuoyHelper(boatBuoyHelper);
-        AgentManager.addAgent(boatAgent);
-        scene.setGameObj(boat);
+//        AgentManager.addAgent(boatAgent);
+//        scene.setGameObj(boat);
 
         id = "cube" + TimeUtil.currentTime();
         x = 10;
@@ -145,7 +145,7 @@ public class SimGUI implements GameLogic {
         z = 10;
         Vector3f cubePos = new Vector3f(x, y, z);
         Quaternionf cubeRot = new Quaternionf();
-        Vector3f cubeSca = new Vector3f(5,5,5);
+        Vector3f cubeSca = new Vector3f(10,10,10);
         GameObj cube = new CubeObj(id, cubePos, cubeRot, cubeSca);
         Entity cubeEntity = new CubeEntity(physicsEngine.getWorld(), physicsEngine.getSpace(),
                 cubePos, cubeRot, cubeSca, cube.getMesh().getModel());
@@ -238,7 +238,7 @@ public class SimGUI implements GameLogic {
     @Override
     public void update(double stepTime) {
         //海浪等环境更新
-//        ocean.update();
+        ocean.update();
         //Agent系统周期更新
         agentManager.update(stepTime);
         physicsEngine.update(stepTime);

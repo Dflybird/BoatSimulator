@@ -98,7 +98,7 @@ public class Ocean {
 
     public float distanceToWave(Vector3f pos) {
         float h = getWaveHeight(pos.x, pos.z);
-
+        logger.debug("g_p {} | {} | {}", pos.x, pos.z, h);
         return pos.y - h;
     }
 
@@ -109,30 +109,21 @@ public class Ocean {
      * @return
      */
     public float getWaveHeight(float x, float z) {
-        logger.debug("g_p {} | {}", x, z);
         //排除超过边界的情况
         float lengthX = lX * nX;
         float lengthZ = lZ * nZ;
-        if (x > lengthX / 2 || x < - lengthX / 2) {
+        float initX = pos.x - lengthX/2;
+        float initZ = pos.z - lengthZ/2;
+        if (x - initX > lengthX || x - initX < 0) {
             return pos.y;
         }
-        if (z > lengthZ / 2 || z < - lengthZ / 2) {
+        if (z - initZ > lengthZ || z -initZ < 0) {
             return pos.y;
         }
 
         //在一块海面中相对坐标
-        logger.debug("x {} | lx {}", x, lX);
-        float localX, localZ;
-        if ((nX & 1) != 0) {
-            localX = x % lX + lX / 2;
-        } else {
-            localX = x % lX;
-        }
-        if ((nZ & 1) != 0) {
-            localZ = z % lZ + lZ / 2;
-        } else {
-            localZ = z % lZ;
-        }
+        float localX = (x - initX) % lX - lX / 2;
+        float localZ = (z - initZ) % lZ - lZ / 2;
 
         //在一块海面中确定海浪对应的网格方块
         int index;
@@ -154,7 +145,7 @@ public class Ocean {
         int n = (int) ((localX - originX)/meshX);
         int m = (int) ((localZ - originZ)/meshZ);
         index = m * (N + 1) + n;
-        logger.debug("index {} | m {} | n {} | localZ {} | meshZ {}", index, m, n, localZ, meshZ);
+        logger.debug("index {} | m {} | n {} | originX {} | originZ {}", index, m, n, originX, originZ);
         //index+NPlus1 -- index+NPlus1+1
         //    |          /      |
         //    |        /        |
@@ -206,7 +197,7 @@ public class Ocean {
         AB.cross(AC, abc);
         float d = abc.dot(pointA);
         //三角形平面方程：ax+by+cz+d=0;
-        return (d - abc.x * x - abc.z * z) / abc.y;
+        return (d - abc.x * localX - abc.z * localZ) / abc.y;
     }
 
     public Wave getWave() {

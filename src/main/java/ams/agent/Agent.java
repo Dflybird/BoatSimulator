@@ -23,7 +23,11 @@ public abstract class Agent implements Runnable {
 
     @Override
     public void run() {
-        update(AgentManager.getStepTime());
+        try {
+            update(AgentManager.getStepTime());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         AgentManager.onDone();
     }
 

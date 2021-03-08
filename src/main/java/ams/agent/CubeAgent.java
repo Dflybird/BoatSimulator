@@ -18,7 +18,11 @@ public class CubeAgent extends Agent {
     protected void update(double stepTime) {
         entity.updateState();
         if (buoyHelper != null) {
-            buoyHelper.handleBuoyancy((float) stepTime);
+            try {
+                buoyHelper.handleBuoyancy((float) stepTime);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
