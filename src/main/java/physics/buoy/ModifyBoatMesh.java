@@ -7,6 +7,7 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.ode4j.ode.DBody;
+import org.ode4j.ode.DGeom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import physics.entity.Entity;
@@ -29,7 +30,7 @@ public class ModifyBoatMesh {
     private final Ocean ocean;
     private final Transform transform;
     private final Entity entity;
-    private final DBody body;
+    private final DGeom geom;
 
     private final float[] boatVertices;
     private final int[] boatIndices;
@@ -49,7 +50,7 @@ public class ModifyBoatMesh {
     public ModifyBoatMesh(Entity entity, Ocean ocean) {
         this.ocean = ocean;
         this.entity = entity;
-        body = entity.getBody();
+        geom = entity.getGeom();
         transform = new Transform(entity.getTranslation(), entity.getRotation(), entity.getScale());
         boatVertices = entity.getModel().getVertices();
         boatIndices = entity.getModel().getIndices();
@@ -85,7 +86,6 @@ public class ModifyBoatMesh {
 
         //收集在水下的三角形
         addTriangles();
-
     }
 
     /**
@@ -183,7 +183,7 @@ public class ModifyBoatMesh {
                 Vector3f p2 = vertexData[1].globalVertexPos;
                 Vector3f p3 = vertexData[2].globalVertexPos;
 
-                TriangleData triangleData = new TriangleData(p1, p2, p3, ocean, body);
+                TriangleData triangleData = new TriangleData(p1, p2, p3, ocean, geom);
                 aboveSurfaceTriangleData.add(triangleData);
 
                 slammingForceData[triangleCounter].setSubmergeArea(0f);
@@ -198,7 +198,7 @@ public class ModifyBoatMesh {
                 Vector3f p3 = vertexData[2].globalVertexPos;
 
                 //Save the triangle
-                TriangleData triangleData = new TriangleData(p1, p2, p3, ocean, body);
+                TriangleData triangleData = new TriangleData(p1, p2, p3, ocean, geom);
                 underSurfaceTriangleData.add(triangleData);
 
                 slammingForceData[triangleCounter].setSubmergeArea(slammingForceData[triangleCounter].getOriginalArea());
@@ -270,12 +270,12 @@ public class ModifyBoatMesh {
         Vector3f LI_L = LH.mul(t_L);
         Vector3f I_L = LI_L.add(L);
 
-        TriangleData triangleData1 = new TriangleData(M, I_M, I_L, ocean, body);
+        TriangleData triangleData1 = new TriangleData(M, I_M, I_L, ocean, geom);
         underSurfaceTriangleData.add(triangleData1);
-        TriangleData triangleData2 = new TriangleData(M, I_L, L, ocean, body);
+        TriangleData triangleData2 = new TriangleData(M, I_L, L, ocean, geom);
         underSurfaceTriangleData.add(triangleData2);
 
-        aboveSurfaceTriangleData.add(new TriangleData(I_M, H, I_L, ocean, body));
+        aboveSurfaceTriangleData.add(new TriangleData(I_M, H, I_L, ocean, geom));
 
         //计算水下面积
         float submergeArea = triangleData1.getArea() + triangleData2.getArea();
@@ -333,11 +333,11 @@ public class ModifyBoatMesh {
         Vector3f LJ_H = LH.mul(t_H);
         Vector3f J_H = LJ_H.add(L);
 
-        TriangleData triangleData = new TriangleData(L, J_H, J_M, ocean, body);
+        TriangleData triangleData = new TriangleData(L, J_H, J_M, ocean, geom);
         underSurfaceTriangleData.add(triangleData);
 
-        aboveSurfaceTriangleData.add(new TriangleData(J_H, H, J_M, ocean, body));
-        aboveSurfaceTriangleData.add(new TriangleData(J_M, H, M, ocean, body));
+        aboveSurfaceTriangleData.add(new TriangleData(J_H, H, J_M, ocean, geom));
+        aboveSurfaceTriangleData.add(new TriangleData(J_M, H, M, ocean, geom));
 
         slammingForceData[triangleCounter].setSubmergeArea(triangleData.getArea());
         slammingForceData[triangleCounter].setTriangleCenter(triangleData.getCenter());
@@ -348,19 +348,19 @@ public class ModifyBoatMesh {
         int i = 0;
         int count = 0;
         while (i < boatIndices.length) {
-            Vector3f p1 = new Vector3f(boatVertices[boatIndices[i]],
-                    boatVertices[boatIndices[i] + 1],
-                    boatVertices[boatIndices[i] + 2]);
+            Vector3f p1 = new Vector3f(boatVertices[boatIndices[i] * 3],
+                    boatVertices[boatIndices[i] * 3 + 1],
+                    boatVertices[boatIndices[i] * 3 + 2]);
             i++;
 
-            Vector3f p2 = new Vector3f(boatVertices[boatIndices[i]],
-                    boatVertices[boatIndices[i] + 1],
-                    boatVertices[boatIndices[i] + 2]);
+            Vector3f p2 = new Vector3f(boatVertices[boatIndices[i] * 3],
+                    boatVertices[boatIndices[i] * 3 + 1],
+                    boatVertices[boatIndices[i] * 3 + 2]);
             i++;
 
-            Vector3f p3 = new Vector3f(boatVertices[boatIndices[i]],
-                    boatVertices[boatIndices[i] + 1],
-                    boatVertices[boatIndices[i] + 2]);
+            Vector3f p3 = new Vector3f(boatVertices[boatIndices[i] * 3],
+                    boatVertices[boatIndices[i] * 3 + 1],
+                    boatVertices[boatIndices[i] * 3 + 2]);
             i++;
 
             float triangleArea = triangleArea(p1, p2, p3);
@@ -370,6 +370,7 @@ public class ModifyBoatMesh {
             totalArea += triangleArea;
 
             count++;
+
         }
     }
 

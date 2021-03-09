@@ -2,6 +2,7 @@ package util;
 
 import org.joml.Vector3f;
 import org.ode4j.ode.DBody;
+import org.ode4j.ode.DGeom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import physics.buoy.SlammingForceData;
@@ -20,16 +21,16 @@ public class PhysicsMath {
     private final static Logger logger = LoggerFactory.getLogger(PhysicsMath.class);
 
     //计算三角片中心的移动速度
-    public static Vector3f triangleVelocity(DBody body, Vector3f triangleCenter) {
+    public static Vector3f triangleVelocity(DGeom geom, Vector3f triangleCenter) {
         // v_A = v_B + omega_B cross r_BA
         // v_A - velocity in point A
         // v_B - velocity in point B
         // omega_B - angular velocity in point B
         // r_BA - vector between A and B
-        Vector3f v_B = transformToVector3f(body.getLinearVel());
-        Vector3f omega_B = transformToVector3f(body.getAngularVel());
+        Vector3f v_B = transformToVector3f(geom.getBody().getLinearVel());
+        Vector3f omega_B = transformToVector3f(geom.getBody().getAngularVel());
         Vector3f r_BA = new Vector3f();
-        triangleCenter.sub(transformToVector3f(body.getPosition()), r_BA);
+        triangleCenter.sub(transformToVector3f(geom.getPosition()), r_BA);
         return v_B.add(omega_B.cross(r_BA));
     }
 
@@ -43,7 +44,7 @@ public class PhysicsMath {
         float a = p1.distance(p2);
         float c = p3.distance(p1);
 
-        return (a * c * (float) Math.sin(t1.angle(t2) * Math.PI / 180)) / 2f;
+        return (a * c * (float) Math.sin(t1.angle(t2))) / 2f;
     }
 
     //计算浮力
@@ -63,6 +64,22 @@ public class PhysicsMath {
         return checkForceIsValid(buoyancyForce, "Buoyancy");
     }
 
+    //计算摩擦阻力系数
+    public static float resistanceCoefficient(float velocity, float length) {
+        // Rn = (V * L) / nu
+        // V - 物体运动速度
+        // L - 流体穿过表面的长度
+        // nu - 流体粘性 [m^2 / s]
+
+        //20摄氏度时流体粘性为 0.000001f
+        //30摄氏度时流体粘性为 0.0000008f
+        float nu = 0.000001f;
+
+        float Rn = (velocity * length) / nu;
+        logger.debug("length {}", length);
+        return 0.075f / (float) (Math.pow(Math.log10(Rn) - 2, 2));
+    }
+
     //水面粘性阻力
     public static Vector3f viscousWaterResistanceForce(float rho, TriangleData data, float Cf) {
         // F = 0.5 * rho * v^2 * S * Cf
@@ -70,11 +87,11 @@ public class PhysicsMath {
         // v - speed
         // S - surface area
         // Cf - 摩擦阻力系数
-        logger.debug("cf {}", Cf);
+//        logger.debug("cf {}", Cf);
         Vector3f B = new Vector3f(data.getNormal());
         Vector3f A = new Vector3f(data.getVelocity());
 
-        logger.debug("t_v {}", A.length());
+//        logger.debug("t_v {}", A.length());
         float magnitudeB = B.length();
         Vector3f velocityTangent = new Vector3f();
         Vector3f temp = new Vector3f();
@@ -94,22 +111,6 @@ public class PhysicsMath {
         Vector3f resistanceForce = new Vector3f(fluidVelocity);
         resistanceForce.mul(0.5f * rho * fluidVelocity.length() * data.getArea() * Cf);
         return checkForceIsValid(resistanceForce, "Viscous Water Resistance");
-    }
-
-    //计算摩擦阻力系数
-    public static float resistanceCoefficient(float velocity, float length) {
-        // Rn = (V * L) / nu
-        // V - 物体运动速度
-        // L - 流体穿过表面的长度
-        // nu - 流体粘性 [m^2 / s]
-
-        //20摄氏度时流体粘性为 0.000001f
-        //30摄氏度时流体粘性为 0.0000008f
-        float nu = 0.000001f;
-
-        float Rn = (velocity * length) / nu;
-        logger.debug("v {}", velocity);
-        return 0.075f / (float) (Math.pow(Math.log10(Rn) - 2, 2));
     }
 
     //计算阻力
@@ -132,7 +133,7 @@ public class PhysicsMath {
             //三角面与运动方向相反，计算流体逆向吸力
             pressureDragForce.mul((C_SD1 * velocity + C_SD2 * (velocity * velocity)) * data.getArea() * (float) Math.pow(Math.abs(data.getCosTheta()), f_S));
         }
-
+//        logger.debug("p_f {} | {} | {}", pressureDragForce.x, pressureDragForce.y, pressureDragForce.z);
         return checkForceIsValid(pressureDragForce, "Pressure drag");
     }
 

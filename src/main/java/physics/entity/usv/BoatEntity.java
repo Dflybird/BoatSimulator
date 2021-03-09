@@ -3,6 +3,8 @@ package physics.entity.usv;
 import gui.obj.Model;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.ode4j.math.DVector3;
+import org.ode4j.math.DVector3C;
 import org.ode4j.ode.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +28,8 @@ public class BoatEntity extends Entity {
 
     private void init() {
         DMass mass = OdeHelper.createMass();
-        float weight = 5f * scale.x * scale.y * scale.z * 5 * 2 *  1f;
+        //重量，单位kg
+        float weight = 2000f * scale.x * scale.y * scale.z;
 
         DTriMeshData meshData = OdeHelper.createTriMeshData();
         meshData.build(model.getVertices(), model.getIndices());

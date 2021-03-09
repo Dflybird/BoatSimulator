@@ -73,7 +73,7 @@ public class SimGUI implements GameLogic {
         camera = new Camera(new Vector3f(0, 0, 4f));
         guiState = new GUIState();
         renderer = new GUIRenderer();
-        ocean = new Ocean(128, 128, 4, 4, new Vector3f());
+        ocean = new Ocean(64, 64, 16, 16, new Vector3f());
         scene = new Scene();
         physicsEngine = new PhysicsEngine();
     }
@@ -99,33 +99,12 @@ public class SimGUI implements GameLogic {
 
         scene.setSceneLight(sceneLight);
 
-
-        //海洋平铺
-//        float Lx = 256;
-//        float Lz = 256;
-//        wave = new Wave(Lx, Lx, 128, 128, new Wind(30, new Vector2f(1,0)), 0.000005f);
-//        Material material = new Material(
-//                new Vector4f(0.0f, 0.65f, 0.75f, 1.0f),
-//                new Vector4f(0.5f, 0.65f, 0.75f, 1.0f),
-//                new Vector4f(1.0f, 0.25f, 0.0f,  1.0f),
-//                1, null);
-//        Mesh mesh = new Mesh(wave.getModel(), material);
-//        List<GameObj> oceanBlocks = new ArrayList<>();
-//        for (int i = -2; i < 2; i++) {
-//            for (int j = -2; j < 2; j++) {
-//                OceanObj obj = new OceanObj(new Vector3f(Lx * i, 0, Lz * -j), new Quaternionf(), new Vector3f(1,1,1));
-//                obj.setMesh(mesh);
-//                oceanBlocks.add(obj);
-//            }
-//        }
-//        scene.setOceanBlock(oceanBlocks);
-
         //初始化Agent
 //        Agent usvAgent = new USVAgent("usv0");
 //        长5m 宽2m
         String boatId = "boat" + TimeUtil.currentTime();
         USVAgent boatAgent = new USVAgent(boatId);
-        Vector3f boatPos = new Vector3f(10, 100, -10);
+        Vector3f boatPos = new Vector3f(10, 20, -10);
         Quaternionf boatRot = new Quaternionf();
         Vector3f boatSca = new Vector3f(1,1,1);
         GameObj boat = new BoatObj(boatId, boatPos, boatRot, boatSca, boatModel);
@@ -138,7 +117,7 @@ public class SimGUI implements GameLogic {
         scene.setGameObj(boat);
 
         String cubeId = "cube" + TimeUtil.currentTime();
-        Vector3f cubePos = new Vector3f(10, 100, 10);
+        Vector3f cubePos = new Vector3f(10, 20, 10);
         Quaternionf cubeRot = new Quaternionf();
         Vector3f cubeSca = new Vector3f(1,1,1);
         GameObj cube = new CubeObj(cubeId, cubePos, cubeRot, cubeSca);
@@ -151,7 +130,7 @@ public class SimGUI implements GameLogic {
         AgentManager.addAgent(cubeAgent);
         scene.setGameObj(cube);
 
-//        modifyBoatMesh = cubeBuoyHelper.getModifyBoatMesh();
+        modifyBoatMesh = boatBuoyHelper.getModifyBoatMesh();
     }
     ModifyBoatMesh modifyBoatMesh;
 
@@ -250,10 +229,11 @@ public class SimGUI implements GameLogic {
     public void render(double alpha) {
         guiState.computeRenderState((float) alpha);
         renderer.render();
-//        renderer.renderMeshes(modifyBoatMesh.getUnderwaterModel(),
-//                modifyBoatMesh.getEntity().getTranslation(),
-//                modifyBoatMesh.getEntity().getRotation(),
-//                modifyBoatMesh.getEntity().getScale());
+        Vector3f newScale = new Vector3f(modifyBoatMesh.getEntity().getScale());
+        renderer.renderMeshes(modifyBoatMesh.getUnderwaterModel(),
+                modifyBoatMesh.getEntity().getTranslation(),
+                modifyBoatMesh.getEntity().getRotation(),
+                newScale.mul(1.001f,1.001f,1.001f));
     }
 
     @Override

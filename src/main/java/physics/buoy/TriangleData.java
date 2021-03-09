@@ -3,6 +3,7 @@ package physics.buoy;
 import environment.Ocean;
 import org.joml.Vector3f;
 import org.ode4j.ode.DBody;
+import org.ode4j.ode.DGeom;
 import util.PhysicsMath;
 
 /**
@@ -31,7 +32,7 @@ public class TriangleData {
     //三角片法线与速度的夹角，同向为正，反向为负
     private final float cosTheta;
 
-    public TriangleData(Vector3f p1, Vector3f p2, Vector3f p3, Ocean ocean, DBody body) {
+    public TriangleData(Vector3f p1, Vector3f p2, Vector3f p3, Ocean ocean, DGeom geom) {
         this.p1 = new Vector3f(p1);
         this.p2 = new Vector3f(p2);
         this.p3 = new Vector3f(p3);
@@ -43,18 +44,18 @@ public class TriangleData {
 
         Vector3f t1 = new Vector3f();
         Vector3f t2 = new Vector3f();
-        normal = new Vector3f();
         p2.sub(p1, t1);
         p3.sub(p1, t2);
-        t1.cross(t2, normal);
+        normal = new Vector3f(t1);
+        normal.cross(t2);
         normal.normalize();
 
         float a = p1.distance(p2);
         float c = p3.distance(p1);
 
-        area = (a * c * (float) Math.sin(t1.angle(t2) * Math.PI / 180)) / 2f;
+        area = (a * c * (float) Math.sin(t1.angle(t2))) / 2f;
 
-        velocity = PhysicsMath.triangleVelocity(body, center);
+        velocity = PhysicsMath.triangleVelocity(geom, center);
         velocityDir = new Vector3f(velocity);
         velocityDir.normalize();
 

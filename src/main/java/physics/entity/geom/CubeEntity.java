@@ -32,7 +32,7 @@ public class CubeEntity extends Entity {
     private void init() {
         DMass mass = OdeHelper.createMass();
         //900 kg/m^3 = 0.9 g/cm^3
-        float weight = 200 * scale.x * scale.y * scale.z;
+        float weight = 900*2*2*2;
 
         DTriMeshData meshData = OdeHelper.createTriMeshData();
         meshData.build(model.getVertices(), model.getIndices());
