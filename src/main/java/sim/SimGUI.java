@@ -3,6 +3,7 @@ package sim;
 import ams.agent.Agent;
 import ams.agent.CubeAgent;
 import ams.agent.USVAgent;
+import conf.Constant;
 import environment.Ocean;
 import conf.Config;
 import ams.AgentManager;
@@ -36,8 +37,6 @@ import static conf.Constant.BOAT_OBJ_NAME;
 import static conf.Constant.RESOURCES_MODELS_DIR;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.GL_FILL;
 
 /**
  * @Author Gq
@@ -78,6 +77,9 @@ public class SimGUI implements GameLogic {
         physicsEngine = new PhysicsEngine();
     }
 
+    USVAgent boatAgent;
+    float enginePower;
+    float engineAngle;
     @Override
     public void init(Window window){
         camera.setPosition(0,50,0);
@@ -103,12 +105,12 @@ public class SimGUI implements GameLogic {
 //        Agent usvAgent = new USVAgent("usv0");
 //        长5m 宽2m
         String boatId = "boat" + TimeUtil.currentTime();
-        USVAgent boatAgent = new USVAgent(boatId);
+        boatAgent = new USVAgent(boatId);
         Vector3f boatPos = new Vector3f(10, 20, -10);
         Quaternionf boatRot = new Quaternionf();
         Vector3f boatSca = new Vector3f(1,1,1);
         GameObj boat = new BoatObj(boatId, boatPos, boatRot, boatSca, boatModel);
-        Entity boatEntity = new BoatEntity(physicsEngine.getWorld(), physicsEngine.getSpace(),
+        Entity boatEntity = new BoatEntity(ocean, physicsEngine.getWorld(), physicsEngine.getSpace(),
                 boatPos, boatRot, boatSca, boatModel);
         boatAgent.setEntity(boatEntity);
         BuoyHelper boatBuoyHelper = new BuoyHelper(ocean, boatEntity);
@@ -123,12 +125,12 @@ public class SimGUI implements GameLogic {
         GameObj cube = new CubeObj(cubeId, cubePos, cubeRot, cubeSca);
         Entity cubeEntity = new CubeEntity(physicsEngine.getWorld(), physicsEngine.getSpace(),
                 cubePos, cubeRot, cubeSca, cube.getMesh().getModel());
-        CubeAgent cubeAgent = new CubeAgent(cubeId);
-        BuoyHelper cubeBuoyHelper = new BuoyHelper(ocean, cubeEntity);
-        cubeAgent.setBuoyHelper(cubeBuoyHelper);
-        cubeAgent.setEntity(cubeEntity);
-        AgentManager.addAgent(cubeAgent);
-        scene.setGameObj(cube);
+//        CubeAgent cubeAgent = new CubeAgent(cubeId);
+//        BuoyHelper cubeBuoyHelper = new BuoyHelper(ocean, cubeEntity);
+//        cubeAgent.setBuoyHelper(cubeBuoyHelper);
+//        cubeAgent.setEntity(cubeEntity);
+//        AgentManager.addAgent(cubeAgent);
+//        scene.setGameObj(cube);
 
         modifyBoatMesh = boatBuoyHelper.getModifyBoatMesh();
     }
@@ -207,12 +209,32 @@ public class SimGUI implements GameLogic {
             Quaternionf boatRot = new Quaternionf();
             Vector3f boatSca = new Vector3f(1,1,1);
             GameObj boat = new BoatObj(id, boatPos, boatRot, boatSca, boatModel);
-            Entity boatEntity = new BoatEntity(physicsEngine.getWorld(), physicsEngine.getSpace(),
+            Entity boatEntity = new BoatEntity(ocean, physicsEngine.getWorld(), physicsEngine.getSpace(),
                     boatPos, boatRot, boatSca, boatModel);
             boatAgent.setEntity(boatEntity);
             boatAgent.setBuoyHelper(new BuoyHelper(ocean, boatEntity));
             AgentManager.addAgent(boatAgent);
             scene.setGameObj(boat);
+        }
+
+        //控制船
+        if (glfwGetKey(window.getWindowID(), GLFW_KEY_UP) == GLFW_PRESS) {
+            enginePower += Constant.POWER_FACTOR;
+            boatAgent.setEnginePower(enginePower);
+        } else {
+            enginePower = 0;
+        }
+        if (glfwGetKey(window.getWindowID(), GLFW_KEY_LEFT) == GLFW_PRESS) {
+            engineAngle -= Constant.ANGLE_FACTOR;
+            boatAgent.setEngineRotation(engineAngle);
+        } else {
+            engineAngle = 0;
+        }
+        if (glfwGetKey(window.getWindowID(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
+            engineAngle += Constant.ANGLE_FACTOR;
+            boatAgent.setEngineRotation(engineAngle);
+        } else {
+            engineAngle = 0;
         }
     }
 

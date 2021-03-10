@@ -1,6 +1,11 @@
 package ams.agent;
 
+import environment.Ocean;
 import physics.buoy.BuoyHelper;
+import physics.entity.usv.BoatEntity;
+
+import static conf.Constant.*;
+import static conf.Constant.MAX_ANGLE;
 
 /**
  * @Author Gq
@@ -23,5 +28,13 @@ public class USVAgent extends Agent{
 
     public void setBuoyHelper(BuoyHelper buoyHelper) {
         this.buoyHelper = buoyHelper;
+    }
+
+    public void setEnginePower(float power) {
+        ((BoatEntity)entity).getEngine().setEnginePower(power);
+    }
+
+    public void setEngineRotation(float angle) {
+        ((BoatEntity)entity).getEngine().setEngineRotation(angle);
     }
 }

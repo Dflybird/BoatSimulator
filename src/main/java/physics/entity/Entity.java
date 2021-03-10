@@ -22,28 +22,29 @@ import static util.StructTransform.*;
  **/
 public abstract class Entity {
 
-    protected Vector3f translation;
+    protected final Vector3f translation;
     /*朝向 可以转换为纯四元数v=(0,x,y,z) 实部为0*/
-    protected Quaternionf orientation;
+    protected final Vector3f forward;
     /*旋转 四元数*/
-    protected Quaternionf rotation;
-    protected Vector3f scale;
+    protected final Quaternionf rotation;
+    protected final Vector3f scale;
 
-    protected DWorld world;
-    protected DSpace space;
+    protected final DWorld world;
+    protected final DSpace space;
 
     protected DBody body;
     protected DGeom geom;
 
     protected final Model model;
 
-    public Entity(DWorld world, DSpace space, Vector3f translation, Quaternionf rotation, Vector3f scale, Model model) {
+    public Entity(DWorld world, DSpace space, Vector3f translation, Vector3f forward, Quaternionf rotation, Vector3f scale, Model model) {
         this.world = world;
         this.space = space;
         this.model = model;
         this.translation = new Vector3f(translation);
         this.rotation = new Quaternionf(rotation);
         this.scale = new Vector3f(scale);
+        this.forward = new Vector3f(forward);
     }
 
     public void updateState() {
@@ -58,10 +59,13 @@ public abstract class Entity {
         transformToQuaternionf(quaternion, rotation);
     }
 
-//    protected abstract void update();
 
     public Vector3f getTranslation() {
         return translation;
+    }
+
+    public Vector3f getForward() {
+        return forward;
     }
 
     public Quaternionf getRotation() {

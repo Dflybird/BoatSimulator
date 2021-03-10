@@ -118,7 +118,9 @@ public class BuoyHelper {
     private void calcSlammingVelocities(SlammingForceData[] slammingForceData) {
         for (SlammingForceData data : slammingForceData) {
             data.setPreviousVelocity(data.getVelocity());
-            data.setVelocity(PhysicsMath.triangleVelocity(geom, data.getTriangleCenter()));
+            Vector3f center = data.getTriangleCenter();
+            data.setVelocity(PhysicsMath.triangleVelocity(geom,
+                    modifyBoatMesh.getTransform().transformPoint(center.x, center.y, center.z)));
         }
     }
 }

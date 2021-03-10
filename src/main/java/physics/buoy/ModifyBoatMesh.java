@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static util.PhysicsMath.triangleArea;
+import static util.PhysicsMath.triangleCenter;
 
 /**
  * @Author Gq
@@ -186,7 +187,6 @@ public class ModifyBoatMesh {
                 aboveSurfaceTriangleData.add(triangleData);
 
                 slammingForceData[triangleCounter].setSubmergeArea(0f);
-                slammingForceData[triangleCounter].setTriangleCenter(triangleData.getCenter());
                 continue;
             }
 
@@ -201,7 +201,6 @@ public class ModifyBoatMesh {
                 underSurfaceTriangleData.add(triangleData);
 
                 slammingForceData[triangleCounter].setSubmergeArea(slammingForceData[triangleCounter].getOriginalArea());
-                slammingForceData[triangleCounter].setTriangleCenter(triangleData.getCenter());
 
                 indexOfOriginalTriangle.add(triangleCounter);
                 continue;
@@ -279,12 +278,12 @@ public class ModifyBoatMesh {
         //计算水下面积
         float submergeArea = triangleData1.getArea() + triangleData2.getArea();
         slammingForceData[triangleCounter].setSubmergeArea(submergeArea);
-        Vector3f center = new Vector3f();
-        center.add(triangleData1.getCenter()).add(triangleData2.getCenter()).div(2);
-        slammingForceData[triangleCounter].setTriangleCenter(center);
+
         //两个水下三角形都对应同一个原始的三角形
         indexOfOriginalTriangle.add(triangleCounter);
         indexOfOriginalTriangle.add(triangleCounter);
+
+
     }
 
     private void addTrianglesTwoAboveSurface(VertexData[] vertexData, int triangleCounter){
@@ -339,7 +338,6 @@ public class ModifyBoatMesh {
         aboveSurfaceTriangleData.add(new TriangleData(J_M, H, M, ocean, geom));
 
         slammingForceData[triangleCounter].setSubmergeArea(triangleData.getArea());
-        slammingForceData[triangleCounter].setTriangleCenter(triangleData.getCenter());
         indexOfOriginalTriangle.add(triangleCounter);
     }
 
@@ -366,10 +364,13 @@ public class ModifyBoatMesh {
 
             slammingForceData[count].setOriginalArea(triangleArea);
 
+            Vector3f center = triangleCenter(p1, p2, p3);
+
+            slammingForceData[count].setTriangleCenter(center);
+
             totalArea += triangleArea;
 
             count++;
-
         }
     }
 

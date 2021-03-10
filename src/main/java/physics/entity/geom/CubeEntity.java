@@ -24,7 +24,7 @@ public class CubeEntity extends Entity {
     private final Logger logger = LoggerFactory.getLogger(CubeEntity.class);
 
     public CubeEntity(DWorld world, DSpace space, Vector3f translation, Quaternionf rotation, Vector3f scale, Model model) {
-        super(world, space, translation, rotation, scale, model);
+        super(world, space, translation, new Vector3f(1,0,0), rotation, scale, model);
 
         init();
     }

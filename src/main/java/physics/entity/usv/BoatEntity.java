@@ -1,5 +1,6 @@
 package physics.entity.usv;
 
+import environment.Ocean;
 import gui.obj.Model;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -20,16 +21,20 @@ import static util.StructTransform.transformFromVector3f;
 public class BoatEntity extends Entity {
     private final Logger logger = LoggerFactory.getLogger(BoatEntity.class);
 
-    public BoatEntity(DWorld world, DSpace space, Vector3f translation, Quaternionf rotation, Vector3f scale, Model model) {
-        super(world, space, translation, rotation, scale, model);
+    private Ocean ocean;
+    private BoatEngine engine;
 
+    //船头方向就是船的朝向，指向x轴正方向
+    public BoatEntity(Ocean ocean, DWorld world, DSpace space, Vector3f translation, Quaternionf rotation, Vector3f scale, Model model) {
+        super(world, space, translation, new Vector3f(1,0,0) , rotation, scale, model);
+        this.ocean = ocean;
         init();
     }
 
     private void init() {
         DMass mass = OdeHelper.createMass();
         //重量，单位kg
-        float weight = 2000f * scale.x * scale.y * scale.z;
+        float weight = 3000f * scale.x * scale.y * scale.z;
 
         DTriMeshData meshData = OdeHelper.createTriMeshData();
         meshData.build(model.getVertices(), model.getIndices());
@@ -42,6 +47,19 @@ public class BoatEntity extends Entity {
         body.setPosition(transformFromVector3f(translation));
         body.setMass(mass);
         geom.setBody(body);
+
+        engine = new BoatEngine(ocean, body, new Vector3f(-2f, -1f, 0f));
     }
 
+    @Override
+    public void updateState() {
+        super.updateState();
+
+        engine.updateEngine(translation, forward, rotation);
+//        body.addForceAtPos(new DVector3(1000,0,0),body.getPosition());
+    }
+
+    public BoatEngine getEngine() {
+        return engine;
+    }
 }

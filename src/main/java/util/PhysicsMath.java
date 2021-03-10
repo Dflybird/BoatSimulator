@@ -47,6 +47,14 @@ public class PhysicsMath {
         return (a * c * (float) Math.sin(t1.angle(t2))) / 2f;
     }
 
+    //通过三角形三个顶点坐标计算三角形面积
+    public static Vector3f triangleCenter(Vector3f p1, Vector3f p2, Vector3f p3) {
+        Vector3f center = new Vector3f();
+        center.add(p1).add(p2).add(p3).div(3);
+
+        return center;
+    }
+
     //计算浮力
     public static Vector3f buoyancyForce(float rho, TriangleData data) {
         // F_buoyancy = rho * g * V
@@ -76,8 +84,7 @@ public class PhysicsMath {
         float nu = 0.000001f;
 
         float Rn = (velocity * length) / nu;
-        logger.debug("length {}", length);
-        return 0.075f / (float) (Math.pow(Math.log10(Rn) - 2, 2));
+        return 0.075f / (float) (Math.pow((Math.log10(Rn) - 2), 2));
     }
 
     //水面粘性阻力
@@ -87,7 +94,6 @@ public class PhysicsMath {
         // v - speed
         // S - surface area
         // Cf - 摩擦阻力系数
-//        logger.debug("cf {}", Cf);
         Vector3f B = new Vector3f(data.getNormal());
         Vector3f A = new Vector3f(data.getVelocity());
 
