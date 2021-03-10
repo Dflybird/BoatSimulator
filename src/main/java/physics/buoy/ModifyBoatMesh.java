@@ -6,7 +6,6 @@ import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.ode4j.ode.DBody;
 import org.ode4j.ode.DGeom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

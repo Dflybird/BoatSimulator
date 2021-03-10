@@ -49,4 +49,20 @@ public class Constant {
     //空气阻力系数，与物体材质和表面粗糙度有关，这里取0.4~0.6
     public static final float C_AIR = 0.4f;
 
+    /** 无人船控制相关参数 */
+    private float powerFactor;
+    private float angleFactor;
+    private float maxPower;
+    private float minPower;
+    private float maxTurnAngle;
+    //无人船提速增加的驱动力，单位N
+    public static final float POWER_FACTOR = 2f;
+    //无人船每次转舵增加的角度，单位度
+    public static final float ANGLE_FACTOR = 2f;
+    //无人船最大驱动力
+    public static final float MAX_POWER = 50;
+    //无人船最大转舵角度
+    public static final float MAX_ANGLE = 30;
+    //无人船最大行驶速度,单位m/s
+    public static final float MAX_SPEED = 100f/6f;
 }

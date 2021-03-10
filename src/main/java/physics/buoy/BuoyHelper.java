@@ -2,8 +2,6 @@ package physics.buoy;
 
 import environment.Ocean;
 import org.joml.Vector3f;
-import org.ode4j.math.DVector3;
-import org.ode4j.math.DVector3C;
 import org.ode4j.ode.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
