@@ -1,6 +1,7 @@
 package ams;
 
 import ams.agent.Agent;
+import ams.msg.AgentMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import state.SimState;
@@ -17,25 +18,25 @@ public class AgentManager {
 
     private final Logger logger = LoggerFactory.getLogger(AgentManager.class);
 
-    private static AgentManager instance = new AgentManager();
+    private static final AgentManager instance = new AgentManager();
     private static final Integer processNum = Runtime.getRuntime().availableProcessors();
     private static final ExecutorService threadPool = Executors.newFixedThreadPool(processNum * 2);
 
     private CountDownLatch countDownLatch;
-    private ConcurrentHashMap<String, Agent> agentMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Agent> agentMap = new ConcurrentHashMap<>();
 
-    private ConcurrentLinkedQueue<Agent> agentInsertEven = new ConcurrentLinkedQueue<>();
-    private ConcurrentLinkedQueue<String> agentRemoveEven = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<Agent> agentInsertEven = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<String> agentRemoveEven = new ConcurrentLinkedQueue<>();
 
     private static SimState simState = new SimState();
-    private static final List<StateUpdateListener> listeners = new ArrayList<>();
+    private final List<StateUpdateListener> listeners = new ArrayList<>();
 
-    private static double stepTime = 0;
+    private double stepTime = 0;
 
     private AgentManager(){}
 
     public void update(double stepTime) {
-        AgentManager.stepTime = stepTime;
+        instance.stepTime = stepTime;
         while (!agentRemoveEven.isEmpty()) {
             agentMap.remove(agentRemoveEven.poll());
         }
@@ -79,11 +80,22 @@ public class AgentManager {
     }
 
     public static void registerSimStateListener(StateUpdateListener listener) {
-        listeners.add(listener);
+        instance.listeners.add(listener);
         listener.stateInit(simState);
     }
 
+    public static Agent getAgent(String agentID) {
+        return instance.agentMap.get(agentID);
+    }
+
+    public static void sendAgentMessage(String agentID, AgentMessage message) {
+        Agent targetAgent = instance.agentMap.get(agentID);
+        if (targetAgent != null) {
+            targetAgent.putMessage(message);
+        }
+    }
+
     public static double getStepTime() {
-        return stepTime;
+        return instance.stepTime;
     }
 }

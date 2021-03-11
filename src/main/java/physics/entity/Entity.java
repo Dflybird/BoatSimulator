@@ -47,7 +47,7 @@ public abstract class Entity {
         this.forward = new Vector3f(forward);
     }
 
-    public void updateState() {
+    public void updateState(double stepTime) {
         if (geom == null) {
             return;
         }

@@ -1,5 +1,6 @@
 package physics.entity.geom;
 
+import environment.Ocean;
 import gui.obj.Model;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -10,6 +11,7 @@ import org.ode4j.math.DVector3C;
 import org.ode4j.ode.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import physics.buoy.BuoyHelper;
 import physics.entity.Entity;
 
 import static util.StructTransform.*;
@@ -23,9 +25,12 @@ import static util.StructTransform.transformFromVector3f;
 public class CubeEntity extends Entity {
     private final Logger logger = LoggerFactory.getLogger(CubeEntity.class);
 
-    public CubeEntity(DWorld world, DSpace space, Vector3f translation, Quaternionf rotation, Vector3f scale, Model model) {
-        super(world, space, translation, new Vector3f(1,0,0), rotation, scale, model);
+    private Ocean ocean;
+    private BuoyHelper buoyHelper;
 
+    public CubeEntity(Ocean ocean, DWorld world, DSpace space, Vector3f translation, Quaternionf rotation, Vector3f scale, Model model) {
+        super(world, space, translation, new Vector3f(1,0,0), rotation, scale, model);
+        this.ocean = ocean;
         init();
     }
 
@@ -56,6 +61,22 @@ public class CubeEntity extends Entity {
     }
 
     @Override
-    public void updateState() {
+    public void updateState(double stepTime) {
+        super.updateState(stepTime);
+        if (buoyHelper != null) {
+            try {
+                buoyHelper.handleBuoyancy((float) stepTime);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void createBuoyHelper() {
+        this.buoyHelper = new BuoyHelper(ocean, this);
+    }
+
+    public BuoyHelper getBuoyHelper() {
+        return buoyHelper;
     }
 }

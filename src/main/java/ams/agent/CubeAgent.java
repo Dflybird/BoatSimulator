@@ -14,20 +14,13 @@ public class CubeAgent extends Agent {
 
     private static final Logger logger = LoggerFactory.getLogger(CubeAgent.class);
 
-    private BuoyHelper buoyHelper;
     public CubeAgent(String agentID) {
         super(agentID);
     }
 
     @Override
     protected void update(double stepTime) throws Exception {
-        entity.updateState();
-        if (buoyHelper != null) {
-            buoyHelper.handleBuoyancy((float) stepTime);
-        }
+        entity.updateState(stepTime);
     }
 
-    public void setBuoyHelper(BuoyHelper buoyHelper) {
-        this.buoyHelper = buoyHelper;
-    }
 }

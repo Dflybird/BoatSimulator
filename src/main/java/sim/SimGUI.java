@@ -3,6 +3,7 @@ package sim;
 import ams.agent.Agent;
 import ams.agent.CubeAgent;
 import ams.agent.USVAgent;
+import ams.msg.SteerMessage;
 import conf.Constant;
 import environment.Ocean;
 import conf.Config;
@@ -76,7 +77,6 @@ public class SimGUI implements GameLogic {
         physicsEngine = new PhysicsEngine();
     }
 
-    USVAgent boatAgent;
     float enginePower;
     float engineAngle;
     @Override
@@ -103,35 +103,33 @@ public class SimGUI implements GameLogic {
         //初始化Agent
 //        Agent usvAgent = new USVAgent("usv0");
 //        长5m 宽2m
-        String boatId = "boat" + TimeUtil.currentTime();
-        boatAgent = new USVAgent(boatId);
+        String boatId = "boat";
+        USVAgent boatAgent = new USVAgent(boatId);
         Vector3f boatPos = new Vector3f(10, 20, -10);
         Quaternionf boatRot = new Quaternionf();
         Vector3f boatSca = new Vector3f(1,1,1);
         GameObj boat = new BoatObj(boatId, boatPos, boatRot, boatSca, boatModel);
-        Entity boatEntity = new BoatEntity(ocean, physicsEngine.getWorld(), physicsEngine.getSpace(),
+        BoatEntity boatEntity = new BoatEntity(ocean, physicsEngine.getWorld(), physicsEngine.getSpace(),
                 boatPos, boatRot, boatSca, boatModel);
+        boatEntity.createBuoyHelper();
         boatAgent.setEntity(boatEntity);
-        BuoyHelper boatBuoyHelper = new BuoyHelper(ocean, boatEntity);
-        boatAgent.setBuoyHelper(boatBuoyHelper);
         AgentManager.addAgent(boatAgent);
         scene.setGameObj(boat);
 
-        String cubeId = "cube" + TimeUtil.currentTime();
+        String cubeId = "cube";
         Vector3f cubePos = new Vector3f(10, 20, 10);
         Quaternionf cubeRot = new Quaternionf();
         Vector3f cubeSca = new Vector3f(1,1,1);
         GameObj cube = new CubeObj(cubeId, cubePos, cubeRot, cubeSca);
-        Entity cubeEntity = new CubeEntity(physicsEngine.getWorld(), physicsEngine.getSpace(),
+        CubeEntity cubeEntity = new CubeEntity(ocean, physicsEngine.getWorld(), physicsEngine.getSpace(),
                 cubePos, cubeRot, cubeSca, cube.getMesh().getModel());
         CubeAgent cubeAgent = new CubeAgent(cubeId);
-        BuoyHelper cubeBuoyHelper = new BuoyHelper(ocean, cubeEntity);
-        cubeAgent.setBuoyHelper(cubeBuoyHelper);
+        cubeEntity.createBuoyHelper();
         cubeAgent.setEntity(cubeEntity);
         AgentManager.addAgent(cubeAgent);
         scene.setGameObj(cube);
 
-        modifyBoatMesh = boatBuoyHelper.getModifyBoatMesh();
+        modifyBoatMesh = boatEntity.getBuoyHelper().getModifyBoatMesh();
     }
     ModifyBoatMesh modifyBoatMesh;
 
@@ -190,10 +188,10 @@ public class SimGUI implements GameLogic {
             Quaternionf cubeRot = new Quaternionf();
             Vector3f cubeSca = new Vector3f(1,1,1);
             GameObj cube = new CubeObj(id, cubePos, cubeRot, cubeSca);
-            Entity cubeEntity = new CubeEntity(physicsEngine.getWorld(), physicsEngine.getSpace(),
+            CubeEntity cubeEntity = new CubeEntity(ocean, physicsEngine.getWorld(), physicsEngine.getSpace(),
                     cubePos, cubeRot, cubeSca, cube.getMesh().getModel());
+            cubeEntity.createBuoyHelper();
             cubeAgent.setEntity(cubeEntity);
-            cubeAgent.setBuoyHelper(new BuoyHelper(ocean, cubeEntity));
             AgentManager.addAgent(cubeAgent);
             scene.setGameObj(cube);
         }
@@ -208,10 +206,10 @@ public class SimGUI implements GameLogic {
             Quaternionf boatRot = new Quaternionf();
             Vector3f boatSca = new Vector3f(1,1,1);
             GameObj boat = new BoatObj(id, boatPos, boatRot, boatSca, boatModel);
-            Entity boatEntity = new BoatEntity(ocean, physicsEngine.getWorld(), physicsEngine.getSpace(),
+            BoatEntity boatEntity = new BoatEntity(ocean, physicsEngine.getWorld(), physicsEngine.getSpace(),
                     boatPos, boatRot, boatSca, boatModel);
+            boatEntity.createBuoyHelper();
             boatAgent.setEntity(boatEntity);
-            boatAgent.setBuoyHelper(new BuoyHelper(ocean, boatEntity));
             AgentManager.addAgent(boatAgent);
             scene.setGameObj(boat);
         }
@@ -240,8 +238,8 @@ public class SimGUI implements GameLogic {
             engineAngle = 0;
         }
 
-        boatAgent.setEnginePower(enginePower);
-        boatAgent.setEngineRotation(engineAngle);
+        SteerMessage steerMessage = new SteerMessage(enginePower, engineAngle);
+        AgentManager.sendAgentMessage("boat", steerMessage);
     }
 
     @Override

@@ -9,6 +9,7 @@ import org.ode4j.math.DVector3C;
 import org.ode4j.ode.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import physics.buoy.BuoyHelper;
 import physics.entity.Entity;
 
 import static util.StructTransform.transformFromVector3f;
@@ -22,6 +23,7 @@ public class BoatEntity extends Entity {
     private final Logger logger = LoggerFactory.getLogger(BoatEntity.class);
 
     private Ocean ocean;
+    private BuoyHelper buoyHelper;
     private BoatEngine engine;
 
     //船头方向就是船的朝向，指向x轴正方向
@@ -52,14 +54,30 @@ public class BoatEntity extends Entity {
     }
 
     @Override
-    public void updateState() {
-        super.updateState();
+    public void updateState(double stepTime) {
+        super.updateState(stepTime);
+
+        if (buoyHelper != null) {
+            try {
+                buoyHelper.handleBuoyancy((float) stepTime);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
         engine.updateEngine(translation, forward, rotation);
-//        body.addForceAtPos(new DVector3(1000,0,0),body.getPosition());
     }
 
     public BoatEngine getEngine() {
         return engine;
+    }
+
+
+    public void createBuoyHelper() {
+        this.buoyHelper = new BuoyHelper(ocean, this);
+    }
+
+    public BuoyHelper getBuoyHelper() {
+        return buoyHelper;
     }
 }
