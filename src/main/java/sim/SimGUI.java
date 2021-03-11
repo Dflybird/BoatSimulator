@@ -17,9 +17,7 @@ import gui.obj.GameObj;
 import gui.obj.Model;
 import gui.obj.geom.CubeObj;
 import gui.obj.usv.BoatObj;
-import org.joml.Quaternionf;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
+import org.joml.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import physics.buoy.BuoyHelper;
@@ -32,9 +30,10 @@ import state.GUIState;
 import util.TimeUtil;
 
 import java.io.File;
+import java.lang.Math;
 
-import static conf.Constant.BOAT_OBJ_NAME;
-import static conf.Constant.RESOURCES_MODELS_DIR;
+import static conf.Constant.*;
+import static conf.Constant.MAX_ANGLE;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 
@@ -125,12 +124,12 @@ public class SimGUI implements GameLogic {
         GameObj cube = new CubeObj(cubeId, cubePos, cubeRot, cubeSca);
         Entity cubeEntity = new CubeEntity(physicsEngine.getWorld(), physicsEngine.getSpace(),
                 cubePos, cubeRot, cubeSca, cube.getMesh().getModel());
-//        CubeAgent cubeAgent = new CubeAgent(cubeId);
-//        BuoyHelper cubeBuoyHelper = new BuoyHelper(ocean, cubeEntity);
-//        cubeAgent.setBuoyHelper(cubeBuoyHelper);
-//        cubeAgent.setEntity(cubeEntity);
-//        AgentManager.addAgent(cubeAgent);
-//        scene.setGameObj(cube);
+        CubeAgent cubeAgent = new CubeAgent(cubeId);
+        BuoyHelper cubeBuoyHelper = new BuoyHelper(ocean, cubeEntity);
+        cubeAgent.setBuoyHelper(cubeBuoyHelper);
+        cubeAgent.setEntity(cubeEntity);
+        AgentManager.addAgent(cubeAgent);
+        scene.setGameObj(cube);
 
         modifyBoatMesh = boatBuoyHelper.getModifyBoatMesh();
     }
@@ -219,23 +218,30 @@ public class SimGUI implements GameLogic {
 
         //控制船
         if (glfwGetKey(window.getWindowID(), GLFW_KEY_UP) == GLFW_PRESS) {
-            enginePower += Constant.POWER_FACTOR;
+            if (enginePower <= MAX_POWER) {
+                enginePower += POWER_FACTOR;
+            } else {
+                enginePower = MAX_POWER;
+            }
         } else {
             enginePower = 0;
         }
-        boatAgent.setEnginePower(enginePower);
         if (glfwGetKey(window.getWindowID(), GLFW_KEY_LEFT) == GLFW_PRESS) {
-            engineAngle -= Constant.ANGLE_FACTOR;
-            boatAgent.setEngineRotation(engineAngle);
+            engineAngle -= ANGLE_FACTOR;
+            if (engineAngle < -MAX_ANGLE) {
+                engineAngle = -MAX_ANGLE;
+            }
+        } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
+            engineAngle += ANGLE_FACTOR;
+            if (engineAngle > MAX_ANGLE) {
+                engineAngle = MAX_ANGLE;
+            }
         } else {
             engineAngle = 0;
         }
-        if (glfwGetKey(window.getWindowID(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
-            engineAngle += Constant.ANGLE_FACTOR;
-            boatAgent.setEngineRotation(engineAngle);
-        } else {
-            engineAngle = 0;
-        }
+
+        boatAgent.setEnginePower(enginePower);
+        boatAgent.setEngineRotation(engineAngle);
     }
 
     @Override

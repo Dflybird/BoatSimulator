@@ -139,7 +139,6 @@ public class PhysicsMath {
             //三角面与运动方向相反，计算流体逆向吸力
             pressureDragForce.mul((C_SD1 * velocity + C_SD2 * (velocity * velocity)) * data.getArea() * (float) Math.pow(Math.abs(data.getCosTheta()), f_S));
         }
-//        logger.debug("p_f {} | {} | {}", pressureDragForce.x, pressureDragForce.y, pressureDragForce.z);
         return checkForceIsValid(pressureDragForce, "Pressure drag");
     }
 

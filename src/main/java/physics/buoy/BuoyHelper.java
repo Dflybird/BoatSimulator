@@ -39,21 +39,9 @@ public class BuoyHelper {
             addUnderWaterForce(stepTime);
         }
 
-//        if (modifyBoatMesh.getAboveSurfaceTriangleData().size() > 0) {
-//            addAboveWaterForce();
-//        }
-
-//        if (geom instanceof DBox) {
-//            processBuoys(geom, generateBuoys(3, (DBox) geom), getVolume((DBox) geom), getArea((DBox) geom),world);
-//        } else if (geom instanceof DSphere) {
-//            processBuoys(geom, generateBuoys((DSphere) geom), getVolume((DSphere) geom),getArea((DSphere) geom),world);
-//        } else if (geom instanceof DCapsule) {
-//            processBuoys(geom, generateBuoys(2, (DCapsule) geom), getVolume((DCapsule) geom), getArea((DCapsule) geom),world);
-//        } else if (geom instanceof DCylinder) {
-//            processBuoys(geom, generateBuoys(5, (DCylinder) geom), getVolume((DCylinder) geom), getArea((DCylinder) geom),world);
-//        }else if (geom instanceof DTriMesh) {
-//            processBuoys(geom, generateBuoys(5, (DCylinder) geom),getVolume((DCylinder) geom), getArea((DCylinder) geom),world);
-//        }
+        if (modifyBoatMesh.getAboveSurfaceTriangleData().size() > 0) {
+            addAboveWaterForce();
+        }
     }
 
     public ModifyBoatMesh getModifyBoatMesh() {
@@ -88,15 +76,9 @@ public class BuoyHelper {
             SlammingForceData slammingData = slammingForceData[originalTriangleIndex];
             Vector3f force = new Vector3f();
             Vector3f buoyancyForce = buoyancyForce(RHO_OCEAN_WATER, triangleData);
-            logger.debug("bF {}", buoyancyForce.length());
             Vector3f viscousWaterResistanceForce = viscousWaterResistanceForce(RHO_OCEAN_WATER, triangleData, Cf);
-            logger.debug("vF {}", viscousWaterResistanceForce.length());
             Vector3f pressureDragForce = pressureDragForce(triangleData);
-            logger.debug("pF {}", pressureDragForce.length());
             Vector3f slammingForce = slammingForce(slammingData, triangleData, boatArea, boatMass, stepTime);
-            logger.debug("sF {}", slammingForce.length());
-            logger.debug("tV {}", triangleData.getVelocity().length());
-            logger.debug("bV {}", body.getLinearVel().length());
             force.add(buoyancyForce);
             force.add(viscousWaterResistanceForce);
             force.add(pressureDragForce);

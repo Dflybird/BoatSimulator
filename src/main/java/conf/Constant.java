@@ -57,12 +57,12 @@ public class Constant {
     private float maxTurnAngle;
     //无人船提速增加的驱动力，单位N
     public static final float POWER_FACTOR = 500f;
-    //无人船每次转舵增加的角度，单位度
-    public static final float ANGLE_FACTOR = 2f;
+    //无人船每次转舵增加的角度，单位弧度
+    public static final float ANGLE_FACTOR = (float) (Math.PI/ 90);
     //无人船最大驱动力
-    public static final float MAX_POWER = 10000;
+    public static final float MAX_POWER = 8000;
     //无人船最大转舵角度
-    public static final float MAX_ANGLE = 30;
+    public static final float MAX_ANGLE = (float) (Math.PI/ 6);
     //无人船最大行驶速度,单位m/s
     public static final float MAX_SPEED = 100f/6f;
 }

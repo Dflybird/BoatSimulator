@@ -2,8 +2,10 @@ package physics.entity.usv;
 
 import conf.Constant;
 import environment.Ocean;
+import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.ode4j.math.DQuaternionC;
 import org.ode4j.math.DVector3;
 import org.ode4j.ode.DBody;
@@ -60,17 +62,30 @@ public class BoatEngine {
     }
 
     public void updateEngine(Vector3f translation, Vector3f forward, Quaternionf rotation){
-        Vector3f newForward = new Vector3f(forward);
-        newForward.rotate(rotation);
-        Vector3f enginePos = new Vector3f(translation);
-        enginePos.add(engineRelativeCoordinate);
+        Vector4f point = new Vector4f();
+        Matrix4f matrix = new Matrix4f();
+        point.x = engineRelativeCoordinate.x;
+        point.y = engineRelativeCoordinate.y;
+        point.z = engineRelativeCoordinate.z;
+        point.w = 1;
+        matrix.identity()
+                .translate(translation)
+                .rotate(rotation);
+        point.mul(matrix);
+        Vector3f enginePos = new Vector3f(point.x,point.y,point.z);
+
         float waterLevel = ocean.getWaveHeight(enginePos.x, enginePos.z);
-        //引擎在水面下
+
         if (translation.y < waterLevel) {
+            //引擎在水面下
             Vector3f force = new Vector3f(forward);
             force.rotateY(currentEngineRotation);
+            force.rotate(rotation);
             force.normalize().mul(currentEnginePower);
             body.addForceAtPos(StructTransform.transformFromVector3f(force),
+                    StructTransform.transformFromVector3f(enginePos));
+        } else {
+            body.addForceAtPos(StructTransform.transformFromVector3f(new Vector3f()),
                     StructTransform.transformFromVector3f(enginePos));
         }
     }

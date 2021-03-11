@@ -48,7 +48,7 @@ public class BoatEntity extends Entity {
         body.setMass(mass);
         geom.setBody(body);
 
-        engine = new BoatEngine(ocean, body, new Vector3f(-2f, -1f, 0f));
+        engine = new BoatEngine(ocean, body, new Vector3f(-2f, -0.5f, 0f));
     }
 
     @Override
