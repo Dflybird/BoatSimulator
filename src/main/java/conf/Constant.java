@@ -31,15 +31,15 @@ public class Constant {
     public static final float RHO_AIR = 1.225f;
 
     /** 浮力计算相关参数 */
-    //参考运动速度
-    public static final float VELOCITY_REFERENCE = 10f;
+    //参考运动速度，高于此速度阻力变得明显，单位m/s
+    public static final float VELOCITY_REFERENCE = 2f;
     //运动方向与流体正向压力系数
-    public static final float C_PD1 = 10f;
-    public static final float C_PD2 = 10f;
+    public static final float C_PD1 = 200f;
+    public static final float C_PD2 = 200f;
     public static final float f_P = 0.5f;
     //运动方向与流体逆向吸力系数
-    public static final float C_SD1 = 10f;
-    public static final float C_SD2 = 10f;
+    public static final float C_SD1 = 200f;
+    public static final float C_SD2 = 200f;
     public static final float f_S = 0.5f;
     //流体撞击力参数
     public static final float P = 2f;
@@ -56,11 +56,11 @@ public class Constant {
     private float minPower;
     private float maxTurnAngle;
     //无人船提速增加的驱动力，单位N
-    public static final float POWER_FACTOR = 200f;
+    public static final float POWER_FACTOR = 500f;
     //无人船每次转舵增加的角度，单位度
     public static final float ANGLE_FACTOR = 2f;
     //无人船最大驱动力
-    public static final float MAX_POWER = 6000;
+    public static final float MAX_POWER = 10000;
     //无人船最大转舵角度
     public static final float MAX_ANGLE = 30;
     //无人船最大行驶速度,单位m/s

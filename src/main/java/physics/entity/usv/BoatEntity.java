@@ -34,7 +34,7 @@ public class BoatEntity extends Entity {
     private void init() {
         DMass mass = OdeHelper.createMass();
         //重量，单位kg
-        float weight = 3000f * scale.x * scale.y * scale.z;
+        float weight = 2000f * scale.x * scale.y * scale.z;
 
         DTriMeshData meshData = OdeHelper.createTriMeshData();
         meshData.build(model.getVertices(), model.getIndices());

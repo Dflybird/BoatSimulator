@@ -220,10 +220,10 @@ public class SimGUI implements GameLogic {
         //控制船
         if (glfwGetKey(window.getWindowID(), GLFW_KEY_UP) == GLFW_PRESS) {
             enginePower += Constant.POWER_FACTOR;
-            boatAgent.setEnginePower(enginePower);
         } else {
             enginePower = 0;
         }
+        boatAgent.setEnginePower(enginePower);
         if (glfwGetKey(window.getWindowID(), GLFW_KEY_LEFT) == GLFW_PRESS) {
             engineAngle -= Constant.ANGLE_FACTOR;
             boatAgent.setEngineRotation(engineAngle);

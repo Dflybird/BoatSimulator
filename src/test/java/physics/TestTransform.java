@@ -48,4 +48,12 @@ public class TestTransform {
         logger.debug("point3 x:{} | y: {} | z: {}", point3.x, point3.y, point3.z);
         logger.debug("point3 x:{} | y: {} | z: {}", point3.x, point3.y, point3.z);
     }
+
+    @Test
+    public void testCast() {
+        double d = 0.00000000000000000000000000000000000000000000000000000000001;
+//        float t = 0.00000000000000000000000000000000000000000000000000000000001f;
+        float f = (float) d;
+        logger.debug("f {}", f);
+    }
 }

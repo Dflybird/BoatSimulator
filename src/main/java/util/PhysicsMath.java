@@ -126,8 +126,8 @@ public class PhysicsMath {
 
         float velocity = data.getVelocity().length();
 
-//        float velocityReference = VELOCITY_REFERENCE;
-        float velocityReference = velocity;
+        float velocityReference = VELOCITY_REFERENCE;
+//        float velocityReference = velocity;
 
         velocity = velocity / velocityReference;
 
