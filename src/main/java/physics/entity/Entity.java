@@ -1,5 +1,6 @@
 package physics.entity;
 
+import environment.Ocean;
 import gui.obj.Model;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -31,13 +32,14 @@ public abstract class Entity {
 
     protected final DWorld world;
     protected final DSpace space;
-
-    protected DBody body;
-    protected DGeom geom;
-
+    protected final Ocean ocean;
     protected final Model model;
 
-    public Entity(DWorld world, DSpace space, Vector3f translation, Vector3f forward, Quaternionf rotation, Vector3f scale, Model model) {
+    protected DBody body;
+    protected  DGeom geom;
+
+    public Entity(Ocean ocean, DWorld world, DSpace space, Vector3f translation, Vector3f forward, Quaternionf rotation, Vector3f scale, Model model) {
+        this.ocean = ocean;
         this.world = world;
         this.space = space;
         this.model = model;
@@ -90,5 +92,9 @@ public abstract class Entity {
 
     public Model getModel() {
         return model;
+    }
+
+    public Ocean getOcean() {
+        return ocean;
     }
 }

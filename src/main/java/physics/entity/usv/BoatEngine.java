@@ -11,6 +11,7 @@ import org.ode4j.math.DVector3;
 import org.ode4j.ode.DBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import physics.entity.Entity;
 import util.StructTransform;
 
 import static conf.Constant.*;
@@ -30,17 +31,17 @@ public class BoatEngine {
     private float currentEngineRotation;
 
     private final Ocean ocean;
-    private final DBody body;
+    private final Entity entity;
     private final Vector3f engineRelativeCoordinate;
 
-    public BoatEngine(Ocean ocean, DBody body, Vector3f engineRelativeCoordinate) {
-        this.ocean = ocean;
-        this.body = body;
+    public BoatEngine(Entity entity, Vector3f engineRelativeCoordinate) {
+        this.ocean = entity.getOcean();
+        this.entity = entity;
         this.engineRelativeCoordinate = engineRelativeCoordinate;
     }
 
     public void setEnginePower(float power) {
-        if (body.getLinearVel().length() <= MAX_SPEED && power <= MAX_POWER) {
+        if (entity.getBody().getLinearVel().length() <= MAX_SPEED && power <= MAX_POWER) {
             currentEnginePower = power;
         }
     }
@@ -61,7 +62,11 @@ public class BoatEngine {
         currentEngineRotation = angle;
     }
 
-    public void updateEngine(Vector3f translation, Vector3f forward, Quaternionf rotation){
+    public void updateEngine(){
+        Vector3f translation = entity.getTranslation();
+        Vector3f forward = entity.getForward();
+        Quaternionf rotation = entity.getRotation();
+
         Vector4f point = new Vector4f();
         Matrix4f matrix = new Matrix4f();
         point.x = engineRelativeCoordinate.x;
@@ -82,10 +87,10 @@ public class BoatEngine {
             force.rotateY(currentEngineRotation);
             force.rotate(rotation);
             force.normalize().mul(currentEnginePower);
-            body.addForceAtPos(StructTransform.transformFromVector3f(force),
+            entity.getBody().addForceAtPos(StructTransform.transformFromVector3f(force),
                     StructTransform.transformFromVector3f(enginePos));
         } else {
-            body.addForceAtPos(StructTransform.transformFromVector3f(new Vector3f()),
+            entity.getBody().addForceAtPos(StructTransform.transformFromVector3f(new Vector3f()),
                     StructTransform.transformFromVector3f(enginePos));
         }
     }

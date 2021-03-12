@@ -28,6 +28,11 @@ public abstract class Agent implements Runnable {
         this.agentID = agentID;
     }
 
+    public Agent(String agentID, Entity entity) {
+        this.agentID = agentID;
+        this.entity =entity;
+    }
+
     @Override
     public void run() {
         try {

@@ -4,6 +4,7 @@ import ams.agent.Agent;
 import ams.msg.AgentMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import physics.PhysicsEngine;
 import state.SimState;
 
 import java.util.ArrayList;
@@ -23,12 +24,13 @@ public class AgentManager {
     private static final ExecutorService threadPool = Executors.newFixedThreadPool(processNum * 2);
 
     private CountDownLatch countDownLatch;
-    private final ConcurrentHashMap<String, Agent> agentMap = new ConcurrentHashMap<>();
+    private PhysicsEngine physicsEngine;
+    private static SimState simState = new SimState();
 
+    private final ConcurrentHashMap<String, Agent> agentMap = new ConcurrentHashMap<>();
     private final ConcurrentLinkedQueue<Agent> agentInsertEven = new ConcurrentLinkedQueue<>();
     private final ConcurrentLinkedQueue<String> agentRemoveEven = new ConcurrentLinkedQueue<>();
 
-    private static SimState simState = new SimState();
     private final List<StateUpdateListener> listeners = new ArrayList<>();
 
     private double stepTime = 0;
@@ -44,7 +46,6 @@ public class AgentManager {
             Agent agent = agentInsertEven.poll();
             agentMap.put(agent.getAgentID(), agent);
         }
-        //TODO 网络ACC
 
         instance.countDownLatch = new CountDownLatch(agentMap.size());
         instance.agentMap.values().forEach(threadPool::submit);
@@ -53,8 +54,10 @@ public class AgentManager {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        //TODO 物理引擎
 
+        if (physicsEngine != null) {
+            physicsEngine.update(stepTime);
+        }
 
         //收集所有Agent状态
         simState = new SimState();
@@ -97,5 +100,9 @@ public class AgentManager {
 
     public static double getStepTime() {
         return instance.stepTime;
+    }
+
+    public static void setPhysicsEngine(PhysicsEngine physicsEngine) {
+        instance.physicsEngine = physicsEngine;
     }
 }

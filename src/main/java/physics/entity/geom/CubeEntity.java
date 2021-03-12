@@ -25,12 +25,10 @@ import static util.StructTransform.transformFromVector3f;
 public class CubeEntity extends Entity {
     private final Logger logger = LoggerFactory.getLogger(CubeEntity.class);
 
-    private Ocean ocean;
     private BuoyHelper buoyHelper;
 
     public CubeEntity(Ocean ocean, DWorld world, DSpace space, Vector3f translation, Quaternionf rotation, Vector3f scale, Model model) {
-        super(world, space, translation, new Vector3f(1,0,0), rotation, scale, model);
-        this.ocean = ocean;
+        super(ocean, world, space, translation, new Vector3f(1,0,0), rotation, scale, model);
         init();
     }
 

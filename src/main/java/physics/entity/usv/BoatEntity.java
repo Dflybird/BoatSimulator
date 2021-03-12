@@ -22,14 +22,11 @@ import static util.StructTransform.transformFromVector3f;
 public class BoatEntity extends Entity {
     private final Logger logger = LoggerFactory.getLogger(BoatEntity.class);
 
-    private Ocean ocean;
     private BuoyHelper buoyHelper;
-    private BoatEngine engine;
 
     //船头方向就是船的朝向，指向x轴正方向
     public BoatEntity(Ocean ocean, DWorld world, DSpace space, Vector3f translation, Quaternionf rotation, Vector3f scale, Model model) {
-        super(world, space, translation, new Vector3f(1,0,0) , rotation, scale, model);
-        this.ocean = ocean;
+        super(ocean, world, space, translation, new Vector3f(1,0,0) , rotation, scale, model);
         init();
     }
 
@@ -50,7 +47,6 @@ public class BoatEntity extends Entity {
         body.setMass(mass);
         geom.setBody(body);
 
-        engine = new BoatEngine(ocean, body, new Vector3f(-2f, -0.5f, 0f));
     }
 
     @Override
@@ -65,13 +61,7 @@ public class BoatEntity extends Entity {
             }
         }
 
-        engine.updateEngine(translation, forward, rotation);
     }
-
-    public BoatEngine getEngine() {
-        return engine;
-    }
-
 
     public void createBuoyHelper() {
         this.buoyHelper = new BuoyHelper(ocean, this);
