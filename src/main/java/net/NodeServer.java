@@ -30,16 +30,19 @@ public class NodeServer {
 
     protected Channel channel;
 
-    private GameLogic gameLogic;
+    private final GameLogic gameLogic;
+    private final Config config;
 
     private NioEventLoopGroup bossGroup;
     private NioEventLoopGroup workerGroup;
 
-    public NodeServer() {
+    public NodeServer(GameLogic gameLogic, Config config) {
+        this.gameLogic = gameLogic;
+        this.config = config;
     }
 
     public void start(){
-        //TODO 本机ip port
+        start(config.getLocalNode());
     }
 
     public void start(String ip, int port){
