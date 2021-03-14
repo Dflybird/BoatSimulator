@@ -1,5 +1,8 @@
 package physics.entity.usv;
 
+import ams.AgentManager;
+import ams.agent.Agent;
+import ams.agent.USVAgent;
 import org.joml.Vector3f;
 import physics.entity.Entity;
 
@@ -10,7 +13,7 @@ import physics.entity.Entity;
 public class BoatWeapon {
 
     //武器攻击范围，单位m
-    private static final float RADAR_RANGE = 100;
+    public static final float ATTACK_RANGE = 100;
 
     private final Entity entity;
     private final Vector3f weaponRelativeCoordinate;
@@ -18,5 +21,17 @@ public class BoatWeapon {
     public BoatWeapon(Entity entity, Vector3f weaponRelativeCoordinate) {
         this.entity = entity;
         this.weaponRelativeCoordinate = weaponRelativeCoordinate;
+    }
+
+    public boolean attack(String agentID){
+        Vector3f weaponCoordinate = new Vector3f(entity.getTranslation());
+        weaponCoordinate.add(weaponRelativeCoordinate);
+        Agent target = AgentManager.getAgent(agentID);
+        if (target instanceof USVAgent) {
+            USVAgent usvAgent = (USVAgent)target;
+            return usvAgent.getStatus() == USVAgent.Status.ALIVE &&
+                    weaponCoordinate.distance(usvAgent.getEntity().getTranslation()) <= ATTACK_RANGE;
+        }
+        return false;
     }
 }

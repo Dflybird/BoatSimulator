@@ -91,6 +91,10 @@ public class AgentManager {
         return instance.agentMap.get(agentID);
     }
 
+    public static ConcurrentHashMap<String, Agent> getAgentMap() {
+        return instance.agentMap;
+    }
+
     public static void sendAgentMessage(String agentID, AgentMessage message) {
         Agent targetAgent = instance.agentMap.get(agentID);
         if (targetAgent != null) {

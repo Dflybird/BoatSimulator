@@ -6,7 +6,7 @@ import ams.msg.SteerMessage;
 import org.joml.Vector3f;
 import physics.entity.usv.BoatEngine;
 import physics.entity.usv.BoatEntity;
-import physics.entity.usv.BoatRadar;
+import physics.entity.usv.BoatDetector;
 import physics.entity.usv.BoatWeapon;
 
 
@@ -17,7 +17,7 @@ import physics.entity.usv.BoatWeapon;
  **/
 public class USVAgent extends Agent implements AgentMessageHandler {
 
-    enum Status {
+    public enum Status {
         DEAD(0),
         ALIVE(1);
 
@@ -41,7 +41,7 @@ public class USVAgent extends Agent implements AgentMessageHandler {
     }
 
     private final BoatEngine engine;
-    private final BoatRadar radar;
+    private final BoatDetector detector;
     private final BoatWeapon weapon;
 
     private final Status status;
@@ -50,7 +50,7 @@ public class USVAgent extends Agent implements AgentMessageHandler {
         super(agentID, entity);
 
         engine = new BoatEngine(entity, new Vector3f(-2f, -0.5f, 0f));
-        radar = new BoatRadar(entity, new Vector3f(0f, 0f, 0f));
+        detector = new BoatDetector(entity, new Vector3f(0f, 0f, 0f));
         weapon = new BoatWeapon(entity, new Vector3f(0f, 0f, 0f));
 
         status = Status.ALIVE;
@@ -70,5 +70,9 @@ public class USVAgent extends Agent implements AgentMessageHandler {
             engine.setEnginePower(steerMessage.getPower());
             engine.setEngineRotation(steerMessage.getAngle());
         }
+    }
+
+    public Status getStatus() {
+        return status;
     }
 }
