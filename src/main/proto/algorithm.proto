@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "net";
+option java_outer_classname = "AlgorithmGRPC";
+option objc_class_prefix = "RTG";
+
+package net;
+
+service FirstGRPC {
+  rpc getSceneParameter(Null) re
+
+  rpc getObservation(AgentID) returns (Observation) {}
+
+  rpc step(Action) returns (Reward) {}
+
+  rpc reset(Null) returns (Null) {}
+}
+
+message Vector3 {
+  float x = 1;
+  //纵坐标
+  float y = 2;
+  float z = 3;
+}
+
+message Observation {
+  Vector3 self_pos = 1;
+  //最近敌方坐标
+  Vector3 closest_e_pos = 2;
+  //最近友方坐标
+  Vector3 closest_a_pos = 3;
+  //朝向
+  Vector3 forward = 4;
+  //存活状态 0:死亡 1:存活
+  int32 status = 5;
+}
+
+message Action {
+  //0:停止 1:直行 2:左转30度 3:右转30度
+  int32 action_type = 1;
+}
+
+message AgentID{
+  int32 id = 1;
+  //敌我属性 0:友方 1:敌方
+  int32 type = 2;
+}
+
+message Reward {
+  float reward = 1;
+}
+
+message SceneParameter{
+
+}
+
+message Null {}
+
+
+
+
