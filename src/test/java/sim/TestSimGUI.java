@@ -7,6 +7,7 @@ import ams.msg.SteerMessage;
 import conf.Config;
 import engine.GameEngine;
 import engine.GameLogic;
+import engine.GameStepController;
 import environment.Ocean;
 import gui.*;
 import gui.graphic.light.DirectionalLight;
@@ -49,6 +50,7 @@ public class TestSimGUI implements GameLogic {
     private final Scene scene;
     private final GUIRenderer renderer;
     private final PhysicsEngine physicsEngine;
+    private final GameStepController stepController;
 
     private Ocean ocean;
 
@@ -67,9 +69,10 @@ public class TestSimGUI implements GameLogic {
         camera = new Camera(new Vector3f(0, 0, 4f));
         guiState = new GUIState();
         renderer = new GUIRenderer();
-        ocean = new Ocean(64, 64, 16, 16, new Vector3f());
+        ocean = new Ocean(LENGTH_X, LENGTH_Z, NUM_X, NUM_Z, new Vector3f());
         scene = new Scene();
         physicsEngine = new PhysicsEngine();
+        stepController = new GameStepController(GameStepController.SimType.valueOf(STEP_TYPE), STEP_SIZE);
     }
 
     float enginePower;
@@ -82,50 +85,8 @@ public class TestSimGUI implements GameLogic {
         AgentManager.setPhysicsEngine(physicsEngine);
         AgentManager.registerSimStateListener(guiState);
         renderer.init(window, camera, scene, guiState);
-
-        boatModel = Model.loadObj(new File(RESOURCES_MODELS_DIR, BOAT_OBJ_NAME));
-
-
-        SceneLight sceneLight = new SceneLight();
-        sceneLight.setAmbientLight(new Vector3f(0.3f, 0.3f, 0.3f));
-        PointLight pointLight = new PointLight(new Vector3f(1, 1, 1),
-                new Vector3f(1000,100,-1000), 1);
-//        sceneLight.setPointLightList(new PointLight[]{pointLight});
-        DirectionalLight directionalLight = new DirectionalLight(new Vector3f(1.0f, 0.6f, 0.3f), new Vector3f(1, 0.1f, -1),  1.0f);
-        sceneLight.setDirectionalLight(directionalLight);
-
-        scene.setSceneLight(sceneLight);
-
-        //初始化Agent
-//        Agent usvAgent = new USVAgent("usv0");
-//        长5m 宽2m
-        String boatId = "boat";
-        Vector3f boatPos = new Vector3f(10, 20, -10);
-        Quaternionf boatRot = new Quaternionf();
-        Vector3f boatSca = new Vector3f(1,1,1);
-        GameObj boat = new BoatObj(boatId, boatPos, boatRot, boatSca, boatModel);
-        BoatEntity boatEntity = new BoatEntity(ocean, physicsEngine.getWorld(), physicsEngine.getSpace(),
-                boatPos, boatRot, boatSca, boatModel);
-        boatEntity.createBuoyHelper();
-
-        USVAgent boatAgent = new USVAgent(boatId, boatEntity);
-        AgentManager.addAgent(boatAgent);
-        scene.setGameObj(boat);
-
-        String cubeId = "cube";
-        Vector3f cubePos = new Vector3f(10, 20, 10);
-        Quaternionf cubeRot = new Quaternionf();
-        Vector3f cubeSca = new Vector3f(1,1,1);
-        GameObj cube = new CubeObj(cubeId, cubePos, cubeRot, cubeSca);
-        CubeEntity cubeEntity = new CubeEntity(ocean, physicsEngine.getWorld(), physicsEngine.getSpace(),
-                cubePos, cubeRot, cubeSca, cube.getMesh().getModel());
-        CubeAgent cubeAgent = new CubeAgent(cubeId);
-        cubeEntity.createBuoyHelper();
-        cubeAgent.setEntity(cubeEntity);
-        AgentManager.addAgent(cubeAgent);
-        scene.setGameObj(cube);
-
-        modifyBoatMesh = boatEntity.getBuoyHelper().getModifyBoatMesh();
+        stepController.init();
+        initScene();
     }
     ModifyBoatMesh modifyBoatMesh;
 
@@ -210,39 +171,66 @@ public class TestSimGUI implements GameLogic {
         }
 
         //控制船
+//        if (glfwGetKey(window.getWindowID(), GLFW_KEY_UP) == GLFW_PRESS) {
+//            if (enginePower <= MAX_POWER) {
+//                enginePower += POWER_FACTOR;
+//            } else {
+//                enginePower = MAX_POWER;
+//            }
+//        } else {
+//            enginePower = 0;
+//        }
+//        if (glfwGetKey(window.getWindowID(), GLFW_KEY_LEFT) == GLFW_PRESS) {
+//            engineAngle -= ANGLE_FACTOR;
+//            if (engineAngle < -MAX_ANGLE) {
+//                engineAngle = -MAX_ANGLE;
+//            }
+//        } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
+//            engineAngle += ANGLE_FACTOR;
+//            if (engineAngle > MAX_ANGLE) {
+//                engineAngle = MAX_ANGLE;
+//            }
+//        } else {
+//            engineAngle = 0;
+//        }
+//        SteerMessage steerMessage = new SteerMessage(enginePower, engineAngle);
+//        AgentManager.sendAgentMessage("boat", steerMessage);
+
         if (glfwGetKey(window.getWindowID(), GLFW_KEY_UP) == GLFW_PRESS) {
-            if (enginePower <= MAX_POWER) {
-                enginePower += POWER_FACTOR;
-            } else {
-                enginePower = MAX_POWER;
-            }
-        } else {
-            enginePower = 0;
-        }
-        if (glfwGetKey(window.getWindowID(), GLFW_KEY_LEFT) == GLFW_PRESS) {
-            engineAngle -= ANGLE_FACTOR;
-            if (engineAngle < -MAX_ANGLE) {
-                engineAngle = -MAX_ANGLE;
-            }
+            AgentManager.sendAgentMessage("boat", new SteerMessage(SteerMessage.SteerType.STRAIGHT));
+        } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_DOWN) == GLFW_PRESS) {
+            AgentManager.sendAgentMessage("boat", new SteerMessage(SteerMessage.SteerType.STOP));
+        } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_LEFT) == GLFW_PRESS) {
+            AgentManager.sendAgentMessage("boat", new SteerMessage(SteerMessage.SteerType.TURN_LEFT));
         } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
-            engineAngle += ANGLE_FACTOR;
-            if (engineAngle > MAX_ANGLE) {
-                engineAngle = MAX_ANGLE;
-            }
-        } else {
-            engineAngle = 0;
+            AgentManager.sendAgentMessage("boat", new SteerMessage(SteerMessage.SteerType.TURN_RIGHT));
         }
 
-        SteerMessage steerMessage = new SteerMessage(enginePower, engineAngle);
-        AgentManager.sendAgentMessage("boat", steerMessage);
+        //reset
+        if (glfwGetKey(window.getWindowID(), GLFW_KEY_R) == GLFW_PRESS) {
+            reset();
+        }
+
+        //暂停
+        if (glfwGetKey(window.getWindowID(), GLFW_KEY_SPACE) == GLFW_PRESS) {
+            pause();
+        }
+
+        //播放
+        if (glfwGetKey(window.getWindowID(), GLFW_KEY_ENTER) == GLFW_PRESS) {
+            play();
+        }
     }
 
     @Override
     public void update(double stepTime) {
-        //海浪等环境更新
-        ocean.update();
-        //Agent系统周期更新
-        agentManager.update(stepTime);
+        if (!stepController.isPause()) {
+            //海浪等环境更新
+            ocean.update(stepController.getElapsedTime());
+            logger.debug("time {}",stepController.getElapsedTime());
+            //Agent系统周期更新
+            agentManager.update(stepTime);
+        }
     }
 
     @Override
@@ -263,6 +251,21 @@ public class TestSimGUI implements GameLogic {
         physicsEngine.cleanup();
     }
 
+    @Override
+    public void reset() {
+        initScene();
+    }
+
+    @Override
+    public void pause() {
+        stepController.pause();
+    }
+
+    @Override
+    public void play() {
+        stepController.play();
+    }
+
     public void start(){
         config = Config.loadConfig();
         Window window = new Window("BoatSimulator", 300, 300, false);
@@ -272,5 +275,51 @@ public class TestSimGUI implements GameLogic {
 
     public Config getConfig() {
         return config;
+    }
+
+    private void initScene() {
+        boatModel = Model.loadObj(new File(RESOURCES_MODELS_DIR, BOAT_OBJ_NAME));
+
+
+        SceneLight sceneLight = new SceneLight();
+        sceneLight.setAmbientLight(new Vector3f(0.3f, 0.3f, 0.3f));
+        PointLight pointLight = new PointLight(new Vector3f(1, 1, 1),
+                new Vector3f(1000,100,-1000), 1);
+//        sceneLight.setPointLightList(new PointLight[]{pointLight});
+        DirectionalLight directionalLight = new DirectionalLight(new Vector3f(1.0f, 0.6f, 0.3f), new Vector3f(1, 0.1f, -1),  1.0f);
+        sceneLight.setDirectionalLight(directionalLight);
+
+        scene.setSceneLight(sceneLight);
+
+        //初始化Agent
+//        Agent usvAgent = new USVAgent("usv0");
+//        长5m 宽2m
+        String boatId = "boat";
+        Vector3f boatPos = new Vector3f(10, 20, -10);
+        Quaternionf boatRot = new Quaternionf();
+        Vector3f boatSca = new Vector3f(1,1,1);
+        GameObj boat = new BoatObj(boatId, boatPos, boatRot, boatSca, boatModel);
+        BoatEntity boatEntity = new BoatEntity(ocean, physicsEngine.getWorld(), physicsEngine.getSpace(),
+                boatPos, boatRot, boatSca, boatModel);
+        boatEntity.createBuoyHelper();
+
+        USVAgent boatAgent = new USVAgent(boatId, boatEntity);
+        AgentManager.addAgent(boatAgent);
+        scene.setGameObj(boat);
+
+        String cubeId = "cube";
+        Vector3f cubePos = new Vector3f(10, 20, 10);
+        Quaternionf cubeRot = new Quaternionf();
+        Vector3f cubeSca = new Vector3f(1,1,1);
+        GameObj cube = new CubeObj(cubeId, cubePos, cubeRot, cubeSca);
+        CubeEntity cubeEntity = new CubeEntity(ocean, physicsEngine.getWorld(), physicsEngine.getSpace(),
+                cubePos, cubeRot, cubeSca, cube.getMesh().getModel());
+        CubeAgent cubeAgent = new CubeAgent(cubeId);
+        cubeEntity.createBuoyHelper();
+        cubeAgent.setEntity(cubeEntity);
+        AgentManager.addAgent(cubeAgent);
+        scene.setGameObj(cube);
+
+        modifyBoatMesh = boatEntity.getBuoyHelper().getModifyBoatMesh();
     }
 }

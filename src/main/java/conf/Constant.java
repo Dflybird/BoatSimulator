@@ -6,6 +6,7 @@ package conf;
  */
 public class Constant {
 
+    /** 文件 **/
     public static final String DEFAULT_RESOURCES_DIR = "src/main/resources";
 
     public static final String RESOURCES_MODELS_DIR = DEFAULT_RESOURCES_DIR + "/models";
@@ -20,7 +21,21 @@ public class Constant {
 
     public static final String BOAT_MTL_NAME = "boat2.mtl";
 
+    /** 仿真控制 **/
+    //仿真循环方式 STEP:循环一定步长后停止 ROLL:持续循环
+    public static final String STEP_TYPE = "ROLL";
+    public static final int STEP_SIZE = 30;
+
     /** 环境相关参数 */
+    //海浪方块长
+    public static final float LENGTH_X = 64;
+    //海浪方块宽
+    public static final float LENGTH_Z = 64;
+    //海浪方x轴数量
+    public static final int NUM_X = 16;
+    //海浪方z轴数量
+    public static final int NUM_Z = 16;
+
     //重力系数 m/s^2
     public static final float g = 9.81f;
     //水密度 1000 kg/m^3 = 1 g/cm^3
@@ -65,4 +80,15 @@ public class Constant {
     public static final float MAX_ANGLE = (float) (Math.PI/ 6);
     //无人船最大行驶速度,单位m/s
     public static final float MAX_SPEED = 100f/6f;
+    public static final float MIN_SPEED = 0f;
+
+    /** 场景算法相关 **/
+    public static final int ALLY_NUM = 3;
+    public static final int ENEMY_NUM = 3;
+    public static final float ALLY_ATTACK_RANGE = 100f;
+    public static final float ALLY_DETECT_RANGE = 100f;
+    public static final float ENEMY_ATTACK_RANGE = 100f;
+    public static final float ENEMY_DETECT_RANGE = 100f;
+    //主舰ID
+    public static final String MAIN_SHIP_ID = "MAIN_SHIP";
 }

@@ -85,6 +85,21 @@ public class SimGUI implements GameLogic {
 
     }
 
+    @Override
+    public void reset() {
+
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void play() {
+
+    }
+
     public void start(){
 
     }

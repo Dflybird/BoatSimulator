@@ -1,7 +1,5 @@
 package conf;
 
-import net.Node;
-
 /**
  * @Author Gq
  * @Date 2021/1/28 19:52
@@ -24,9 +22,4 @@ public class Config {
         return visible;
     }
 
-    private Node localNode;
-
-    public Node getLocalNode() {
-        return localNode;
-    }
 }

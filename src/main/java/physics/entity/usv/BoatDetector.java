@@ -2,11 +2,13 @@ package physics.entity.usv;
 
 import ams.AgentManager;
 import ams.agent.Agent;
+import ams.agent.USVAgent;
 import org.joml.Vector3f;
 import physics.entity.Entity;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @Author: gq
@@ -25,16 +27,27 @@ public class BoatDetector {
         this.detectorRelativeCoordinate = detectorRelativeCoordinate;
     }
 
+    //与除自己外所有Agent距离
     public Map<String, Float> detect(){
+        Vector3f detectorCoordinate = new Vector3f(entity.getTranslation());
+        detectorCoordinate.add(detectorRelativeCoordinate);
         Map<String, Float> targets = new HashMap<>();
         for (Agent agent : AgentManager.getAgentMap().values()) {
-            Vector3f detectorCoordinate = new Vector3f(entity.getTranslation());
-            detectorCoordinate.add(detectorRelativeCoordinate);
+            if (entity.equals(agent.getEntity())) {
+                continue;
+            }
             float distance = detectorCoordinate.distance(agent.getEntity().getTranslation());
             if (distance <= DETECT_RANGE) {
                 targets.put(agent.getAgentID(), distance);
             }
         }
         return targets;
+    }
+
+    public float detect(Agent agent) {
+        Vector3f detectorCoordinate = new Vector3f(entity.getTranslation());
+        detectorCoordinate.add(detectorRelativeCoordinate);
+
+        return detectorCoordinate.distance(agent.getEntity().getTranslation());
     }
 }

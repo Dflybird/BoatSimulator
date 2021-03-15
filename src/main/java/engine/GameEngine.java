@@ -96,12 +96,9 @@ public class GameEngine implements Runnable {
             input();
 
             while (accumulator >= secsPreUpdate) {
-                double st = timer.getTime();
                 update();
-                double et = timer.getTime();
                 timer.updateUPS();
                 accumulator-= secsPreUpdate;
-                logger.debug("secsPreUpdate: {} | useTime: {}", secsPreUpdate, et-st);
             }
 
             double alpha = accumulator / secsPreUpdate;

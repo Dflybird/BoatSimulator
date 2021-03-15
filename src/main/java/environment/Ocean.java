@@ -82,8 +82,8 @@ public class Ocean {
         scene.setFog(fog);
     }
 
-    public void update() {
-        wave.evaluateWavesFFT((float) TimeUtil.currentTime());
+    public void update(double timeFromStart) {
+        wave.evaluateWavesFFT((float) timeFromStart);
     }
 
     /**

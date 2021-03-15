@@ -2,18 +2,19 @@ syntax = "proto3";
 
 option java_multiple_files = true;
 option java_package = "net";
-option java_outer_classname = "AlgorithmGRPC";
+option java_outer_classname = "AlgorithmProto";
 option objc_class_prefix = "RTG";
 
 package net;
 
-service FirstGRPC {
-  rpc getSceneParameter(Null) re
+service Algorithm {
+  //环境参数
+  rpc getSceneParameter(Null) returns (SceneParameter) {}
 
-  rpc getObservation(AgentID) returns (Observation) {}
+  rpc getObservation(ObservationRequest) returns (Observation) {}
 
   rpc step(Action) returns (Reward) {}
-
+  //重启仿真
   rpc reset(Null) returns (Null) {}
 }
 
@@ -24,35 +25,84 @@ message Vector3 {
   float z = 3;
 }
 
+message SceneParameter {
+  float max_velocity = 1;
+  float min_velocity = 2;
+  float max_x_length = 3;
+  float min_x_length = 4;
+  float max_z_length = 5;
+  float min_z_length = 6;
+  //id从0开始编号
+  int32 ally_num = 7;
+  int32 enemy_num = 8;
+  //双方攻击与探测范围
+  float ally_attack_range = 9;
+  float ally_detect_range = 10;
+  float enemy_attack_range = 11;
+  float enemy_detect_range = 12;
+}
+
+message ObservationRequest {
+  //阵营 0:友方 1:敌方
+  repeated int32 camp = 1;
+}
+
 message Observation {
-  Vector3 self_pos = 1;
-  //最近敌方坐标
-  Vector3 closest_e_pos = 2;
-  //最近友方坐标
-  Vector3 closest_a_pos = 3;
-  //朝向
-  Vector3 forward = 4;
-  //存活状态 0:死亡 1:存活
-  int32 status = 5;
+  repeated TeamObservation team_observation = 1;
 }
 
-message Action {
-  //0:停止 1:直行 2:左转30度 3:右转30度
-  int32 action_type = 1;
+message TeamObservation {
+  //阵营 0:友方 1:敌方
+  int32 camp = 1;
+  repeated MemberObservation member_observation = 2;
 }
 
-message AgentID{
+message MemberObservation {
+  //编号 eg:0,1,2
   int32 id = 1;
-  //敌我属性 0:友方 1:敌方
-  int32 type = 2;
+  //存活状态 0:死亡 1:存活
+  int32 status = 2;
+  //自身坐标
+  Vector3 self_pos = 3;
+  //最近敌方坐标
+  Vector3 closest_enemy_pos = 4;
+  //最近友方坐标
+  Vector3 closest_ally_pos = 5;
+  //主舰坐标
+  Vector3 main_ship_pos = 6;
+  //朝向
+  Vector3 forward = 7;
+}
+
+//控制指令，包含多个团队控制指令
+message Action {
+  repeated TeamAction team_action = 1;
+}
+
+//团体控制指令，包含多个团队成员控制指令
+message TeamAction {
+  //阵营 0:友方 1:敌方
+  int32 camp = 1;
+  repeated MemberAction member_action = 2;
+}
+
+//成员控制指令，针对具体控制对象
+message MemberAction {
+  //编号 eg:0,1,2
+  int32 id = 1;
+  //0:停止 1:直行 2:左转30度 3:右转30度
+  int32 action_type = 2;
 }
 
 message Reward {
-  float reward = 1;
+  repeated TeamReward team_reward = 1;
 }
 
-message SceneParameter{
-
+message TeamReward {
+  //阵营 0:友方 1:敌方
+  int32 camp = 1;
+  //团队回报
+  float reward = 2;
 }
 
 message Null {}

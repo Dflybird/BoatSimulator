@@ -19,4 +19,10 @@ public interface GameLogic {
     void render(double alpha);
 
     void cleanup();
+
+    void reset();
+
+    void pause();
+
+    void play();
 }
