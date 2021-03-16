@@ -54,6 +54,9 @@ public class GameStepController {
         return elapsedTime;
     }
 
+    /**
+     * pause可能在任何线程中被调用
+     */
     public void pause() {
         pause = true;
         elapsedStep = 0;

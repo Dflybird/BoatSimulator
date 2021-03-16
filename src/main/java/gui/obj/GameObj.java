@@ -22,12 +22,14 @@ public abstract class GameObj {
     protected Quaternionf rotation;
     protected Vector3f scale;
     protected Mesh mesh;
+    protected boolean render;
 
     public GameObj(String id, Vector3f translation, Quaternionf rotation, Vector3f scale) {
         this.id = id;
         this.translation = new Vector3f(translation);
         this.rotation = new Quaternionf(rotation);
         this.scale = new Vector3f(scale);
+        this.render = true;
     }
 
     public Vector3f getTranslation() {
@@ -64,5 +66,13 @@ public abstract class GameObj {
 
     public String getID() {
         return id;
+    }
+
+    public boolean isRender() {
+        return render;
+    }
+
+    public void setRender(boolean render) {
+        this.render = render;
     }
 }

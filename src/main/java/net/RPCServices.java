@@ -103,6 +103,7 @@ public class RPCServices extends AlgorithmGrpc.AlgorithmImplBase {
             Reward reward = Reward.newBuilder().addAllTeamReward(list).build();
             responseObserver.onNext(reward);
             responseObserver.onCompleted();
+
         });
     }
 

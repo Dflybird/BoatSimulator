@@ -3,6 +3,7 @@ package sim;
 import ams.AgentManager;
 import ams.agent.CubeAgent;
 import ams.agent.USVAgent;
+import ams.msg.AttackMessage;
 import ams.msg.SteerMessage;
 import conf.Config;
 import engine.GameEngine;
@@ -257,6 +258,11 @@ public class TestSimGUI implements GameLogic {
             AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.TURN_RIGHT));
         }
 
+        //测试键
+        if (glfwGetKey(window.getWindowID(), GLFW_KEY_T) == GLFW_PRESS) {
+            AgentManager.sendAgentMessage("ALLY_0", new AttackMessage());
+        }
+
         //reset
         if (glfwGetKey(window.getWindowID(), GLFW_KEY_R) == GLFW_PRESS) {
             reset();
@@ -306,9 +312,11 @@ public class TestSimGUI implements GameLogic {
 
     @Override
     public void reset() {
+        pause();
         logger.debug("reset");
         stepController.init();
         AgentManager.resetAllAgent();
+        play(null);
     }
 
     @Override

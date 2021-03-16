@@ -54,8 +54,7 @@ public class CubeEntity extends Entity {
     @Override
     public void reset() {
         super.reset();
-        body.destroy();
-        geom.destroy();
+        destroy();
         init();
     }
 

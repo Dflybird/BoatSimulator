@@ -54,6 +54,7 @@ public class GUIState implements StateUpdateListener {
                 obj.setTranslation(objStateInfo.getTranslation());
                 obj.setRotation(objStateInfo.getRotation());
                 obj.setScale(objStateInfo.getScale());
+                obj.setRender(objStateInfo.isRender());
             }
         }
     }

@@ -3,24 +3,26 @@ package state;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 public class ObjStateInfo {
     private Vector3f translation;  //len = 3
     private Quaternionf rotation; //len = 4
     private Vector3f scale;
+    private boolean render; //是否渲染
 
     public ObjStateInfo() {
         this.translation = new Vector3f();
         this.rotation = new Quaternionf();
         this.scale = new Vector3f();
+        this.render = true;
     }
 
     public ObjStateInfo(ObjStateInfo objStateInfo) {
         this.translation = objStateInfo.translation;
         this.rotation = objStateInfo.rotation;
         this.scale = objStateInfo.scale;
+        this.render = objStateInfo.render;
     }
 
     public ObjStateInfo mul(float num) {
@@ -68,16 +70,24 @@ public class ObjStateInfo {
         this.scale.set(scale);
     }
 
+    public boolean isRender() {
+        return render;
+    }
+
+    public void setRender(boolean render) {
+        this.render = render;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof ObjStateInfo)) return false;
         ObjStateInfo that = (ObjStateInfo) o;
-        return Objects.equals(translation, that.translation) && Objects.equals(rotation, that.rotation) && Objects.equals(scale, that.scale);
+        return render == that.render && Objects.equals(translation, that.translation) && Objects.equals(rotation, that.rotation) && Objects.equals(scale, that.scale);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(translation, rotation, scale);
+        return Objects.hash(translation, rotation, scale, render);
     }
 }

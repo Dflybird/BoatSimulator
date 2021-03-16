@@ -77,6 +77,16 @@ public abstract class Entity {
         transformToQuaternionf(quaternion, rotation);
     }
 
+    public void destroy() {
+        if (body != null) {
+            body.destroy();
+            body = null;
+        }
+        if (geom != null) {
+            geom.destroy();
+            geom = null;
+        }
+    }
 
     public Vector3f getTranslation() {
         return translation;

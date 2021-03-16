@@ -21,6 +21,8 @@ public abstract class Agent implements Runnable {
     protected final String agentID;
     //对象实体，用于物理引擎计算
     protected Entity entity;
+    //有图形界面时选择是否渲染，默认渲染
+    protected boolean render = true;
     //消息队列，存放Agent间的通信消息
     private final Queue<AgentMessage> queue = new ConcurrentLinkedQueue<>();
 
@@ -36,6 +38,8 @@ public abstract class Agent implements Runnable {
     public void reset() {
         if (entity != null) {
             entity.reset();
+            render = true;
+            queue.clear();
         }
     }
 
@@ -80,5 +84,13 @@ public abstract class Agent implements Runnable {
 
     public void putMessage(AgentMessage msg) {
         queue.offer(msg);
+    }
+
+    public boolean isRender() {
+        return render;
+    }
+
+    public void setRender(boolean render) {
+        this.render = render;
     }
 }

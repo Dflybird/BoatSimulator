@@ -13,6 +13,8 @@ public class Constant {
 
     public static final String RESOURCES_SHADERS_DIR = DEFAULT_RESOURCES_DIR + "/shaders";
 
+    public static final String RESOURCES_SCENES_DIR = DEFAULT_RESOURCES_DIR + "/scenes";
+
     public static final String CONFIG_FILE_NAME = "config.json";
 
     //boat1 长5m 宽2m 高0.5m
@@ -23,7 +25,7 @@ public class Constant {
 
     /** 仿真控制 **/
     //仿真循环方式 STEP:循环一定步长后停止 ROLL:持续循环
-    public static final String STEP_TYPE = "ROLL";
+    public static final String STEP_TYPE = "STEP";
     public static final int STEP_SIZE = 30;
 
     /** 渲染频率 **/

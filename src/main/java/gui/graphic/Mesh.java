@@ -130,9 +130,11 @@ public class Mesh {
         glBindVertexArray(vaoId);
 
         for (GameObj obj : objects) {
-            //计算坐标位置信息
-            consumer.accept(obj);
-            glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, 0);
+            if (obj.isRender()) {
+                //计算坐标位置信息
+                consumer.accept(obj);
+                glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, 0);
+            }
         }
 
         glBindVertexArray(0);

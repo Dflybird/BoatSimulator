@@ -3,6 +3,7 @@ package ams.agent;
 import ams.AgentManager;
 import ams.AgentMessageHandler;
 import ams.msg.AgentMessage;
+import ams.msg.AttackMessage;
 import ams.msg.SteerMessage;
 import org.joml.Vector3f;
 import physics.entity.usv.BoatEngine;
@@ -97,9 +98,18 @@ public class USVAgent extends Agent implements AgentMessageHandler {
 
     @Override
     protected void update(double stepTime) throws Exception {
-        entity.updateState(stepTime);
         receiveAll(this);
-        engine.updateEngine();
+        if (status == Status.ALIVE) {
+            //解算上一周期的状态和reward
+            entity.updateState(stepTime);
+            calcReward();
+            //处理这一周期的行为
+            engine.updateEngine();
+        } else {
+            //TODO
+            render = false;
+            entity.destroy();
+        }
     }
 
     @Override
@@ -109,6 +119,13 @@ public class USVAgent extends Agent implements AgentMessageHandler {
             engine.setEnginePower(steerMessage.getPower());
             engine.setEngineRotation(steerMessage.getAngle());
         }
+        else if (msg.getCorrespondingMessageClass() == AttackMessage.class) {
+            status = Status.DEAD;
+        }
+    }
+
+    private void calcReward() {
+
     }
 
     //TODO 修改成消息驱动？

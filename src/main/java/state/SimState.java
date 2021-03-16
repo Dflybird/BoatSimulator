@@ -30,11 +30,12 @@ public class SimState {
         state.stateMap.forEach((key, value) -> stateMap.put(key, new ObjStateInfo(value)));
     }
 
-    public void collect(String id, Vector3f translation, Quaternionf rotation, Vector3f scale) {
+    public void collect(String id, Vector3f translation, Quaternionf rotation, Vector3f scale, boolean render) {
         ObjStateInfo objStateInfo = stateMap.computeIfAbsent(id, key -> new ObjStateInfo());
         objStateInfo.setTranslation(translation);
         objStateInfo.setRotation(rotation);
         objStateInfo.setScale(scale);
+        objStateInfo.setRender(render);
     }
 
     /**
@@ -47,6 +48,7 @@ public class SimState {
         objStateInfo.setTranslation(entity.getTranslation());
         objStateInfo.setRotation(entity.getRotation());
         objStateInfo.setScale(entity.getScale());
+        objStateInfo.setRender(agent.isRender());
     }
 
     public ObjStateInfo getStateInfo(String id) {

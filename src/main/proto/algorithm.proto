@@ -95,7 +95,8 @@ message MemberAction {
 }
 
 message Reward {
-  repeated TeamReward team_reward = 1;
+  int32 done = 1;
+  repeated TeamReward team_reward = 2;
 }
 
 message TeamReward {
