@@ -13,6 +13,6 @@ import org.joml.Vector4f;
  **/
 public class OceanObj extends GameObj{
     public OceanObj(Vector3f translation, Quaternionf rotation, Vector3f scale) {
-        super(translation, rotation, scale);
+        super("ocean", translation, rotation, scale);
     }
 }

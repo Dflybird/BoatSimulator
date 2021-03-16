@@ -33,6 +33,12 @@ public abstract class Agent implements Runnable {
         this.entity =entity;
     }
 
+    public void reset() {
+        if (entity != null) {
+            entity.reset();
+        }
+    }
+
     @Override
     public void run() {
         try {

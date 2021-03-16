@@ -5,6 +5,7 @@ import ams.agent.CubeAgent;
 import ams.agent.USVAgent;
 import ams.msg.SteerMessage;
 import conf.Constant;
+import engine.PauseListener;
 import environment.Ocean;
 import conf.Config;
 import ams.AgentManager;
@@ -96,7 +97,7 @@ public class SimGUI implements GameLogic {
     }
 
     @Override
-    public void play() {
+    public void play(PauseListener listener) {
 
     }
 

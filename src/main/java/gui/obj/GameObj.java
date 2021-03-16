@@ -23,10 +23,6 @@ public abstract class GameObj {
     protected Vector3f scale;
     protected Mesh mesh;
 
-    public GameObj(Vector3f translation, Quaternionf rotation, Vector3f scale) {
-        this(UUID.randomUUID().toString(), translation, rotation, scale);
-    }
-
     public GameObj(String id, Vector3f translation, Quaternionf rotation, Vector3f scale) {
         this.id = id;
         this.translation = new Vector3f(translation);

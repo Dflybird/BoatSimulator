@@ -43,10 +43,18 @@ public class BoatEntity extends Entity {
         mass.setTrimeshTotal(weight, (DTriMesh) geom);
 
         body = OdeHelper.createBody(world);
-        body.setPosition(transformFromVector3f(translation));
         body.setMass(mass);
+        body.setPosition(transformFromVector3f(translation));
         geom.setBody(body);
 
+    }
+
+    @Override
+    public void reset() {
+        super.reset();
+        body.destroy();
+        geom.destroy();
+        init();
     }
 
     @Override

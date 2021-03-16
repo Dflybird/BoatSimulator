@@ -3,12 +3,17 @@ package net;
 import ams.AgentManager;
 import ams.agent.Agent;
 import ams.agent.USVAgent;
+import ams.msg.SteerMessage;
 import engine.GameLogic;
+import engine.PauseListener;
 import io.grpc.stub.StreamObserver;
 import org.joml.Vector3f;
+import util.AgentUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static conf.Constant.*;
 
@@ -64,17 +69,54 @@ public class RPCServices extends AlgorithmGrpc.AlgorithmImplBase {
 
     @Override
     public void step(Action request, StreamObserver<Reward> responseObserver) {
+        HashMap<USVAgent.Camp, Float> rewardMap = new HashMap<>();
+        for (TeamAction teamAction : request.getTeamActionList()) {
+            USVAgent.Camp camp = USVAgent.Camp.campOf(teamAction.getCamp());
+            rewardMap.put(camp, 0f);
 
+            for (MemberAction memberAction : teamAction.getMemberActionList()) {
+                String agentID = AgentUtil.assembleName(camp, memberAction.getId());
+                SteerMessage steerMessage = new SteerMessage(SteerMessage.SteerType.typeOf(memberAction.getActionType()));
+                AgentManager.sendAgentMessage(agentID, steerMessage);
+            }
+        }
+
+        gameLogic.play(() -> {
+            for (Agent agent : AgentManager.getAgentMap().values()) {
+                if (agent instanceof USVAgent) {
+                    USVAgent usvAgent = (USVAgent) agent;
+                    if (rewardMap.containsKey(usvAgent.getCamp())) {
+                        float sum = rewardMap.get(usvAgent.getCamp());
+                        sum += usvAgent.getReward(true);
+                        rewardMap.put(usvAgent.getCamp(), sum);
+                    }
+                }
+            }
+            List<TeamReward> list = new ArrayList<>(rewardMap.size());
+            for (Map.Entry<USVAgent.Camp, Float> entry : rewardMap.entrySet()) {
+                TeamReward teamReward = TeamReward.newBuilder()
+                        .setCamp(entry.getKey().toInteger())
+                        .setReward(entry.getValue())
+                        .build();
+                list.add(teamReward);
+            }
+            Reward reward = Reward.newBuilder().addAllTeamReward(list).build();
+            responseObserver.onNext(reward);
+            responseObserver.onCompleted();
+        });
     }
 
     @Override
     public void reset(Null request, StreamObserver<Null> responseObserver) {
         gameLogic.reset();
+        responseObserver.onNext(Null.newBuilder().build());
+        responseObserver.onCompleted();
     }
 
     private TeamObservation getAllyObservation() {
         List<MemberObservation> list = new ArrayList<>();
         USVAgent mainShip = (USVAgent) AgentManager.getAgent(MAIN_SHIP_ID);
+        Vector3f mainShipPos = mainShip == null ? new Vector3f() : mainShip.getEntity().getTranslation();
         for (Agent agent : AgentManager.getAgentMap().values()) {
             if (agent instanceof USVAgent) {
                 USVAgent usvAgent = (USVAgent) agent;
@@ -85,7 +127,7 @@ public class RPCServices extends AlgorithmGrpc.AlgorithmImplBase {
                             .setSelfPos(newVector3(usvAgent.getEntity().getTranslation()))
                             .setClosestEnemyPos(newVector3(usvAgent.relativeCoordinateToSelf(usvAgent.closestEnemyPos())))
                             .setClosestAllyPos(newVector3(usvAgent.relativeCoordinateToSelf(usvAgent.closestAllyPos())))
-                            .setMainShipPos(newVector3(usvAgent.relativeCoordinateToSelf(mainShip.getEntity().getTranslation())))
+                            .setMainShipPos(newVector3(usvAgent.relativeCoordinateToSelf(mainShipPos)))
                             .setForward(newVector3(usvAgent.getCurrForward()))
                             .build();
                     list.add(memberObservation);

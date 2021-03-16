@@ -48,14 +48,15 @@ public class CubeEntity extends Entity {
         body.setPosition(transformFromVector3f(translation));
         body.setMass(mass);
         geom.setBody(body);
-        //立方体大小
-//        mass.setBox(density, transformFromVector3f(scale));
-//        body = OdeHelper.createBody(world);
-//        body.setPosition(transformFromVector3f(translation));
-//        body.setMass(mass);
-//        geom = OdeHelper.createBox(space, transformFromVector3f(scale));
-//        geom.setBody(body);
 
+    }
+
+    @Override
+    public void reset() {
+        super.reset();
+        body.destroy();
+        geom.destroy();
+        init();
     }
 
     @Override

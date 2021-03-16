@@ -20,15 +20,13 @@ public class BuoyHelper {
 
     private Ocean ocean;
     private final DWorld world;
-    private final DGeom geom;
-    private final DBody body;
+    private final Entity entity;
     private final ModifyBoatMesh modifyBoatMesh;
 
     public BuoyHelper(Ocean ocean, Entity entity) {
         this.ocean = ocean;
         this.world = entity.getWorld();
-        this.geom = entity.getGeom();
-        this.body = entity.getBody();
+        this.entity = entity;
         this.modifyBoatMesh = new ModifyBoatMesh(entity, ocean);
     }
 
@@ -49,7 +47,7 @@ public class BuoyHelper {
     }
 
     private void addUnderWaterForce(float stepTime) {
-        Vector3f velocity = transformToVector3f(body.getLinearVel());
+        Vector3f velocity = transformToVector3f(entity.getBody().getLinearVel());
         Vector3f normal = new Vector3f(velocity);
         normal.normalize();
         float len = modifyBoatMesh.calcUnderwaterLength(normal);
@@ -62,7 +60,7 @@ public class BuoyHelper {
         calcSlammingVelocities(slammingForceData);
 
         float boatArea = modifyBoatMesh.getTotalArea();
-        float boatMass = (float) body.getMass().getMass();
+        float boatMass = (float) entity.getBody().getMass().getMass();
 
         List<Integer> indexOfOriginalTriangle = modifyBoatMesh.getIndexOfOriginalTriangle();
 
@@ -84,7 +82,7 @@ public class BuoyHelper {
             force.add(pressureDragForce);
             force.add(slammingForce);
             Vector3f forcePos = triangleData.getCenter();
-            body.addForceAtPos(transformFromVector3f(force), transformFromVector3f(forcePos));
+            entity.getBody().addForceAtPos(transformFromVector3f(force), transformFromVector3f(forcePos));
         }
     }
 
@@ -99,7 +97,7 @@ public class BuoyHelper {
             Vector3f airResistanceForce = airResistanceForce(RHO_AIR, triangleData, C_AIR);
             force.add(airResistanceForce);
             Vector3f forcePos = triangleData.getCenter();
-            body.addForceAtPos(transformFromVector3f(force), transformFromVector3f(forcePos));
+            entity.getBody().addForceAtPos(transformFromVector3f(force), transformFromVector3f(forcePos));
         }
     }
 
@@ -107,7 +105,7 @@ public class BuoyHelper {
         for (SlammingForceData data : slammingForceData) {
             data.setPreviousVelocity(data.getVelocity());
             Vector3f center = data.getTriangleCenter();
-            data.setVelocity(PhysicsMath.triangleVelocity(geom,
+            data.setVelocity(PhysicsMath.triangleVelocity(entity.getGeom(),
                     modifyBoatMesh.getTransform().transformPoint(center.x, center.y, center.z)));
         }
     }

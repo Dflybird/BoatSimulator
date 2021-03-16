@@ -9,6 +9,7 @@ import physics.entity.usv.BoatEngine;
 import physics.entity.usv.BoatEntity;
 import physics.entity.usv.BoatDetector;
 import physics.entity.usv.BoatWeapon;
+import util.AgentUtil;
 
 
 /**
@@ -68,18 +69,30 @@ public class USVAgent extends Agent implements AgentMessageHandler {
     private final BoatDetector detector;
     private final BoatWeapon weapon;
 
-    private final Status status;
-    private Camp camp;
-    private int id;
+    private final Camp camp;
+    private final int id;
+    private Status status;
+    private float reward;
 
-    public USVAgent(String agentID, BoatEntity entity) {
-        super(agentID, entity);
-
+    public USVAgent(Camp camp, int id, BoatEntity entity) {
+        super(AgentUtil.assembleName(camp, id), entity);
+        this.camp = camp;
+        this.id = id;
         engine = new BoatEngine(entity, new Vector3f(-2f, -0.5f, 0f));
         detector = new BoatDetector(entity, new Vector3f(0f, 0f, 0f));
         weapon = new BoatWeapon(entity, new Vector3f(0f, 0f, 0f));
 
         status = Status.ALIVE;
+        reward = 0;
+    }
+
+    @Override
+    public void reset() {
+        super.reset();
+        status = Status.ALIVE;
+        reward = 0;
+        engine.setEnginePower(0);
+        engine.setEngineRotation(0);
     }
 
     @Override
@@ -98,7 +111,7 @@ public class USVAgent extends Agent implements AgentMessageHandler {
         }
     }
 
-    //TODO 修改成消息驱动
+    //TODO 修改成消息驱动？
     public Vector3f closestEnemyPos() {
         USVAgent closestEnemy = null;
         float minDistance = Float.MAX_VALUE;
@@ -168,6 +181,19 @@ public class USVAgent extends Agent implements AgentMessageHandler {
 
     public Camp getCamp() {
         return camp;
+    }
+
+    /**
+     *
+     * @param clean 是否保留reward
+     * @return
+     */
+    public float getReward(boolean clean) {
+        float result = reward;
+        if (clean) {
+            reward = 0;
+        }
+        return result;
     }
 
     public int getId() {

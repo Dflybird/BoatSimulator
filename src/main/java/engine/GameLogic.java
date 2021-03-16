@@ -24,5 +24,5 @@ public interface GameLogic {
 
     void pause();
 
-    void play();
+    void play(PauseListener listener);
 }

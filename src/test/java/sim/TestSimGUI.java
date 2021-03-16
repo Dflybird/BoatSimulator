@@ -8,6 +8,7 @@ import conf.Config;
 import engine.GameEngine;
 import engine.GameLogic;
 import engine.GameStepController;
+import engine.PauseListener;
 import environment.Ocean;
 import gui.*;
 import gui.graphic.light.DirectionalLight;
@@ -17,6 +18,7 @@ import gui.obj.GameObj;
 import gui.obj.Model;
 import gui.obj.geom.CubeObj;
 import gui.obj.usv.BoatObj;
+import net.SimServer;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -27,6 +29,7 @@ import physics.buoy.ModifyBoatMesh;
 import physics.entity.geom.CubeEntity;
 import physics.entity.usv.BoatEntity;
 import state.GUIState;
+import util.AgentUtil;
 import util.TimeUtil;
 
 import java.io.File;
@@ -43,7 +46,6 @@ public class TestSimGUI implements GameLogic {
 
     private final Logger logger = LoggerFactory.getLogger(TestSimGUI.class);
 
-    private final AgentManager agentManager = AgentManager.getInstance();
     private Config config;
     private final Camera camera;
     private final GUIState guiState;
@@ -51,10 +53,12 @@ public class TestSimGUI implements GameLogic {
     private final GUIRenderer renderer;
     private final PhysicsEngine physicsEngine;
     private final GameStepController stepController;
+    private final SimServer server;
 
     private Ocean ocean;
 
     private Model boatModel;
+    private Model cubeModel;
 
     public static void main(String[] args) {
         main(args, new TestSimGUI());
@@ -73,6 +77,7 @@ public class TestSimGUI implements GameLogic {
         scene = new Scene();
         physicsEngine = new PhysicsEngine();
         stepController = new GameStepController(GameStepController.SimType.valueOf(STEP_TYPE), STEP_SIZE);
+        server = new SimServer(this, PORT);
     }
 
     float enginePower;
@@ -85,8 +90,54 @@ public class TestSimGUI implements GameLogic {
         AgentManager.setPhysicsEngine(physicsEngine);
         AgentManager.registerSimStateListener(guiState);
         renderer.init(window, camera, scene, guiState);
+        server.start();
+
         stepController.init();
-        initScene();
+
+        boatModel = Model.loadObj(new File(RESOURCES_MODELS_DIR, BOAT_OBJ_NAME));
+        cubeModel = Model.loadObj(new File(RESOURCES_MODELS_DIR, "cube.obj"));
+
+
+        SceneLight sceneLight = new SceneLight();
+        sceneLight.setAmbientLight(new Vector3f(0.3f, 0.3f, 0.3f));
+        PointLight pointLight = new PointLight(new Vector3f(1, 1, 1),
+                new Vector3f(1000,100,-1000), 1);
+//        sceneLight.setPointLightList(new PointLight[]{pointLight});
+        DirectionalLight directionalLight = new DirectionalLight(new Vector3f(1.0f, 0.6f, 0.3f), new Vector3f(1, 0.1f, -1),  1.0f);
+        sceneLight.setDirectionalLight(directionalLight);
+
+        scene.setSceneLight(sceneLight);
+
+        //初始化Agent
+//        Agent usvAgent = new USVAgent("usv0");
+//        长5m 宽2m
+        int boatId = 0;
+        Vector3f boatPos = new Vector3f(10, 20, -10);
+        Quaternionf boatRot = new Quaternionf();
+        Vector3f boatSca = new Vector3f(1,1,1);
+        GameObj boat = new BoatObj(AgentUtil.assembleName(USVAgent.Camp.ALLY, boatId), boatPos, boatRot, boatSca, boatModel);
+        BoatEntity boatEntity = new BoatEntity(ocean, physicsEngine.getWorld(), physicsEngine.getSpace(),
+                boatPos, boatRot, boatSca, boatModel);
+        boatEntity.createBuoyHelper();
+
+        USVAgent boatAgent = new USVAgent(USVAgent.Camp.ALLY, boatId, boatEntity);
+        AgentManager.addAgent(boatAgent);
+        scene.setGameObj(boat);
+
+        String cubeId = "cube";
+        Vector3f cubePos = new Vector3f(10, 20, 10);
+        Quaternionf cubeRot = new Quaternionf();
+        Vector3f cubeSca = new Vector3f(1,1,1);
+        GameObj cube = new CubeObj(cubeId, cubePos, cubeRot, cubeSca, cubeModel);
+        CubeEntity cubeEntity = new CubeEntity(ocean, physicsEngine.getWorld(), physicsEngine.getSpace(),
+                cubePos, cubeRot, cubeSca, cube.getMesh().getModel());
+        CubeAgent cubeAgent = new CubeAgent(cubeId);
+        cubeEntity.createBuoyHelper();
+        cubeAgent.setEntity(cubeEntity);
+        AgentManager.addAgent(cubeAgent);
+        scene.setGameObj(cube);
+
+        modifyBoatMesh = boatEntity.getBuoyHelper().getModifyBoatMesh();
     }
     ModifyBoatMesh modifyBoatMesh;
 
@@ -144,7 +195,7 @@ public class TestSimGUI implements GameLogic {
             Vector3f cubePos = new Vector3f(x, y, z);
             Quaternionf cubeRot = new Quaternionf();
             Vector3f cubeSca = new Vector3f(1,1,1);
-            GameObj cube = new CubeObj(id, cubePos, cubeRot, cubeSca);
+            GameObj cube = new CubeObj(id, cubePos, cubeRot, cubeSca,cubeModel);
             CubeEntity cubeEntity = new CubeEntity(ocean, physicsEngine.getWorld(), physicsEngine.getSpace(),
                     cubePos, cubeRot, cubeSca, cube.getMesh().getModel());
             cubeEntity.createBuoyHelper();
@@ -153,7 +204,7 @@ public class TestSimGUI implements GameLogic {
             scene.setGameObj(cube);
         }
         if (glfwGetKey(window.getWindowID(), GLFW_KEY_B) == GLFW_PRESS) {
-            String id = "boat" + TimeUtil.currentTime();
+            int id = (int) TimeUtil.currentTime();
             float x, y, z;
             x = (float) (10+Math.random()*50);
             y = 100;
@@ -161,11 +212,11 @@ public class TestSimGUI implements GameLogic {
             Vector3f boatPos = new Vector3f(x, y, z);
             Quaternionf boatRot = new Quaternionf();
             Vector3f boatSca = new Vector3f(1,1,1);
-            GameObj boat = new BoatObj(id, boatPos, boatRot, boatSca, boatModel);
+            GameObj boat = new BoatObj(AgentUtil.assembleName(USVAgent.Camp.ENEMY, id), boatPos, boatRot, boatSca, boatModel);
             BoatEntity boatEntity = new BoatEntity(ocean, physicsEngine.getWorld(), physicsEngine.getSpace(),
                     boatPos, boatRot, boatSca, boatModel);
             boatEntity.createBuoyHelper();
-            USVAgent boatAgent = new USVAgent(id, boatEntity);
+            USVAgent boatAgent = new USVAgent(USVAgent.Camp.ENEMY, id, boatEntity);
             AgentManager.addAgent(boatAgent);
             scene.setGameObj(boat);
         }
@@ -197,13 +248,13 @@ public class TestSimGUI implements GameLogic {
 //        AgentManager.sendAgentMessage("boat", steerMessage);
 
         if (glfwGetKey(window.getWindowID(), GLFW_KEY_UP) == GLFW_PRESS) {
-            AgentManager.sendAgentMessage("boat", new SteerMessage(SteerMessage.SteerType.STRAIGHT));
+            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.STRAIGHT));
         } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_DOWN) == GLFW_PRESS) {
-            AgentManager.sendAgentMessage("boat", new SteerMessage(SteerMessage.SteerType.STOP));
+            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.STOP));
         } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_LEFT) == GLFW_PRESS) {
-            AgentManager.sendAgentMessage("boat", new SteerMessage(SteerMessage.SteerType.TURN_LEFT));
+            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.TURN_LEFT));
         } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
-            AgentManager.sendAgentMessage("boat", new SteerMessage(SteerMessage.SteerType.TURN_RIGHT));
+            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.TURN_RIGHT));
         }
 
         //reset
@@ -218,7 +269,7 @@ public class TestSimGUI implements GameLogic {
 
         //播放
         if (glfwGetKey(window.getWindowID(), GLFW_KEY_ENTER) == GLFW_PRESS) {
-            play();
+            play(() -> logger.info("sim pause"));
         }
     }
 
@@ -227,9 +278,8 @@ public class TestSimGUI implements GameLogic {
         if (!stepController.isPause()) {
             //海浪等环境更新
             ocean.update(stepController.getElapsedTime());
-            logger.debug("time {}",stepController.getElapsedTime());
             //Agent系统周期更新
-            agentManager.update(stepTime);
+            AgentManager.update(stepTime);
         }
     }
 
@@ -248,12 +298,17 @@ public class TestSimGUI implements GameLogic {
     public void cleanup() {
         renderer.cleanup();
         scene.cleanup();
+        server.stop();
         physicsEngine.cleanup();
+        AgentManager.stop();
+        logger.info("sim shut down");
     }
 
     @Override
     public void reset() {
-        initScene();
+        logger.debug("reset");
+        stepController.init();
+        AgentManager.resetAllAgent();
     }
 
     @Override
@@ -262,8 +317,8 @@ public class TestSimGUI implements GameLogic {
     }
 
     @Override
-    public void play() {
-        stepController.play();
+    public void play(PauseListener listener) {
+        stepController.play(listener);
     }
 
     public void start(){
@@ -277,49 +332,4 @@ public class TestSimGUI implements GameLogic {
         return config;
     }
 
-    private void initScene() {
-        boatModel = Model.loadObj(new File(RESOURCES_MODELS_DIR, BOAT_OBJ_NAME));
-
-
-        SceneLight sceneLight = new SceneLight();
-        sceneLight.setAmbientLight(new Vector3f(0.3f, 0.3f, 0.3f));
-        PointLight pointLight = new PointLight(new Vector3f(1, 1, 1),
-                new Vector3f(1000,100,-1000), 1);
-//        sceneLight.setPointLightList(new PointLight[]{pointLight});
-        DirectionalLight directionalLight = new DirectionalLight(new Vector3f(1.0f, 0.6f, 0.3f), new Vector3f(1, 0.1f, -1),  1.0f);
-        sceneLight.setDirectionalLight(directionalLight);
-
-        scene.setSceneLight(sceneLight);
-
-        //初始化Agent
-//        Agent usvAgent = new USVAgent("usv0");
-//        长5m 宽2m
-        String boatId = "boat";
-        Vector3f boatPos = new Vector3f(10, 20, -10);
-        Quaternionf boatRot = new Quaternionf();
-        Vector3f boatSca = new Vector3f(1,1,1);
-        GameObj boat = new BoatObj(boatId, boatPos, boatRot, boatSca, boatModel);
-        BoatEntity boatEntity = new BoatEntity(ocean, physicsEngine.getWorld(), physicsEngine.getSpace(),
-                boatPos, boatRot, boatSca, boatModel);
-        boatEntity.createBuoyHelper();
-
-        USVAgent boatAgent = new USVAgent(boatId, boatEntity);
-        AgentManager.addAgent(boatAgent);
-        scene.setGameObj(boat);
-
-        String cubeId = "cube";
-        Vector3f cubePos = new Vector3f(10, 20, 10);
-        Quaternionf cubeRot = new Quaternionf();
-        Vector3f cubeSca = new Vector3f(1,1,1);
-        GameObj cube = new CubeObj(cubeId, cubePos, cubeRot, cubeSca);
-        CubeEntity cubeEntity = new CubeEntity(ocean, physicsEngine.getWorld(), physicsEngine.getSpace(),
-                cubePos, cubeRot, cubeSca, cube.getMesh().getModel());
-        CubeAgent cubeAgent = new CubeAgent(cubeId);
-        cubeEntity.createBuoyHelper();
-        cubeAgent.setEntity(cubeEntity);
-        AgentManager.addAgent(cubeAgent);
-        scene.setGameObj(cube);
-
-        modifyBoatMesh = boatEntity.getBuoyHelper().getModifyBoatMesh();
-    }
 }

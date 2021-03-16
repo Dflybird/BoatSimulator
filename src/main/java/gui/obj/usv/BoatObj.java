@@ -21,24 +21,23 @@ import static conf.Constant.*;
 public class BoatObj extends GameObj {
 
     private Model model;
-
-    public BoatObj(Vector3f position, Quaternionf rotation, Vector3f scale, Model model) {
-        super(position, rotation, scale);
-        init();
-    }
+    protected Vector3f initTranslation;
+    protected Quaternionf initRotation;
+    protected Vector3f initScale;
 
     public BoatObj(String id, Vector3f position, Quaternionf rotation, Vector3f scale, Model model) {
         super(id, position, rotation, scale);
         this.model = model;
-        init();
-    }
 
-    private void init() {
-//        Texture texture = new Texture(new File(RESOURCES_MODELS_DIR, BOAT_MTL_NAME));
-//        Material material = new Material(texture);
         Material material = new Material();
-
         Mesh mesh = new Mesh(model, material);
         setMesh(mesh);
     }
+
+    public void init() {
+        translation = initTranslation;
+        rotation = initRotation;
+        scale = initScale;
+    }
+
 }

@@ -2,6 +2,7 @@ package ams;
 
 import ams.agent.Agent;
 import ams.msg.AgentMessage;
+import net.SimServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import physics.PhysicsEngine;
@@ -17,7 +18,7 @@ import java.util.concurrent.*;
  */
 public class AgentManager {
 
-    private final Logger logger = LoggerFactory.getLogger(AgentManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(AgentManager.class);
 
     private static final AgentManager instance = new AgentManager();
     private static final Integer processNum = Runtime.getRuntime().availableProcessors();
@@ -37,17 +38,17 @@ public class AgentManager {
 
     private AgentManager(){}
 
-    public void update(double stepTime) {
+    public static void update(double stepTime) {
         instance.stepTime = stepTime;
-        while (!agentRemoveEven.isEmpty()) {
-            agentMap.remove(agentRemoveEven.poll());
+        while (!instance.agentRemoveEven.isEmpty()) {
+            instance.agentMap.remove(instance.agentRemoveEven.poll());
         }
-        while (!agentInsertEven.isEmpty()) {
-            Agent agent = agentInsertEven.poll();
-            agentMap.put(agent.getAgentID(), agent);
+        while (!instance.agentInsertEven.isEmpty()) {
+            Agent agent = instance.agentInsertEven.poll();
+            instance.agentMap.put(agent.getAgentID(), agent);
         }
 
-        instance.countDownLatch = new CountDownLatch(agentMap.size());
+        instance.countDownLatch = new CountDownLatch(instance.agentMap.size());
         instance.agentMap.values().forEach(threadPool::submit);
         try {
             instance.countDownLatch.await();
@@ -55,15 +56,15 @@ public class AgentManager {
             e.printStackTrace();
         }
 
-        if (physicsEngine != null) {
-            physicsEngine.update(stepTime);
+        if (instance.physicsEngine != null) {
+            instance.physicsEngine.update(stepTime);
         }
 
         //收集所有Agent状态
         simState = new SimState();
-        agentMap.values().forEach( agent -> simState.collect(agent));
+        instance.agentMap.values().forEach( agent -> simState.collect(agent));
 
-        listeners.forEach(listener -> listener.stateUpdated(simState));
+        instance.listeners.forEach(listener -> listener.stateUpdated(simState));
     }
 
     public static AgentManager getInstance(){
@@ -108,5 +109,21 @@ public class AgentManager {
 
     public static void setPhysicsEngine(PhysicsEngine physicsEngine) {
         instance.physicsEngine = physicsEngine;
+    }
+
+    public static void resetAllAgent() {
+        for (Agent agent : instance.agentMap.values()) {
+            agent.reset();
+        }
+    }
+
+    public static void stop() {
+        try {
+            threadPool.shutdown();
+            threadPool.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        logger.info("agent manager shutdown.");
     }
 }

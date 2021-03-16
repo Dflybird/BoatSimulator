@@ -23,20 +23,12 @@ public class CubeObj extends GameObj {
     //2 * 2 * 2 m^3
     private static Logger logger = LoggerFactory.getLogger(CubeObj.class);
 
-    public CubeObj(Vector3f position, Quaternionf rotation, Vector3f scale) {
-        super(position, rotation, scale);
-        init();
-    }
-
-    public CubeObj(String id, Vector3f position, Quaternionf rotation, Vector3f scale) {
+    public CubeObj(String id, Vector3f position, Quaternionf rotation, Vector3f scale, Model model) {
         super(id, position, rotation, scale);
-        init();
-    }
 
-    private void init() {
-        Model model = Model.loadObj(new File(RESOURCES_MODELS_DIR, "cube.obj"));
         Material material = new Material();
         Mesh mesh = new Mesh(model, material);
         setMesh(mesh);
     }
+
 }

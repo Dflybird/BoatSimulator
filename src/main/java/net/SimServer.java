@@ -27,22 +27,25 @@ public class SimServer {
         this.server = serverBuilder.addService(new RPCServices(gameLogic)).build();
     }
 
-    public void start() throws IOException {
-        server.start();
+    public void start(){
+        try {
+            server.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+//        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+//            SimServer.this.stop();
+//        }));
+    }
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+    public void stop(){
+        if (server != null) {
             try {
-                SimServer.this.stop();
+                server.shutdown().awaitTermination(5, TimeUnit.SECONDS);
+                logger.info("network server shutdown.");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            logger.info("network server shut down.");
-        }));
-    }
-
-    public void stop() throws InterruptedException {
-        if (server != null) {
-            server.shutdown().awaitTermination(5, TimeUnit.SECONDS);
         }
     }
 }

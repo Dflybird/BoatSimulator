@@ -23,6 +23,11 @@ import static util.StructTransform.*;
  **/
 public abstract class Entity {
 
+    private final Vector3f initTranslation;
+    private final Vector3f initForward;
+    private final Quaternionf initRotation;
+    private final Vector3f initScale;
+
     protected final Vector3f translation;
     /*朝向 可以转换为纯四元数v=(0,x,y,z) 实部为0*/
     protected final Vector3f forward;
@@ -43,10 +48,21 @@ public abstract class Entity {
         this.world = world;
         this.space = space;
         this.model = model;
+        this.initTranslation = new Vector3f(translation);
+        this.initRotation = new Quaternionf(rotation);
+        this.initScale = new Vector3f(scale);
+        this.initForward = new Vector3f(forward);
         this.translation = new Vector3f(translation);
         this.rotation = new Quaternionf(rotation);
         this.scale = new Vector3f(scale);
         this.forward = new Vector3f(forward);
+    }
+
+    public void reset() {
+        this.translation.set(initTranslation);
+        this.rotation.set(initRotation);
+        this.scale.set(initScale);
+        this.forward.set(initForward);
     }
 
     public void updateState(double stepTime) {

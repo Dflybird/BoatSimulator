@@ -1,6 +1,7 @@
 package engine;
 
 import conf.Config;
+import conf.Constant;
 import gui.MouseEvent;
 import gui.Window;
 import org.slf4j.Logger;
@@ -14,17 +15,6 @@ import org.slf4j.LoggerFactory;
 public class GameEngine implements Runnable {
 
     private final Logger logger = LoggerFactory.getLogger(GameEngine.class);
-
-    /** 渲染频率 **/
-    private int FPS = 30;
-    /** 更新频率 **/
-    private int UPS = 30;
-    /** Agent系统每周期时间步长，单位毫秒 **/
-    private double secsPreUpdate = 1.0d / UPS;
-    /** 每帧渲染时间，单位毫秒 **/
-    private double secsPreFrame = 1.0d / FPS;
-    /** 快进速度 **/
-    private double fastForwardSpeed = 1.0d;
 
     private int fpsCount = 0;
     private int upsCount = 0;
@@ -65,14 +55,12 @@ public class GameEngine implements Runnable {
     }
 
     private void update() {
-        gameLogic.update(secsPreUpdate * fastForwardSpeed);
+        gameLogic.update(Constant.SECS_PRE_UPDATE * Constant.FAST_FORWARD_SPEED);
     }
 
     private void render(double alpha) {
         window.clean();
         gameLogic.render(alpha);
-
-        //TODO 渲染
         window.render();
         timer.updateFPS();
     }
@@ -80,7 +68,6 @@ public class GameEngine implements Runnable {
     private void cleanup(){
         gameLogic.cleanup();
         window.cleanup();
-        //TODO 关闭AgentManager
     }
 
     protected void gameLoop() {
@@ -95,19 +82,19 @@ public class GameEngine implements Runnable {
 
             input();
 
-            while (accumulator >= secsPreUpdate) {
+            while (accumulator >= Constant.SECS_PRE_UPDATE) {
                 update();
                 timer.updateUPS();
-                accumulator-= secsPreUpdate;
+                accumulator-= Constant.SECS_PRE_UPDATE;
             }
 
-            double alpha = accumulator / secsPreUpdate;
+            double alpha = accumulator / Constant.SECS_PRE_UPDATE;
 
             render(alpha);
 
             timer.update();
             //打印fps和ups
-            logger.debug("FPS: {} | UPS: {}", timer.getFPS(), timer.getUPS());
+//            logger.debug("FPS: {} | UPS: {}", timer.getFPS(), timer.getUPS());
 
             //如果没有开启垂直同步，通过sleep休眠CPU，控制刷新帧率
             if (!window.isvSync()) {
@@ -119,7 +106,7 @@ public class GameEngine implements Runnable {
     }
 
     private void sync() {
-        double frameEndTime = timer.getLastLoopTime() + secsPreFrame;
+        double frameEndTime = timer.getLastLoopTime() + Constant.SECS_PRE_FRAME;
         while (timer.getTime() < frameEndTime) {
             Thread.yield();
             try {

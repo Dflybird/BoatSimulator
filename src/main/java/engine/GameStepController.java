@@ -14,6 +14,8 @@ public class GameStepController {
 
     private final SimType simType;
     private final int stepSize;
+    //停止时通知
+    private PauseListener listener;
 
     public GameStepController(SimType simType, int stepSize) {
         this.simType = simType;
@@ -55,9 +57,13 @@ public class GameStepController {
     public void pause() {
         pause = true;
         elapsedStep = 0;
+        if (listener != null) {
+            listener.onPause();
+        }
     }
 
-    public void play() {
+    public void play(PauseListener listener) {
+        this.listener = listener;
         pause = false;
     }
 
