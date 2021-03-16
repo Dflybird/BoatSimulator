@@ -1,6 +1,6 @@
 package util;
 
-import ams.agent.USVAgent;
+import ams.agent.usv.USVAgent;
 
 /**
  * @Author: gq

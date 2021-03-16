@@ -2,10 +2,10 @@ package net;
 
 import ams.AgentManager;
 import ams.agent.Agent;
-import ams.agent.USVAgent;
+import ams.agent.usv.USVAgent;
 import ams.msg.SteerMessage;
+import conf.SceneConfig;
 import engine.GameLogic;
-import engine.PauseListener;
 import io.grpc.stub.StreamObserver;
 import org.joml.Vector3f;
 import util.AgentUtil;
@@ -24,9 +24,11 @@ import static conf.Constant.*;
 public class RPCServices extends AlgorithmGrpc.AlgorithmImplBase {
 
     private final GameLogic gameLogic;
+    private final SceneConfig sceneConfig;
 
     public RPCServices(GameLogic gameLogic) {
         this.gameLogic = gameLogic;
+        this.sceneConfig = SceneConfig.loadConfig();
     }
 
     @Override

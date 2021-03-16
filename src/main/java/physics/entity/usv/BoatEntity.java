@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import physics.buoy.BuoyHelper;
 import physics.entity.Entity;
 
+import static util.StructTransform.transformFromQuaternionf;
 import static util.StructTransform.transformFromVector3f;
 
 /**
@@ -45,6 +46,7 @@ public class BoatEntity extends Entity {
         body = OdeHelper.createBody(world);
         body.setMass(mass);
         body.setPosition(transformFromVector3f(translation));
+        body.setQuaternion(transformFromQuaternionf(rotation));
         geom.setBody(body);
 
     }

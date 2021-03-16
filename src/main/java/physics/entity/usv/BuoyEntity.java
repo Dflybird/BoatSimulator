@@ -1,20 +1,16 @@
-package physics.entity.geom;
+package physics.entity.usv;
 
 import environment.Ocean;
 import gui.obj.Model;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-import org.ode4j.math.DMatrix3C;
-import org.ode4j.math.DQuaternionC;
-import org.ode4j.math.DVector3;
-import org.ode4j.math.DVector3C;
 import org.ode4j.ode.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import physics.buoy.BuoyHelper;
 import physics.entity.Entity;
 
-import static util.StructTransform.*;
+import static util.StructTransform.transformFromQuaternionf;
 import static util.StructTransform.transformFromVector3f;
 
 /**
@@ -22,12 +18,12 @@ import static util.StructTransform.transformFromVector3f;
  * @Date 2021/2/22 18:30
  * @Version 1.0
  **/
-public class CubeEntity extends Entity {
-    private final Logger logger = LoggerFactory.getLogger(CubeEntity.class);
+public class BuoyEntity extends Entity {
+    private final Logger logger = LoggerFactory.getLogger(BuoyEntity.class);
 
     private BuoyHelper buoyHelper;
 
-    public CubeEntity(Ocean ocean, DWorld world, DSpace space, Vector3f translation, Quaternionf rotation, Vector3f scale, Model model) {
+    public BuoyEntity(Ocean ocean, DWorld world, DSpace space, Vector3f translation, Quaternionf rotation, Vector3f scale, Model model) {
         super(ocean, world, space, translation, new Vector3f(1,0,0), rotation, scale, model);
         init();
     }
@@ -35,7 +31,7 @@ public class CubeEntity extends Entity {
     private void init() {
         DMass mass = OdeHelper.createMass();
         //900 kg/m^3 = 0.9 g/cm^3
-        float weight = 900*2*2*2;
+        float weight = 3000;
 
         DTriMeshData meshData = OdeHelper.createTriMeshData();
         meshData.build(model.getVertices(), model.getIndices());

@@ -1,7 +1,8 @@
-package ams.agent;
+package ams.agent.usv;
 
 import ams.AgentManager;
 import ams.AgentMessageHandler;
+import ams.agent.Agent;
 import ams.msg.AgentMessage;
 import ams.msg.AttackMessage;
 import ams.msg.SteerMessage;
@@ -45,12 +46,13 @@ public class USVAgent extends Agent implements AgentMessageHandler {
 
     public enum Camp {
         ALLY(0),
-        ENEMY(1);
+        ENEMY(1),
+        MAIN_SHIP(2);
 
         private final int code;
 
         private static final Camp[] CAMPS = new Camp[] {
-                ALLY, ENEMY
+                ALLY, ENEMY, MAIN_SHIP
         };
 
         Camp(int code) {

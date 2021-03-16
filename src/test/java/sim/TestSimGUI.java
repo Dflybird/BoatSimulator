@@ -1,8 +1,9 @@
 package sim;
 
 import ams.AgentManager;
-import ams.agent.CubeAgent;
-import ams.agent.USVAgent;
+import ams.agent.geom.CubeAgent;
+import ams.agent.usv.BuoyAgent;
+import ams.agent.usv.USVAgent;
 import ams.msg.AttackMessage;
 import ams.msg.SteerMessage;
 import conf.Config;
@@ -19,6 +20,7 @@ import gui.obj.GameObj;
 import gui.obj.Model;
 import gui.obj.geom.CubeObj;
 import gui.obj.usv.BoatObj;
+import gui.obj.usv.BuoyObj;
 import net.SimServer;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
@@ -29,6 +31,7 @@ import physics.PhysicsEngine;
 import physics.buoy.ModifyBoatMesh;
 import physics.entity.geom.CubeEntity;
 import physics.entity.usv.BoatEntity;
+import physics.entity.usv.BuoyEntity;
 import state.GUIState;
 import util.AgentUtil;
 import util.TimeUtil;
@@ -59,6 +62,7 @@ public class TestSimGUI implements GameLogic {
     private Ocean ocean;
 
     private Model boatModel;
+    private Model buoyModel;
     private Model cubeModel;
 
     public static void main(String[] args) {
@@ -96,6 +100,7 @@ public class TestSimGUI implements GameLogic {
         stepController.init();
 
         boatModel = Model.loadObj(new File(RESOURCES_MODELS_DIR, BOAT_OBJ_NAME));
+        buoyModel = Model.loadObj(new File(RESOURCES_MODELS_DIR, BUOY_OBJ_NAME));
         cubeModel = Model.loadObj(new File(RESOURCES_MODELS_DIR, "cube.obj"));
 
 
@@ -114,8 +119,9 @@ public class TestSimGUI implements GameLogic {
 //        长5m 宽2m
         int boatId = 0;
         Vector3f boatPos = new Vector3f(10, 20, -10);
-        Quaternionf boatRot = new Quaternionf();
+        Quaternionf boatRot = new Quaternionf(0,0,0,1);
         Vector3f boatSca = new Vector3f(1,1,1);
+
         GameObj boat = new BoatObj(AgentUtil.assembleName(USVAgent.Camp.ALLY, boatId), boatPos, boatRot, boatSca, boatModel);
         BoatEntity boatEntity = new BoatEntity(ocean, physicsEngine.getWorld(), physicsEngine.getSpace(),
                 boatPos, boatRot, boatSca, boatModel);
@@ -131,12 +137,25 @@ public class TestSimGUI implements GameLogic {
         Vector3f cubeSca = new Vector3f(1,1,1);
         GameObj cube = new CubeObj(cubeId, cubePos, cubeRot, cubeSca, cubeModel);
         CubeEntity cubeEntity = new CubeEntity(ocean, physicsEngine.getWorld(), physicsEngine.getSpace(),
-                cubePos, cubeRot, cubeSca, cube.getMesh().getModel());
+                cubePos, cubeRot, cubeSca, cubeModel);
         CubeAgent cubeAgent = new CubeAgent(cubeId);
         cubeEntity.createBuoyHelper();
         cubeAgent.setEntity(cubeEntity);
         AgentManager.addAgent(cubeAgent);
         scene.setGameObj(cube);
+
+        String buoyId = "buoy";
+        Vector3f buoyPos = new Vector3f(10, 20, -20);
+        Quaternionf buoyRot = new Quaternionf();
+        Vector3f buoySca = new Vector3f(1,1,1);
+        GameObj buoy = new BuoyObj(buoyId, buoyPos, buoyRot, buoySca, buoyModel);
+        BuoyEntity buoyEntity = new BuoyEntity(ocean, physicsEngine.getWorld(), physicsEngine.getSpace(),
+                buoyPos, buoyRot, buoySca, buoyModel);
+        BuoyAgent buoyAgent = new BuoyAgent(buoyId);
+        buoyEntity.createBuoyHelper();
+        buoyAgent.setEntity(buoyEntity);
+        AgentManager.addAgent(buoyAgent);
+        scene.setGameObj(buoy);
 
         modifyBoatMesh = boatEntity.getBuoyHelper().getModifyBoatMesh();
     }

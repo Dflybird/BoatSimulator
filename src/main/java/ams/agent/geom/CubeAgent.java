@@ -1,9 +1,8 @@
-package ams.agent;
+package ams.agent.geom;
 
-import org.ode4j.math.DVector3;
+import ams.agent.Agent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import physics.buoy.BuoyHelper;
 
 /**
  * @Author Gq

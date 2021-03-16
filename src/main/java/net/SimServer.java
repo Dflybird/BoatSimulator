@@ -1,5 +1,6 @@
 package net;
 
+import conf.SceneConfig;
 import engine.GameLogic;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;

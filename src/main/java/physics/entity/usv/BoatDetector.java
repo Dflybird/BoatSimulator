@@ -2,13 +2,11 @@ package physics.entity.usv;
 
 import ams.AgentManager;
 import ams.agent.Agent;
-import ams.agent.USVAgent;
 import org.joml.Vector3f;
 import physics.entity.Entity;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * @Author: gq

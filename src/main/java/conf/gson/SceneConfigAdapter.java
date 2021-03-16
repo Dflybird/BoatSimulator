@@ -1,6 +1,7 @@
-package conf;
+package conf.gson;
 
 import com.google.gson.*;
+import conf.SceneConfig;
 
 import java.lang.reflect.Type;
 

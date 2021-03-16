@@ -22,6 +22,10 @@ public class Constant {
     public static final String BOAT_OBJ_NAME = "boat2.obj";
 
     public static final String BOAT_MTL_NAME = "boat2.mtl";
+    //浮标模型
+    public static final String BUOY_OBJ_NAME = "buoy2.obj";
+
+    public static final String BUOY_MTL_NAME = "buoy2.mtl";
 
     /** 仿真控制 **/
     //仿真循环方式 STEP:循环一定步长后停止 ROLL:持续循环
