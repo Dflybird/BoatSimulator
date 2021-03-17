@@ -14,6 +14,9 @@ import java.lang.reflect.Type;
 public class AgentConfigAdapter implements JsonDeserializer<AgentConfig>, JsonSerializer<AgentConfig> {
     @Override
     public AgentConfig deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        if (jsonElement == null) {
+            return null;
+        }
         JsonObject jsonObject = jsonElement.getAsJsonObject();
         AgentConfig agentConfig = new AgentConfig();
         agentConfig.setId(jsonObject.get("id").getAsInt());
@@ -24,9 +27,12 @@ public class AgentConfigAdapter implements JsonDeserializer<AgentConfig>, JsonSe
 
     @Override
     public JsonElement serialize(AgentConfig agentConfig, Type type, JsonSerializationContext jsonSerializationContext) {
+        if (agentConfig == null) {
+            return null;
+        }
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("id", agentConfig.getId());
-        jsonObject.add("pos", jsonSerializationContext.serialize(agentConfig.getPos(), Vector3f.class));
+        jsonObject.add("pos", jsonSerializationContext.serialize(agentConfig.getPos()));
         jsonObject.add("forward", jsonSerializationContext.serialize(agentConfig.getForward()));
         return jsonObject;
     }

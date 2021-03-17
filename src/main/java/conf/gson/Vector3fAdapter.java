@@ -13,6 +13,9 @@ import java.lang.reflect.Type;
 public class Vector3fAdapter implements JsonDeserializer<Vector3f>, JsonSerializer<Vector3f> {
     @Override
     public Vector3f deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        if (jsonElement == null) {
+            return null;
+        }
         JsonObject jsonObject = jsonElement.getAsJsonObject();
         return new Vector3f(
                 jsonObject.get("x").getAsFloat(),
@@ -22,6 +25,9 @@ public class Vector3fAdapter implements JsonDeserializer<Vector3f>, JsonSerializ
 
     @Override
     public JsonElement serialize(Vector3f vector3f, Type type, JsonSerializationContext jsonSerializationContext) {
+        if (vector3f == null) {
+            return null;
+        }
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("x", vector3f.x);
         jsonObject.addProperty("y", vector3f.y);

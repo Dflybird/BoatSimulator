@@ -1,5 +1,10 @@
 package conf;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import conf.gson.AgentConfigAdapter;
+import conf.gson.SceneConfigAdapter;
+import conf.gson.Vector3fAdapter;
 import org.joml.Vector3f;
 
 /**
@@ -34,5 +39,14 @@ public class AgentConfig {
 
     public void setForward(Vector3f forward) {
         this.forward = forward;
+    }
+
+    @Override
+    public String toString() {
+        Gson gson = new GsonBuilder().setPrettyPrinting()
+                .registerTypeAdapter(AgentConfig.class, new AgentConfigAdapter())
+                .registerTypeAdapter(Vector3f.class, new Vector3fAdapter())
+                .create();
+        return gson.toJson(this);
     }
 }
