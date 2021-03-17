@@ -78,4 +78,7 @@ public class Constant {
     public static final float MAX_SPEED = 100f/6f;
     public static final float MIN_SPEED = 0f;
 
+    //检测流程结束Agent，全局有且只有一个
+    public static final String ON_DONE_AGENT = "ON_DONE_AGENT";
+
 }

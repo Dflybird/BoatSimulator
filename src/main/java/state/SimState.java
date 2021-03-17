@@ -45,10 +45,12 @@ public class SimState {
     public void collect(Agent agent) {
         ObjStateInfo objStateInfo = stateMap.computeIfAbsent(agent.getAgentID(), key -> new ObjStateInfo());
         Entity entity = agent.getEntity();
-        objStateInfo.setTranslation(entity.getTranslation());
-        objStateInfo.setRotation(entity.getRotation());
-        objStateInfo.setScale(entity.getScale());
-        objStateInfo.setRender(agent.isRender());
+        if (entity != null) {
+            objStateInfo.setTranslation(entity.getTranslation());
+            objStateInfo.setRotation(entity.getRotation());
+            objStateInfo.setScale(entity.getScale());
+            objStateInfo.setRender(agent.isRender());
+        }
     }
 
     public ObjStateInfo getStateInfo(String id) {

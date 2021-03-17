@@ -1,7 +1,9 @@
 package ams;
 
 import ams.agent.Agent;
+import ams.agent.OnDoneAgent;
 import ams.msg.AgentMessage;
+import conf.Constant;
 import net.SimServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +38,10 @@ public class AgentManager {
 
     private double stepTime = 0;
 
-    private AgentManager(){}
+    private AgentManager(){
+        OnDoneAgent onDoneAgent = new OnDoneAgent(Constant.ON_DONE_AGENT);
+        agentMap.put(onDoneAgent.getAgentID(), onDoneAgent);
+    }
 
     public static void update(double stepTime) {
         instance.stepTime = stepTime;

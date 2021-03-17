@@ -2,8 +2,10 @@ package net;
 
 import ams.AgentManager;
 import ams.agent.Agent;
+import ams.agent.OnDoneAgent;
 import ams.agent.usv.USVAgent;
 import ams.msg.SteerMessage;
+import conf.Constant;
 import conf.SceneConfig;
 import engine.GameLogic;
 import io.grpc.stub.StreamObserver;
@@ -87,7 +89,14 @@ public class RPCServices extends AlgorithmGrpc.AlgorithmImplBase {
             for (Agent agent : AgentManager.getAgentMap().values()) {
                 if (agent instanceof USVAgent) {
                     USVAgent usvAgent = (USVAgent) agent;
-                    if (rewardMap.containsKey(usvAgent.getCamp())) {
+                    if (usvAgent.getCamp() == USVAgent.Camp.MAIN_SHIP) {
+                        if (rewardMap.containsKey(USVAgent.Camp.ALLY)) {
+                            float sum = rewardMap.get(USVAgent.Camp.ALLY);
+                            sum += usvAgent.getReward(true);
+                            rewardMap.put(USVAgent.Camp.ALLY, sum);
+                        }
+                    }
+                    else if (rewardMap.containsKey(usvAgent.getCamp())) {
                         float sum = rewardMap.get(usvAgent.getCamp());
                         sum += usvAgent.getReward(true);
                         rewardMap.put(usvAgent.getCamp(), sum);
@@ -102,7 +111,11 @@ public class RPCServices extends AlgorithmGrpc.AlgorithmImplBase {
                         .build();
                 list.add(teamReward);
             }
-            Reward reward = Reward.newBuilder().addAllTeamReward(list).build();
+            OnDoneAgent onDoneAgent = (OnDoneAgent) AgentManager.getAgent(ON_DONE_AGENT);
+            Reward reward = Reward.newBuilder()
+                    .setDone(onDoneAgent.isDone() ? 1 : 0)
+                    .addAllTeamReward(list)
+                    .build();
             responseObserver.onNext(reward);
             responseObserver.onCompleted();
 

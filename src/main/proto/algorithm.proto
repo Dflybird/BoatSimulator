@@ -81,7 +81,7 @@ message Action {
 
 //团体控制指令，包含多个团队成员控制指令
 message TeamAction {
-  //阵营 0:友方 1:敌方
+  //阵营 0:友方 1:敌方 2:主舰
   int32 camp = 1;
   repeated MemberAction member_action = 2;
 }

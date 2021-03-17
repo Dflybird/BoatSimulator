@@ -43,8 +43,7 @@ public class SceneConfig {
                 if (instance == null) {
                     String jsonString;
                     try {
-//                        File file = new File(RESOURCES_SCENES_DIR, Config.loadConfig().getSceneFile());
-                        File file = new File(RESOURCES_SCENES_DIR, "defend_main_ship.json");
+                        File file = new File(RESOURCES_SCENES_DIR, Config.loadConfig().getSceneConfigFile());
                         jsonString = FileUtil.readFileCharacter(file);
                         instance = gson.fromJson(jsonString, SceneConfig.class);
                     } catch (IOException e) {

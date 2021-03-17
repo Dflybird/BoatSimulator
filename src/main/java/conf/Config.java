@@ -54,7 +54,9 @@ public class Config {
     /** 是否渲染 **/
     private boolean isRender;
 
-    private String sceneFile;
+    private String sceneConfigFile;
+
+    private String rewardConfigFile;
 
     public int getPort() {
         return port;
@@ -84,12 +86,12 @@ public class Config {
         return isRender;
     }
 
-    public String getSceneFile() {
-        return sceneFile;
+    public String getSceneConfigFile() {
+        return sceneConfigFile;
     }
 
-    public void setSceneFile(String sceneFile) {
-        this.sceneFile = sceneFile;
+    public String getRewardConfigFile() {
+        return rewardConfigFile;
     }
 
     @Override

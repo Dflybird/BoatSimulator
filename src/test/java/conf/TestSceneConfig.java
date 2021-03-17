@@ -179,7 +179,7 @@ public class TestSceneConfig {
         mainShipField.setAccessible(true);
         mainShipField.set(sceneConfig, mainShip);
 
-        File file = new File(RESOURCES_SCENES_DIR, "defend_main_ship.json");
+        File file = new File(RESOURCES_SCENES_DIR, "defend_main_ship_scene.json");
         FileUtil.writeFile(file, sceneConfig.toString());
     }
 

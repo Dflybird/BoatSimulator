@@ -15,12 +15,13 @@ import java.util.Map;
 public class BoatDetector {
 
     //观测范围，单位m
-    public static final float DETECT_RANGE = 100;
+    public final float detectRange;
 
     private final Entity entity;
     private final Vector3f detectorRelativeCoordinate;
 
-    public BoatDetector(Entity entity, Vector3f detectorRelativeCoordinate) {
+    public BoatDetector(Entity entity, Vector3f detectorRelativeCoordinate, float detectRange) {
+        this.detectRange = detectRange;
         this.entity = entity;
         this.detectorRelativeCoordinate = detectorRelativeCoordinate;
     }
@@ -31,11 +32,11 @@ public class BoatDetector {
         detectorCoordinate.add(detectorRelativeCoordinate);
         Map<String, Float> targets = new HashMap<>();
         for (Agent agent : AgentManager.getAgentMap().values()) {
-            if (entity.equals(agent.getEntity())) {
+            if (agent.getEntity() == null || entity.equals(agent.getEntity())) {
                 continue;
             }
             float distance = detectorCoordinate.distance(agent.getEntity().getTranslation());
-            if (distance <= DETECT_RANGE) {
+            if (distance <= detectRange) {
                 targets.put(agent.getAgentID(), distance);
             }
         }
@@ -45,7 +46,10 @@ public class BoatDetector {
     public float detect(Agent agent) {
         Vector3f detectorCoordinate = new Vector3f(entity.getTranslation());
         detectorCoordinate.add(detectorRelativeCoordinate);
-
-        return detectorCoordinate.distance(agent.getEntity().getTranslation());
+        float distance = detectorCoordinate.distance(agent.getEntity().getTranslation());
+        if (distance <= detectRange) {
+            return distance;
+        }
+        return -1;
     }
 }

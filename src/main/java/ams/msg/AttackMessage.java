@@ -6,18 +6,26 @@ package ams.msg;
  */
 public class AttackMessage extends AgentMessage{
 
-    private float damage;
+    private final String attacker;
+    private final float damage;
 
-    public AttackMessage() {
+    public AttackMessage(String attacker) {
         super(AttackMessage.class);
+        this.attacker = attacker;
+        this.damage = 0;
     }
 
-    public AttackMessage(float damage) {
+    public AttackMessage(String attacker, float damage) {
         super(AttackMessage.class);
+        this.attacker = attacker;
         this.damage = damage;
     }
 
     public float getDamage() {
         return damage;
+    }
+
+    public String getAttacker() {
+        return attacker;
     }
 }

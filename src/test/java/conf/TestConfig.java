@@ -19,20 +19,6 @@ import static conf.Constant.RESOURCES_SCENES_DIR;
 public class TestConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(TestConfig.class);
-    /** 仿真控制 **/
-    //仿真循环方式 STEP:循环一定步长后停止 ROLL:持续循环
-    public static final String STEP_TYPE = "STEP";
-    public static final int STEP_SIZE = 30;
-
-    /** 渲染频率 **/
-    public static final int FPS = 30;
-    /** 更新频率 **/
-    public static final int UPS = 30;
-    /** 快进速度 **/
-    public static final double FAST_FORWARD_SPEED = 1.0d;
-
-    /** 网络 **/
-    public static final int PORT = 10086;
 
     @Test
     public void testWriteConfig() throws Exception {
@@ -74,9 +60,13 @@ public class TestConfig {
         isRender.setAccessible(true);
         isRender.setBoolean(config, true);
 
-        Field sceneFile = clazz.getDeclaredField("sceneFile");
-        sceneFile.setAccessible(true);
-        sceneFile.set(config, "defend_main_ship.json");
+        Field sceneConfigFile = clazz.getDeclaredField("sceneConfigFile");
+        sceneConfigFile.setAccessible(true);
+        sceneConfigFile.set(config, "defend_main_ship_scene.json");
+
+        Field rewardConfigFile = clazz.getDeclaredField("rewardConfigFile");
+        rewardConfigFile.setAccessible(true);
+        rewardConfigFile.set(config, "defend_main_ship_reward.json");
 
         File file = new File(Constant.DEFAULT_RESOURCES_DIR, Constant.CONFIG_FILE_NAME);
         FileUtil.writeFile(file, config.toString());

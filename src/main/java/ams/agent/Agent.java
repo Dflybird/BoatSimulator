@@ -38,9 +38,9 @@ public abstract class Agent implements Runnable {
     public void reset() {
         if (entity != null) {
             entity.reset();
-            render = true;
-            queue.clear();
         }
+        render = true;
+        queue.clear();
     }
 
     @Override
@@ -55,8 +55,8 @@ public abstract class Agent implements Runnable {
 
     protected abstract void update(double stepTime) throws Exception;
 
-    protected void send(String id, AgentMessage msg) {
-        Agent targetAgent = AgentManager.getAgent(id);
+    protected void send(String agentID, AgentMessage msg) {
+        Agent targetAgent = AgentManager.getAgent(agentID);
         targetAgent.queue.offer(msg);
     }
 

@@ -71,7 +71,7 @@ public class SimGUI implements GameLogic {
         config = Config.loadConfig();
         sceneConfig = SceneConfig.loadConfig();
 
-        camera = new Camera(new Vector3f(0, 0, 0));
+        camera = new Camera(new Vector3f(0, 0, 500));
         guiState = new GUIState();
         renderer = new GUIRenderer();
         ocean = new Ocean(LENGTH_X, LENGTH_Z, NUM_X, NUM_Z, new Vector3f());

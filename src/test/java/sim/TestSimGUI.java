@@ -279,7 +279,6 @@ public class TestSimGUI implements GameLogic {
 
         //测试键
         if (glfwGetKey(window.getWindowID(), GLFW_KEY_T) == GLFW_PRESS) {
-            AgentManager.sendAgentMessage("ALLY_0", new AttackMessage());
         }
 
         //reset
