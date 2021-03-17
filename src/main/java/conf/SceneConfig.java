@@ -4,7 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import conf.gson.AgentConfigAdapter;
 import conf.gson.SceneConfigAdapter;
+import conf.gson.Vector2fAdapter;
 import conf.gson.Vector3fAdapter;
+import environment.Wind;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,8 +29,9 @@ public class SceneConfig {
 
     private static SceneConfig instance;
     private static final Gson gson = new GsonBuilder().setPrettyPrinting()
-            .registerTypeAdapter(AgentConfig.class, new AgentConfigAdapter())
             .registerTypeAdapter(Vector3f.class, new Vector3fAdapter())
+            .registerTypeAdapter(Vector2f.class, new Vector2fAdapter())
+            .registerTypeAdapter(AgentConfig.class, new AgentConfigAdapter())
             .registerTypeAdapter(SceneConfig.class, new SceneConfigAdapter())
             .create();
 
@@ -54,6 +58,10 @@ public class SceneConfig {
         return instance;
     }
 
+    //海面环境参数
+    private float fogVisibility;
+    private Wind wind;
+
     private Vector3f sceneOrigin;
     private float sceneX;
     private float sceneZ;
@@ -75,6 +83,14 @@ public class SceneConfig {
     private List<AgentConfig> enemyUSVs;
 
     private AgentConfig mainShip;
+
+    public float getFogVisibility() {
+        return fogVisibility;
+    }
+
+    public Wind getWind() {
+        return wind;
+    }
 
     public Vector3f getSceneOrigin() {
         return sceneOrigin;
@@ -146,7 +162,6 @@ public class SceneConfig {
 
     @Override
     public String toString() {
-
         return gson.toJson(this);
     }
 }

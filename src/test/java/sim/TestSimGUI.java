@@ -81,8 +81,8 @@ public class TestSimGUI implements GameLogic {
         ocean = new Ocean(LENGTH_X, LENGTH_Z, NUM_X, NUM_Z, new Vector3f());
         scene = new Scene();
         physicsEngine = new PhysicsEngine();
-        stepController = new GameStepController(GameStepController.SimType.valueOf(STEP_TYPE), STEP_SIZE);
-        server = new SimServer(this, PORT);
+        stepController = new GameStepController(GameStepController.SimType.valueOf(config.getStepType()), config.getStepSize());
+        server = new SimServer(this, config.getPort());
     }
 
     float enginePower;
@@ -91,7 +91,7 @@ public class TestSimGUI implements GameLogic {
     public void init(Window window){
         camera.setPosition(0,50,0);
         physicsEngine.init();
-        ocean.init(scene);
+        ocean.init(scene, null);
         AgentManager.setPhysicsEngine(physicsEngine);
         AgentManager.registerSimStateListener(guiState);
         renderer.init(window, camera, scene, guiState);

@@ -1,5 +1,6 @@
 package environment;
 
+import conf.SceneConfig;
 import gui.Scene;
 import gui.graphic.Material;
 import gui.graphic.Mesh;
@@ -54,9 +55,14 @@ public class Ocean {
         this.pos = pos;
     }
 
-    public void init(Scene scene) {
-        fog = Fog.OCEAN_FLOG;
-        wind = new Wind(30, new Vector2f(1,0));
+    public void init(Scene scene, SceneConfig sceneConfig) {
+        if (sceneConfig == null) {
+            fog = Fog.OCEAN_FLOG;
+            wind = new Wind(30, new Vector2f(1,0));
+        } else {
+            fog = new Fog(true, new Vector3f(0.7f, 0.7f, 0.7f), 2f, sceneConfig.getFogVisibility());
+            wind = sceneConfig.getWind();
+        }
         wave = new Wave(lX, lZ, N, M, wind, A);
         Material material = new Material(
                 new Vector4f(0.0f, 0.65f, 0.75f, 1.0f),

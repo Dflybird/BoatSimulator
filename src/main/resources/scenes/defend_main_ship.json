@@ -1,0 +1,63 @@
+{
+  "fogVisibility": 500.0,
+  "wind": {
+    "velocity": 30.0,
+    "direction": {
+      "x": 1.0,
+      "z": 0.0
+    }
+  },
+  "sceneOrigin": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+  },
+  "sceneX": 200.0,
+  "sceneZ": 200.0,
+  "allyAttackRange": 100.0,
+  "allyDetectRange": 100.0,
+  "allyUSVs": [
+    {
+      "id": 0,
+      "pos": {
+        "x": 10.0,
+        "y": 0.0,
+        "z": 10.0
+      },
+      "forward": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      }
+    },
+    {
+      "id": 1,
+      "pos": {
+        "x": 10.0,
+        "y": 0.0,
+        "z": -10.0
+      },
+      "forward": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      }
+    }
+  ],
+  "enemyAttackRange": 100.0,
+  "enemyDetectRange": 100.0,
+  "enemyUSVs": [],
+  "mainShip": {
+    "id": 0,
+    "pos": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": 0.0
+    },
+    "forward": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": 1.0
+    }
+  }
+}

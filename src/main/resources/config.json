@@ -1,3 +1,10 @@
 {
-  "sceneFile": "protect_main_ship.json"
+  "port": 10086,
+  "stepType": "ROLL",
+  "stepSize": 30,
+  "FPS": 30,
+  "UPS": 30,
+  "fastForwardSpeed": 1.0,
+  "isRender": true,
+  "sceneFile": "defend_main_ship.json"
 }

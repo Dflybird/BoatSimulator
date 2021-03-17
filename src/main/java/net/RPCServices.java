@@ -36,16 +36,16 @@ public class RPCServices extends AlgorithmGrpc.AlgorithmImplBase {
         SceneParameter sceneParameter = SceneParameter.newBuilder()
                 .setMaxVelocity(MAX_SPEED)
                 .setMinVelocity(MIN_SPEED)
-                .setMaxXLength(LENGTH_X * NUM_X / 2)
-                .setMinXLength(-LENGTH_X * NUM_X / 2)
-                .setMaxZLength(LENGTH_Z * NUM_Z / 2)
-                .setMinZLength(-LENGTH_Z * NUM_Z / 2)
-                .setAllyNum(ALLY_NUM)
-                .setEnemyNum(ENEMY_NUM)
-                .setAllyAttackRange(ALLY_ATTACK_RANGE)
-                .setAllyDetectRange(ALLY_DETECT_RANGE)
-                .setEnemyAttackRange(ENEMY_ATTACK_RANGE)
-                .setEnemyDetectRange(ENEMY_DETECT_RANGE)
+                .setMaxXLength(sceneConfig.getMaxBoundaryX())
+                .setMinXLength(sceneConfig.getMinBoundaryX())
+                .setMaxZLength(sceneConfig.getMaxBoundaryZ())
+                .setMinZLength(sceneConfig.getMinBoundaryZ())
+                .setAllyNum(sceneConfig.getAllyNum())
+                .setEnemyNum(sceneConfig.getEnemyNum())
+                .setAllyAttackRange(sceneConfig.getAllyAttackRange())
+                .setAllyDetectRange(sceneConfig.getAllyDetectRange())
+                .setEnemyAttackRange(sceneConfig.getEnemyAttackRange())
+                .setEnemyDetectRange(sceneConfig.getEnemyDetectRange())
                 .build();
         responseObserver.onNext(sceneParameter);
         responseObserver.onCompleted();
@@ -118,7 +118,7 @@ public class RPCServices extends AlgorithmGrpc.AlgorithmImplBase {
 
     private TeamObservation getAllyObservation() {
         List<MemberObservation> list = new ArrayList<>();
-        USVAgent mainShip = (USVAgent) AgentManager.getAgent(MAIN_SHIP_ID);
+        USVAgent mainShip = (USVAgent) AgentManager.getAgent(AgentUtil.assembleName(USVAgent.Camp.MAIN_SHIP, sceneConfig.getMainShip().getId()));
         Vector3f mainShipPos = mainShip == null ? new Vector3f() : mainShip.getEntity().getTranslation();
         for (Agent agent : AgentManager.getAgentMap().values()) {
             if (agent instanceof USVAgent) {
@@ -145,7 +145,7 @@ public class RPCServices extends AlgorithmGrpc.AlgorithmImplBase {
 
     private TeamObservation getEnemyObservation() {
         List<MemberObservation> list = new ArrayList<>();
-        USVAgent mainShip = (USVAgent) AgentManager.getAgent(MAIN_SHIP_ID);
+        USVAgent mainShip = (USVAgent) AgentManager.getAgent(AgentUtil.assembleName(USVAgent.Camp.MAIN_SHIP, sceneConfig.getMainShip().getId()));
         for (Agent agent : AgentManager.getAgentMap().values()) {
             if (agent instanceof USVAgent) {
                 USVAgent usvAgent = (USVAgent) agent;

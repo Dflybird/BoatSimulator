@@ -1,8 +1,10 @@
 package conf.gson;
 
 import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 import conf.AgentConfig;
 import conf.SceneConfig;
+import environment.Wind;
 import org.joml.Vector3f;
 
 import java.lang.reflect.Constructor;
@@ -21,6 +23,9 @@ public class SceneConfigAdapter implements JsonDeserializer<SceneConfig>, JsonSe
         try {
             if (jsonElement != null) {
                 JsonObject jsonObject = jsonElement.getAsJsonObject();
+                
+                float fogVisibility = jsonObject.get("fogVisibility").getAsFloat();
+                Wind wind = jsonDeserializationContext.deserialize(jsonObject.getAsJsonObject("wind"), Wind.class);
                 Vector3f sceneOrigin = jsonDeserializationContext.deserialize(jsonObject.getAsJsonObject("sceneOrigin"), Vector3f.class);
                 float sceneX = jsonObject.get("sceneX").getAsFloat();
                 float sceneZ = jsonObject.get("sceneZ").getAsFloat();
@@ -36,20 +41,23 @@ public class SceneConfigAdapter implements JsonDeserializer<SceneConfig>, JsonSe
                 for (int i = 0; i < 2; i++) {
                     for (int j = 0; j < 2; j++) {
                         AgentConfig buoyConfig = new AgentConfig();
-                        buoyConfig.setId(i+j);
+                        buoyConfig.setId(i+j*2);
                         buoyConfig.setForward(new Vector3f(1,0,0));
                         buoyConfig.setPos(new Vector3f(boundaryX[i], 0, boundaryZ[j]));
                         buoys.add(buoyConfig);
                     }
                 }
+
+                Type agentConfigListType = new TypeToken<ArrayList<AgentConfig>>(){}.getType();
+
                 float allyAttackRange = jsonObject.get("allyAttackRange").getAsFloat();
                 float allyDetectRange = jsonObject.get("allyDetectRange").getAsFloat();
-                List<AgentConfig> allyUSVs = jsonDeserializationContext.deserialize(jsonObject.getAsJsonArray("allyUSVs"), List.class);
+                List<AgentConfig> allyUSVs = jsonDeserializationContext.deserialize(jsonObject.getAsJsonArray("allyUSVs"), agentConfigListType);
                 int allyNum = allyUSVs.size();
 
                 float enemyAttackRange = jsonObject.get("enemyAttackRange").getAsFloat();
                 float enemyDetectRange = jsonObject.get("enemyDetectRange").getAsFloat();
-                List<AgentConfig> enemyUSVs = jsonDeserializationContext.deserialize(jsonObject.getAsJsonArray("enemyUSVs"), List.class);
+                List<AgentConfig> enemyUSVs = jsonDeserializationContext.deserialize(jsonObject.getAsJsonArray("enemyUSVs"), agentConfigListType);
                 int enemyNum = enemyUSVs.size();
 
                 AgentConfig mainShip = jsonDeserializationContext.deserialize(jsonObject.getAsJsonObject("mainShip"), AgentConfig.class);
@@ -64,6 +72,14 @@ public class SceneConfigAdapter implements JsonDeserializer<SceneConfig>, JsonSe
                 instance.setAccessible(true);
                 instance.set(sceneConfig, sceneConfig);
                 //为其他成员变量赋值
+                Field fogVisibilityField = clazz.getDeclaredField("fogVisibility");
+                fogVisibilityField.setAccessible(true);
+                fogVisibilityField.set(sceneConfig, fogVisibility);
+                
+                Field windField = clazz.getDeclaredField("wind");
+                windField.setAccessible(true);
+                windField.set(sceneConfig, wind);
+                
                 Field sceneOriginField = clazz.getDeclaredField("sceneOrigin");
                 sceneOriginField.setAccessible(true);
                 sceneOriginField.set(sceneConfig, sceneOrigin);
@@ -146,6 +162,8 @@ public class SceneConfigAdapter implements JsonDeserializer<SceneConfig>, JsonSe
             return null;
         }
         JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("fogVisibility", sceneConfig.getFogVisibility());
+        jsonObject.add("wind", jsonSerializationContext.serialize(sceneConfig.getWind()));
         jsonObject.add("sceneOrigin", jsonSerializationContext.serialize(sceneConfig.getSceneOrigin()));
         jsonObject.addProperty("sceneX", sceneConfig.getSceneX());
         jsonObject.addProperty("sceneZ", sceneConfig.getSceneZ());

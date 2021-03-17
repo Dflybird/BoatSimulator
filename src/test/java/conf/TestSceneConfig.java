@@ -1,5 +1,7 @@
 package conf;
 
+import environment.Wind;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -42,6 +44,8 @@ public class TestSceneConfig {
 
     @Test
     public void testWriteSceneConfig() throws Exception {
+        float fogVisibility = 100;
+        Wind wind = new Wind(30, new Vector2f(1,0));
         Vector3f sceneOrigin = new Vector3f(0,0,0);
         float sceneX = 100;
         float sceneZ = 100;
@@ -72,7 +76,7 @@ public class TestSceneConfig {
         a1.setPos(new Vector3f(10,0,10));
         allyUSVs.add(a1);
         AgentConfig a2 = new AgentConfig();
-        a2.setId(0);
+        a2.setId(1);
         a2.setForward(new Vector3f(1,0,0));
         a2.setPos(new Vector3f(10,0,10));
         allyUSVs.add(a2);
@@ -99,6 +103,14 @@ public class TestSceneConfig {
         instance.setAccessible(true);
         instance.set(sceneConfig, sceneConfig);
         //为其他成员变量赋值
+        Field fogVisibilityField = clazz.getDeclaredField("fogVisibility");
+        fogVisibilityField.setAccessible(true);
+        fogVisibilityField.set(sceneConfig, fogVisibility);
+
+        Field windField = clazz.getDeclaredField("wind");
+        windField.setAccessible(true);
+        windField.set(sceneConfig, wind);
+
         Field sceneOriginField = clazz.getDeclaredField("sceneOrigin");
         sceneOriginField.setAccessible(true);
         sceneOriginField.set(sceneConfig, sceneOrigin);
@@ -178,5 +190,8 @@ public class TestSceneConfig {
         for (AgentConfig agentConfig : sceneConfig.getBuoys()) {
             logger.debug(agentConfig.toString());
         }
+//        for (AgentConfig agentConfig : sceneConfig.getAllyUSVs()) {
+//            logger.debug(agentConfig.toString());
+//        }
     }
 }

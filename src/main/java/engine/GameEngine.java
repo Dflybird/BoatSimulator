@@ -16,8 +16,16 @@ public class GameEngine implements Runnable {
 
     private final Logger logger = LoggerFactory.getLogger(GameEngine.class);
 
-    private int fpsCount = 0;
-    private int upsCount = 0;
+    /** 渲染频率 **/
+    private final int FPS;
+    /** 更新频率 **/
+    private final int UPS;
+    /** Agent系统每周期时间步长，单位毫秒 **/
+    private final double SECS_PRE_UPDATE;
+    /** 每帧渲染时间，单位毫秒 **/
+    private final double SECS_PRE_FRAME;
+    /** 快进速度 **/
+    private final double FAST_FORWARD_SPEED;
 
     private Window window;
     private SimTimer timer;
@@ -34,6 +42,11 @@ public class GameEngine implements Runnable {
         this.config = config;
         this.timer = new SimTimer();
         this.mouseEvent = new MouseEvent();
+        this.FPS = config.getFPS();
+        this.UPS = config.getUPS();
+        this.SECS_PRE_FRAME = 1.0d / FPS;
+        this.SECS_PRE_UPDATE = 1.0d / UPS;
+        this.FAST_FORWARD_SPEED = config.getFastForwardSpeed();
     }
 
     @Override
@@ -55,7 +68,7 @@ public class GameEngine implements Runnable {
     }
 
     private void update() {
-        gameLogic.update(Constant.SECS_PRE_UPDATE * Constant.FAST_FORWARD_SPEED);
+        gameLogic.update(SECS_PRE_UPDATE * FAST_FORWARD_SPEED);
     }
 
     private void render(double alpha) {
@@ -82,13 +95,13 @@ public class GameEngine implements Runnable {
 
             input();
 
-            while (accumulator >= Constant.SECS_PRE_UPDATE) {
+            while (accumulator >= SECS_PRE_UPDATE) {
                 update();
                 timer.updateUPS();
-                accumulator-= Constant.SECS_PRE_UPDATE;
+                accumulator-= SECS_PRE_UPDATE;
             }
 
-            double alpha = accumulator / Constant.SECS_PRE_UPDATE;
+            double alpha = accumulator / SECS_PRE_UPDATE;
 
             render(alpha);
 
@@ -106,7 +119,7 @@ public class GameEngine implements Runnable {
     }
 
     private void sync() {
-        double frameEndTime = timer.getLastLoopTime() + Constant.SECS_PRE_FRAME;
+        double frameEndTime = timer.getLastLoopTime() + SECS_PRE_FRAME;
         while (timer.getTime() < frameEndTime) {
             Thread.yield();
             try {

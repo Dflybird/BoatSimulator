@@ -18,6 +18,7 @@ public class Config {
     private static final Logger logger = LoggerFactory.getLogger(Config.class);
 
     private static Config instance;
+    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     public static Config loadConfig() {
         if (instance == null) {
@@ -26,7 +27,6 @@ public class Config {
                     String jsonString;
                     try {
                         jsonString = FileUtil.readFileCharacter(new File(Constant.DEFAULT_RESOURCES_DIR, Constant.CONFIG_FILE_NAME));
-                        Gson gson = new GsonBuilder().setPrettyPrinting().create();
                         instance = gson.fromJson(jsonString, Config.class);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -39,7 +39,50 @@ public class Config {
         return instance;
     }
 
+    /** 网络 **/
+    private int port;
+    /** 仿真循环方式 STEP:循环一定步长后停止 ROLL:持续循环 **/
+    private String stepType;
+    /** STEP模式下循环stepSize后仿真暂停 **/
+    private int stepSize;
+    /** 渲染频率 **/
+    private int FPS;
+    /** 更新频率 **/
+    private int UPS;
+    /** 快进速度 **/
+    private double fastForwardSpeed;
+    /** 是否渲染 **/
+    private boolean isRender;
+
     private String sceneFile;
+
+    public int getPort() {
+        return port;
+    }
+
+    public String getStepType() {
+        return stepType;
+    }
+
+    public int getStepSize() {
+        return stepSize;
+    }
+
+    public int getFPS() {
+        return FPS;
+    }
+
+    public int getUPS() {
+        return UPS;
+    }
+
+    public double getFastForwardSpeed() {
+        return fastForwardSpeed;
+    }
+
+    public boolean isRender() {
+        return isRender;
+    }
 
     public String getSceneFile() {
         return sceneFile;
@@ -47,5 +90,10 @@ public class Config {
 
     public void setSceneFile(String sceneFile) {
         this.sceneFile = sceneFile;
+    }
+
+    @Override
+    public String toString() {
+        return gson.toJson(this);
     }
 }

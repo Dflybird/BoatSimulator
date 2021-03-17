@@ -71,14 +71,14 @@ public class SimGUI implements GameLogic {
         config = Config.loadConfig();
         sceneConfig = SceneConfig.loadConfig();
 
-        camera = new Camera(new Vector3f(0, 50, 0));
+        camera = new Camera(new Vector3f(0, 0, 0));
         guiState = new GUIState();
         renderer = new GUIRenderer();
         ocean = new Ocean(LENGTH_X, LENGTH_Z, NUM_X, NUM_Z, new Vector3f());
         scene = new Scene();
         physicsEngine = new PhysicsEngine();
-        stepController = new GameStepController(GameStepController.SimType.valueOf(STEP_TYPE), STEP_SIZE);
-        server = new SimServer(this, PORT);
+        stepController = new GameStepController(GameStepController.SimType.valueOf(config.getStepType()), config.getStepSize());
+        server = new SimServer(this, config.getPort());
         boatModel = Model.loadObj(new File(RESOURCES_MODELS_DIR, BOAT_OBJ_NAME));
         buoyModel = Model.loadObj(new File(RESOURCES_MODELS_DIR, BUOY_OBJ_NAME));
     }
@@ -88,7 +88,7 @@ public class SimGUI implements GameLogic {
         AgentManager.setPhysicsEngine(physicsEngine);
         AgentManager.registerSimStateListener(guiState);
         physicsEngine.init();
-        ocean.init(scene);
+        ocean.init(scene, sceneConfig);
         renderer.init(window, camera, scene, guiState);
         server.start();
         stepController.init();
@@ -139,6 +139,11 @@ public class SimGUI implements GameLogic {
         if (mouseEvent.isRightButtonPressed()) {
             Vector2f rotVec = mouseEvent.getDisplVec();
             camera.moveRotation(rotVec.x * MOUSE_SENSITIVITY, rotVec.y * MOUSE_SENSITIVITY, 0);
+        }
+
+        //reset
+        if (glfwGetKey(window.getWindowID(), GLFW_KEY_R) == GLFW_PRESS) {
+            reset();
         }
     }
 
@@ -213,6 +218,7 @@ public class SimGUI implements GameLogic {
                     position, rotation, scale, buoyModel);
             buoyEntity.createBuoyHelper();
             BuoyAgent buoyAgent = new BuoyAgent("BUOY_"+agentConfig.getId());
+
             buoyAgent.setEntity(buoyEntity);
             AgentManager.addAgent(buoyAgent);
             GameObj buoy = new BuoyObj(buoyAgent.getAgentID(),

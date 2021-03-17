@@ -27,25 +27,6 @@ public class Constant {
 
     public static final String BUOY_MTL_NAME = "buoy2.mtl";
 
-    /** 仿真控制 **/
-    //仿真循环方式 STEP:循环一定步长后停止 ROLL:持续循环
-    public static final String STEP_TYPE = "STEP";
-    public static final int STEP_SIZE = 30;
-
-    /** 渲染频率 **/
-    public static final int FPS = 30;
-    /** 更新频率 **/
-    public static final int UPS = 30;
-    /** Agent系统每周期时间步长，单位毫秒 **/
-    public static final double SECS_PRE_UPDATE = 1.0d / UPS;
-    /** 每帧渲染时间，单位毫秒 **/
-    public static final double SECS_PRE_FRAME = 1.0d / FPS;
-    /** 快进速度 **/
-    public static final double FAST_FORWARD_SPEED = 1.0d;
-
-    /** 网络 **/
-    public static final int PORT = 10086;
-
     /** 环境相关参数 */
     //海浪方块长
     public static final float LENGTH_X = 64;
@@ -85,11 +66,6 @@ public class Constant {
     public static final float C_AIR = 0.4f;
 
     /** 无人船控制相关参数 */
-    private float powerFactor;
-    private float angleFactor;
-    private float maxPower;
-    private float minPower;
-    private float maxTurnAngle;
     //无人船提速增加的驱动力，单位N
     public static final float POWER_FACTOR = 500f;
     //无人船每次转舵增加的角度，单位弧度
@@ -102,13 +78,4 @@ public class Constant {
     public static final float MAX_SPEED = 100f/6f;
     public static final float MIN_SPEED = 0f;
 
-    /** 场景算法相关 **/
-    public static final int ALLY_NUM = 3;
-    public static final int ENEMY_NUM = 3;
-    public static final float ALLY_ATTACK_RANGE = 100f;
-    public static final float ALLY_DETECT_RANGE = 100f;
-    public static final float ENEMY_ATTACK_RANGE = 100f;
-    public static final float ENEMY_DETECT_RANGE = 100f;
-    //主舰ID
-    public static final String MAIN_SHIP_ID = "MAIN_SHIP";
 }

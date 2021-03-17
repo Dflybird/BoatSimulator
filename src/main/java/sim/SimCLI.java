@@ -65,13 +65,19 @@ public class SimCLI implements GameLogic {
     }
 
     public void start(){
-        init(null);
-
-        while (atomicBoolean.get()) {
-            update(Constant.SECS_PRE_UPDATE * Constant.FAST_FORWARD_SPEED);
-        }
-
-        cleanup();
+//        int FPS = config.getFPS();
+//        int UPS = config.getUPS();
+//        this.SECS_PRE_FRAME = 1.0d / FPS;
+//        this.SECS_PRE_UPDATE = 1.0d / UPS;
+//        this.FAST_FORWARD_SPEED = config.getFastForwardSpeed();
+//
+//        init(null);
+//
+//        while (atomicBoolean.get()) {
+//            update(SECS_PRE_UPDATE * FAST_FORWARD_SPEED);
+//        }
+//
+//        cleanup();
     }
 
 }
