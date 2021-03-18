@@ -3,11 +3,14 @@ package ams.agent.usv;
 import ams.AgentManager;
 import ams.AgentMessageHandler;
 import ams.agent.Agent;
+import ams.agent.OnDoneAgent;
 import ams.msg.*;
 import conf.Constant;
 import conf.RewardConfig;
 import conf.SceneConfig;
 import org.joml.Vector3f;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import physics.entity.usv.BoatEngine;
 import physics.entity.usv.BoatEntity;
 import physics.entity.usv.BoatDetector;
@@ -23,6 +26,7 @@ import java.util.Map;
  * @Version 1.0
  **/
 public class USVAgent extends Agent implements AgentMessageHandler {
+    private static final Logger logger = LoggerFactory.getLogger(USVAgent.class);
 
     public enum Status {
         DEAD(0),
@@ -132,9 +136,11 @@ public class USVAgent extends Agent implements AgentMessageHandler {
     @Override
     public void handle(AgentMessage msg) {
         if (msg.getCorrespondingMessageClass() == SteerMessage.class) {
-            SteerMessage steerMessage = (SteerMessage) msg;
-            engine.setEnginePower(steerMessage.getPower());
-            engine.setEngineRotation(steerMessage.getAngle());
+            if (status == Status.ALIVE) {
+                SteerMessage steerMessage = (SteerMessage) msg;
+                engine.setEnginePower(steerMessage.getPower());
+                engine.setEngineRotation(steerMessage.getAngle());
+            }
         }
         else if (msg.getCorrespondingMessageClass() == AttackMessage.class) {
             //被击毁
@@ -165,7 +171,7 @@ public class USVAgent extends Agent implements AgentMessageHandler {
                 send(mainShipID, new AttackMessage(agentID));
             }
             //其次攻击最近Ally
-            USVAgent closestAlly = null;
+            USVAgent closestEnemy = null;
             float minDistance = Float.MAX_VALUE;
             for (Agent agent : AgentManager.getAgentMap().values()) {
                 if (this.equals(agent)) {
@@ -175,15 +181,15 @@ public class USVAgent extends Agent implements AgentMessageHandler {
                     USVAgent usvAgent = (USVAgent) agent;
                     if (usvAgent.getCamp() != null && usvAgent.getCamp() == Camp.ALLY) {
                         float distance = detector.detect(usvAgent);
-                        if (distance >=0 && distance > minDistance) {
+                        if (distance >=0 && distance < minDistance) {
                             minDistance = distance;
-                            closestAlly = usvAgent;
+                            closestEnemy = usvAgent;
                         }
                     }
                 }
             }
-            if (closestAlly != null && weapon.attack(closestAlly.agentID)) {
-                send(closestAlly.agentID, new AttackMessage(agentID));
+            if (closestEnemy != null && weapon.attack(closestEnemy.agentID)) {
+                send(closestEnemy.agentID, new AttackMessage(agentID));
             }
         }
         else if (camp == Camp.ALLY) {
@@ -221,7 +227,7 @@ public class USVAgent extends Agent implements AgentMessageHandler {
         }
         if (camp == Camp.ENEMY) {
             //每靠近主舰enemy回报增加，ally回报
-            Agent MainShip = AgentManager.getAgent(AgentUtil.assembleName(USVAgent.Camp.MAIN_SHIP, sceneConfig.getMainShip().getId()));
+//            Agent MainShip = AgentManager.getAgent(AgentUtil.assembleName(USVAgent.Camp.MAIN_SHIP, sceneConfig.getMainShip().getId()));
 
         }
     }

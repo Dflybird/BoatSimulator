@@ -71,7 +71,7 @@ public class SimGUI implements GameLogic {
         config = Config.loadConfig();
         sceneConfig = SceneConfig.loadConfig();
 
-        camera = new Camera(new Vector3f(0, 0, 500));
+        camera = new Camera(new Vector3f(0, 200, 0));
         guiState = new GUIState();
         renderer = new GUIRenderer();
         ocean = new Ocean(LENGTH_X, LENGTH_Z, NUM_X, NUM_Z, new Vector3f());
@@ -175,11 +175,11 @@ public class SimGUI implements GameLogic {
 
     @Override
     public void reset() {
-        pause();
-        logger.debug("reset");
+//        pause();
+        logger.info("reset");
         stepController.init();
         AgentManager.resetAllAgent();
-        play(null);
+//        play(null);
     }
 
     @Override
@@ -200,34 +200,34 @@ public class SimGUI implements GameLogic {
 
     private void initSimScene() {
         //设置浮标，限制场地范围
-        List<AgentConfig> buoys = sceneConfig.getBuoys();
-        for (AgentConfig agentConfig : buoys) {
-            //模型初始朝向面向x轴正方向
-            Vector3f position = agentConfig.getPos();
-            Vector3f scale = new Vector3f(1,1,1);
-            Vector3f modelForward = new Vector3f(1,0,0);
-            Vector3f forward = agentConfig.getForward();
-            Vector3f u = new Vector3f();
-            modelForward.cross(forward, u);
-            float angle = forward.angle(modelForward);
-            u.mul((float) Math.sin(angle/2));
-            Quaternionf rotation = new Quaternionf(u.x, u.y, u.z, (float) Math.cos(angle/2));
-
-            BuoyEntity buoyEntity = new BuoyEntity(ocean,
-                    physicsEngine.getWorld(), physicsEngine.getSpace(),
-                    position, rotation, scale, buoyModel);
-            buoyEntity.createBuoyHelper();
-            BuoyAgent buoyAgent = new BuoyAgent("BUOY_"+agentConfig.getId());
-
-            buoyAgent.setEntity(buoyEntity);
-            AgentManager.addAgent(buoyAgent);
-            GameObj buoy = new BuoyObj(buoyAgent.getAgentID(),
-                    buoyEntity.getTranslation(),
-                    buoyEntity.getRotation(),
-                    buoyEntity.getScale(),
-                    buoyModel);
-            scene.setGameObj(buoy);
-        }
+//        List<AgentConfig> buoys = sceneConfig.getBuoys();
+//        for (AgentConfig agentConfig : buoys) {
+//            //模型初始朝向面向x轴正方向
+//            Vector3f position = agentConfig.getPos();
+//            Vector3f scale = new Vector3f(1,1,1);
+//            Vector3f modelForward = new Vector3f(1,0,0);
+//            Vector3f forward = agentConfig.getForward();
+//            Vector3f u = new Vector3f();
+//            modelForward.cross(forward, u);
+//            float angle = forward.angle(modelForward);
+//            u.mul((float) Math.sin(angle/2));
+//            Quaternionf rotation = new Quaternionf(u.x, u.y, u.z, (float) Math.cos(angle/2));
+//
+//            BuoyEntity buoyEntity = new BuoyEntity(ocean,
+//                    physicsEngine.getWorld(), physicsEngine.getSpace(),
+//                    position, rotation, scale, buoyModel);
+//            buoyEntity.createBuoyHelper();
+//            BuoyAgent buoyAgent = new BuoyAgent("BUOY_"+agentConfig.getId());
+//
+//            buoyAgent.setEntity(buoyEntity);
+//            AgentManager.addAgent(buoyAgent);
+//            GameObj buoy = new BuoyObj(buoyAgent.getAgentID(),
+//                    buoyEntity.getTranslation(),
+//                    buoyEntity.getRotation(),
+//                    buoyEntity.getScale(),
+//                    buoyModel);
+//            scene.setGameObj(buoy);
+//        }
         //main ship
         {
             AgentConfig agentConfig = sceneConfig.getMainShip();

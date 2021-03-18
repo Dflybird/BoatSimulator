@@ -48,7 +48,7 @@ public class TestGameEngine {
 
             }
         });
-        new SimGUI().start();
+//        new SimGUI().start();
 
     }
 }

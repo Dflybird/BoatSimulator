@@ -5,12 +5,15 @@ import ams.agent.usv.USVAgent;
 import ams.msg.AgentMessage;
 import ams.msg.OnDoneMessage;
 import conf.SceneConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @Author: gq
  * @Date: 2021/3/17 15:30
  */
 public class OnDoneAgent extends Agent implements AgentMessageHandler {
+    private static final Logger logger = LoggerFactory.getLogger(OnDoneAgent.class);
 
     private boolean done;
     private final SceneConfig sceneConfig;
@@ -38,6 +41,7 @@ public class OnDoneAgent extends Agent implements AgentMessageHandler {
         onDoneAllyNum = 0;
         onDoneEnemyNum = 0;
         onDoneMainShip = false;
+        done = false;
     }
 
     @Override

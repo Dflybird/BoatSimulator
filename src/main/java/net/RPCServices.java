@@ -10,6 +10,8 @@ import conf.SceneConfig;
 import engine.GameLogic;
 import io.grpc.stub.StreamObserver;
 import org.joml.Vector3f;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import util.AgentUtil;
 
 import java.util.ArrayList;
@@ -24,6 +26,8 @@ import static conf.Constant.*;
  * @Date: 2021/3/15 15:19
  */
 public class RPCServices extends AlgorithmGrpc.AlgorithmImplBase {
+
+    private static final Logger logger = LoggerFactory.getLogger(RPCServices.class);
 
     private final GameLogic gameLogic;
     private final SceneConfig sceneConfig;

@@ -1,11 +1,11 @@
 {
   "port": 10086,
-  "stepType": "STEP",
-  "stepSize": 30,
+  "stepType": "ROLL",
+  "stepSize": 5,
   "FPS": 30,
-  "UPS": 30,
+  "UPS": 150,
   "fastForwardSpeed": 1.0,
   "isRender": true,
-  "sceneConfigFile": "test_scene.json",
+  "sceneConfigFile": "defend_main_ship_scene.json",
   "rewardConfigFile": "defend_main_ship_reward.json"
 }

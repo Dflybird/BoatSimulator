@@ -11,7 +11,7 @@ public class OnDoneMessage extends AgentMessage {
     private final USVAgent.Camp camp;
 
     public OnDoneMessage(USVAgent.Camp camp) {
-        super(AgentMessage.class);
+        super(OnDoneMessage.class);
         this.camp = camp;
     }
 

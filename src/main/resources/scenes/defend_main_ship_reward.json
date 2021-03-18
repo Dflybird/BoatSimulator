@@ -1,5 +1,5 @@
 {
-  "outOfRange": 100.0,
-  "destroyUSV": 10.0,
-  "enemyDestroyMainShip": 50.0
+  "outOfRange": -10.0,
+  "destroyUSV": 1.0,
+  "enemyDestroyMainShip": 5.0
 }
