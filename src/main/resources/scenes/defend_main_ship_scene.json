@@ -16,6 +16,7 @@
   "sceneZ": 450.0,
   "allyAttackRange": 10.0,
   "allyDetectRange": 1000.0,
+  "allyDetectAngle": 30.0,
   "allyUSVs": [
     {
       "id": 0,
@@ -59,6 +60,7 @@
   ],
   "enemyAttackRange": 10.0,
   "enemyDetectRange": 1000.0,
+  "enemyDetectAngle": 30.0,
   "enemyUSVs": [
     {
       "id": 0,

@@ -97,10 +97,10 @@ public class USVAgent extends Agent implements AgentMessageHandler {
         engine = new BoatEngine(entity, new Vector3f(-2f, -0.5f, 0f));
         if (camp == Camp.ALLY) {
             detector = new BoatDetector(entity, new Vector3f(0f, 0f, 0f), sceneConfig.getAllyDetectRange());
-            weapon = new BoatWeapon(entity, new Vector3f(0f, 0f, 0f), sceneConfig.getAllyAttackRange());
+            weapon = new BoatWeapon(entity, new Vector3f(0f, 0f, 0f), sceneConfig.getAllyAttackRange(), sceneConfig.getAllyAttackAngle());
         } else if (camp == Camp.ENEMY) {
             detector = new BoatDetector(entity, new Vector3f(0f, 0f, 0f), sceneConfig.getEnemyDetectRange());
-            weapon = new BoatWeapon(entity, new Vector3f(0f, 0f, 0f), sceneConfig.getEnemyAttackRange());
+            weapon = new BoatWeapon(entity, new Vector3f(0f, 0f, 0f), sceneConfig.getEnemyAttackRange(), sceneConfig.getEnemyAttackAngle());
         }
 
         status = Status.ALIVE;

@@ -17,6 +17,8 @@ public class BoatWeapon {
 
     //武器攻击范围，单位m
     public final float attackRange;
+    //武器攻击角度，从船的朝向开始算，左右各attackAngle度，单位弧度
+    public final float attackAngle;
     //开火间隔，单位s
     public static final float ATTACK_INTERVAL = 0.1f;
     //击毁概率，百分之八十
@@ -29,12 +31,13 @@ public class BoatWeapon {
     private final Entity entity;
     private final Vector3f weaponRelativeCoordinate;
 
-    public BoatWeapon(Entity entity, Vector3f weaponRelativeCoordinate, float attackRange) {
+    public BoatWeapon(Entity entity, Vector3f weaponRelativeCoordinate, float attackRange, float attackAngle) {
         this.entity = entity;
         this.attackRange = attackRange;
         this.weaponRelativeCoordinate = weaponRelativeCoordinate;
         this.lastAttackTime = TimeUtil.currentTime();
         this.random = new Random(System.currentTimeMillis());
+        this.attackAngle = (float) (attackAngle * Math.PI/180);
     }
 
     public boolean attack(String agentID){
@@ -49,7 +52,14 @@ public class BoatWeapon {
                     weaponCoordinate.distance(usvAgent.getEntity().getTranslation()) <= attackRange    //目标在攻击距离内
             ) {
                 lastAttackTime = currentTime;
-                return random.nextDouble() < ATTACK_PROBABILITY;
+                Vector3f forward = new Vector3f(entity.getForward());
+                forward.rotate(entity.getRotation()).normalize();
+
+                Vector3f direction = new Vector3f(usvAgent.getEntity().getTranslation());
+                direction.sub(entity.getTranslation()).normalize();
+
+                float angle = forward.angle(direction);
+                return angle < attackAngle;
             }
         }
         return false;

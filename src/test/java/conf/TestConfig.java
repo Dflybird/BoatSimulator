@@ -38,11 +38,11 @@ public class TestConfig {
 
         Field stepType = clazz.getDeclaredField("stepType");
         stepType.setAccessible(true);
-        stepType.set(config, "ROLL");
+        stepType.set(config, "STEP");
 
         Field stepSize = clazz.getDeclaredField("stepSize");
         stepSize.setAccessible(true);
-        stepSize.setInt(config, 30);
+        stepSize.setInt(config, 5);
 
         Field FPS = clazz.getDeclaredField("FPS");
         FPS.setAccessible(true);
@@ -50,7 +50,7 @@ public class TestConfig {
 
         Field UPS = clazz.getDeclaredField("UPS");
         UPS.setAccessible(true);
-        UPS.setInt(config, 30);
+        UPS.setInt(config, 150);
 
         Field fastForwardSpeed = clazz.getDeclaredField("fastForwardSpeed");
         fastForwardSpeed.setAccessible(true);
@@ -68,8 +68,8 @@ public class TestConfig {
         rewardConfigFile.setAccessible(true);
         rewardConfigFile.set(config, "defend_main_ship_reward.json");
 
-        File file = new File(Constant.DEFAULT_RESOURCES_DIR, Constant.CONFIG_FILE_NAME);
-        FileUtil.writeFile(file, config.toString());
+//        File file = new File(Constant.DEFAULT_RESOURCES_DIR, Constant.CONFIG_FILE_NAME);
+//        FileUtil.writeFile(file, config.toString());
     }
 
     @Test

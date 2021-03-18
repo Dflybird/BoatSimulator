@@ -44,8 +44,8 @@ public class TestRewardConfig {
         enemyDestroyMainShip.setFloat(rewardConfig, 50);
 
 
-        File file = new File(RESOURCES_SCENES_DIR, "defend_main_ship_reward.json");
-        FileUtil.writeFile(file, rewardConfig.toString());
+//        File file = new File(RESOURCES_SCENES_DIR, "defend_main_ship_reward.json");
+//        FileUtil.writeFile(file, rewardConfig.toString());
     }
 
     @Test

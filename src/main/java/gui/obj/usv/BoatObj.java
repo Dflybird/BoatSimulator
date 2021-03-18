@@ -7,6 +7,7 @@ import gui.obj.GameObj;
 import gui.obj.Model;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import java.io.File;
 import java.util.UUID;
@@ -40,4 +41,9 @@ public class BoatObj extends GameObj {
         scale = initScale;
     }
 
+    public void setColor(float r, float g, float b, float a){
+        mesh.getMaterial().setAmbient(new Vector4f(r,g,b,a));
+        mesh.getMaterial().setDiffuse(new Vector4f(r,g,b,a));
+        mesh.getMaterial().setSpecular(new Vector4f(r,g,b,a));
+    }
 }

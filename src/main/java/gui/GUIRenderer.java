@@ -70,8 +70,9 @@ public class GUIRenderer {
 
     private void setupOceanShader() {
         oceanProgram = new ShaderProgram();
-        oceanProgram.init(new File(RESOURCES_SHADERS_DIR, "ocean.vert"),
-                new File(RESOURCES_SHADERS_DIR, "ocean.frag"));
+        File vertFile = new File(RESOURCES_SHADERS_DIR, "ocean.vert");
+        File fragFile = new File(RESOURCES_SHADERS_DIR, "ocean.frag");
+        oceanProgram.init(vertFile, fragFile);
         oceanProgram.createUniform("world");
         oceanProgram.createUniform("view");
         oceanProgram.createUniform("projection");

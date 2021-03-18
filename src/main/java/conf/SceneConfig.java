@@ -75,10 +75,13 @@ public class SceneConfig {
     private int allyNum;
     private float allyAttackRange;
     private float allyDetectRange;
+    //攻击角度，0~180，单位度
+    private float allyAttackAngle;
     private List<AgentConfig> allyUSVs;
     private int enemyNum;
     private float enemyAttackRange;
     private float enemyDetectRange;
+    private float enemyAttackAngle;
     private List<AgentConfig> enemyUSVs;
 
     private AgentConfig mainShip;
@@ -157,6 +160,14 @@ public class SceneConfig {
 
     public AgentConfig getMainShip() {
         return mainShip;
+    }
+
+    public float getAllyAttackAngle() {
+        return allyAttackAngle;
+    }
+
+    public float getEnemyAttackAngle() {
+        return enemyAttackAngle;
     }
 
     @Override

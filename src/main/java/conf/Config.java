@@ -26,7 +26,8 @@ public class Config {
                 if (instance == null) {
                     String jsonString;
                     try {
-                        jsonString = FileUtil.readFileCharacter(new File(Constant.DEFAULT_RESOURCES_DIR, Constant.CONFIG_FILE_NAME));
+                        File file = new File(Constant.DEFAULT_RESOURCES_DIR, Constant.CONFIG_FILE_NAME);
+                        jsonString = FileUtil.readFileCharacter(file);
                         instance = gson.fromJson(jsonString, Config.class);
                     } catch (IOException e) {
                         e.printStackTrace();

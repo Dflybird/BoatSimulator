@@ -96,7 +96,8 @@ public class SimGUI implements GameLogic {
         //环境光
         SceneLight sceneLight = new SceneLight();
         sceneLight.setAmbientLight(new Vector3f(0.3f, 0.3f, 0.3f));
-        DirectionalLight directionalLight = new DirectionalLight(new Vector3f(1.0f, 0.6f, 0.3f), new Vector3f(1, 0.1f, -1),  1.0f);
+//        DirectionalLight directionalLight = new DirectionalLight(new Vector3f(1.0f, 0.6f, 0.3f), new Vector3f(1, 0.1f, -1),  1.0f);
+        DirectionalLight directionalLight = new DirectionalLight(new Vector3f(1.0f, 0.8f, 0.8f), new Vector3f(1, 0.5f, -1),  1.0f);
         sceneLight.setDirectionalLight(directionalLight);
         scene.setSceneLight(sceneLight);
 
@@ -248,7 +249,7 @@ public class SimGUI implements GameLogic {
             boatEntity.createBuoyHelper();
             USVAgent boatAgent = new USVAgent(USVAgent.Camp.MAIN_SHIP, agentConfig.getId(), boatEntity);
             AgentManager.addAgent(boatAgent);
-            GameObj boat = new BoatObj(boatAgent.getAgentID(),
+            BoatObj boat = new BoatObj(boatAgent.getAgentID(),
                     boatEntity.getTranslation(),
                     boatEntity.getRotation(),
                     boatEntity.getScale(),
@@ -275,11 +276,12 @@ public class SimGUI implements GameLogic {
             boatEntity.createBuoyHelper();
             USVAgent boatAgent = new USVAgent(USVAgent.Camp.ALLY, agentConfig.getId(), boatEntity);
             AgentManager.addAgent(boatAgent);
-            GameObj boat = new BoatObj(boatAgent.getAgentID(),
+            BoatObj boat = new BoatObj(boatAgent.getAgentID(),
                     boatEntity.getTranslation(),
                     boatEntity.getRotation(),
                     boatEntity.getScale(),
                     boatModel);
+            boat.setColor((float) 0xff/0xff,(float) 0x6e/0xff,(float) 0x40/0xff,1);
             scene.setGameObj(boat);
         }
         //enemy usv
@@ -302,11 +304,12 @@ public class SimGUI implements GameLogic {
             boatEntity.createBuoyHelper();
             USVAgent boatAgent = new USVAgent(USVAgent.Camp.ENEMY, agentConfig.getId(), boatEntity);
             AgentManager.addAgent(boatAgent);
-            GameObj boat = new BoatObj(boatAgent.getAgentID(),
+            BoatObj boat = new BoatObj(boatAgent.getAgentID(),
                     boatEntity.getTranslation(),
                     boatEntity.getRotation(),
                     boatEntity.getScale(),
                     boatModel);
+            boat.setColor((float) 0x40/0xff,(float) 0xc4/0xff,(float) 0xff/0xff,1);
             scene.setGameObj(boat);
         }
 

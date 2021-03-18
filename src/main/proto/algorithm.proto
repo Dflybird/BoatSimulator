@@ -8,11 +8,11 @@ option objc_class_prefix = "RTG";
 package net;
 
 service Algorithm {
-  //环境参数
+  //获得环境参数
   rpc getSceneParameter(Null) returns (SceneParameter) {}
-
+  //获得观测数据
   rpc getObservation(ObservationRequest) returns (Observation) {}
-
+  //下发控制指令，并得到控制指令的回报
   rpc step(Action) returns (Reward) {}
   //重启仿真
   rpc reset(Null) returns (Null) {}
