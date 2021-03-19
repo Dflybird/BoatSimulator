@@ -1,6 +1,6 @@
 {
   "port": 10086,
-  "stepType": "STEP",
+  "stepType": "ROLL",
   "stepSize": 5,
   "FPS": 30,
   "UPS": 150,

@@ -171,7 +171,7 @@ public class USVAgent extends Agent implements AgentMessageHandler {
                 send(mainShipID, new AttackMessage(agentID));
             }
             //其次攻击最近Ally
-            USVAgent closestEnemy = null;
+            USVAgent closestAlly = null;
             float minDistance = Float.MAX_VALUE;
             for (Agent agent : AgentManager.getAgentMap().values()) {
                 if (this.equals(agent)) {
@@ -183,13 +183,13 @@ public class USVAgent extends Agent implements AgentMessageHandler {
                         float distance = detector.detect(usvAgent);
                         if (distance >=0 && distance < minDistance) {
                             minDistance = distance;
-                            closestEnemy = usvAgent;
+                            closestAlly = usvAgent;
                         }
                     }
                 }
             }
-            if (closestEnemy != null && weapon.attack(closestEnemy.agentID)) {
-                send(closestEnemy.agentID, new AttackMessage(agentID));
+            if (closestAlly != null && weapon.attack(closestAlly.agentID)) {
+                send(closestAlly.agentID, new AttackMessage(agentID));
             }
         }
         else if (camp == Camp.ALLY) {
@@ -225,11 +225,6 @@ public class USVAgent extends Agent implements AgentMessageHandler {
                 pos.z < sceneConfig.getMinBoundaryZ()) {
             reward += rewardConfig.getOutOfRange();
         }
-        if (camp == Camp.ENEMY) {
-            //每靠近主舰enemy回报增加，ally回报
-//            Agent MainShip = AgentManager.getAgent(AgentUtil.assembleName(USVAgent.Camp.MAIN_SHIP, sceneConfig.getMainShip().getId()));
-
-        }
     }
 
     //TODO 修改成消息驱动？
@@ -242,10 +237,10 @@ public class USVAgent extends Agent implements AgentMessageHandler {
             }
             if (agent instanceof USVAgent) {
                 USVAgent usvAgent = (USVAgent) agent;
-                //拥有阵营但和自己不是同阵营的都属于敌方
-                if (usvAgent.getCamp() != null && usvAgent.getCamp() != camp) {
+                //拥有阵营但和自己不是同阵营的都属于敌方,且不是主舰
+                if (usvAgent.getCamp() != null && usvAgent.getCamp() != Camp.MAIN_SHIP && usvAgent.getCamp() != camp) {
                     float distance = detector.detect(usvAgent);
-                    if (distance >=0 && distance < minDistance) {
+                    if (distance >0 && distance < minDistance) {
                         minDistance = distance;
                         closestEnemy = usvAgent;
                     }
@@ -270,7 +265,7 @@ public class USVAgent extends Agent implements AgentMessageHandler {
                 //拥有阵营但和自己是同阵营的都属于友方
                 if (usvAgent.getCamp() != null && usvAgent.getCamp() == camp) {
                     float distance = detector.detect(usvAgent);
-                    if (distance >=0 && distance > minDistance) {
+                    if (distance >0 && distance < minDistance) {
                         minDistance = distance;
                         closestAlly = usvAgent;
                     }

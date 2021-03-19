@@ -163,6 +163,7 @@ public class RPCServices extends AlgorithmGrpc.AlgorithmImplBase {
     private TeamObservation getEnemyObservation() {
         List<MemberObservation> list = new ArrayList<>();
         USVAgent mainShip = (USVAgent) AgentManager.getAgent(AgentUtil.assembleName(USVAgent.Camp.MAIN_SHIP, sceneConfig.getMainShip().getId()));
+        Vector3f mainShipPos = mainShip == null ? new Vector3f() : mainShip.getEntity().getTranslation();
         for (Agent agent : AgentManager.getAgentMap().values()) {
             if (agent instanceof USVAgent) {
                 USVAgent usvAgent = (USVAgent) agent;
@@ -173,7 +174,7 @@ public class RPCServices extends AlgorithmGrpc.AlgorithmImplBase {
                             .setSelfPos(newVector3(usvAgent.getEntity().getTranslation()))
                             .setClosestEnemyPos(newVector3(usvAgent.relativeCoordinateToSelf(usvAgent.closestEnemyPos())))
                             .setClosestAllyPos(newVector3(usvAgent.relativeCoordinateToSelf(usvAgent.closestAllyPos())))
-                            .setMainShipPos(newVector3(usvAgent.relativeCoordinateToSelf(mainShip.getEntity().getTranslation())))
+                            .setMainShipPos(newVector3(usvAgent.relativeCoordinateToSelf(mainShipPos)))
                             .setForward(newVector3(usvAgent.getCurrForward()))
                             .build();
                     list.add(memberObservation);

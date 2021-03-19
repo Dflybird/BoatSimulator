@@ -2,6 +2,7 @@ package sim;
 
 import ams.agent.usv.BuoyAgent;
 import ams.agent.usv.USVAgent;
+import ams.msg.SteerMessage;
 import conf.AgentConfig;
 import conf.SceneConfig;
 import engine.GameStepController;
@@ -145,6 +146,16 @@ public class SimGUI implements GameLogic {
         //reset
         if (glfwGetKey(window.getWindowID(), GLFW_KEY_R) == GLFW_PRESS) {
             reset();
+        }
+
+        if (glfwGetKey(window.getWindowID(), GLFW_KEY_UP) == GLFW_PRESS) {
+            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.STRAIGHT));
+        } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_DOWN) == GLFW_PRESS) {
+            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.STOP));
+        } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_LEFT) == GLFW_PRESS) {
+            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.TURN_LEFT));
+        } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
+            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.TURN_RIGHT));
         }
     }
 

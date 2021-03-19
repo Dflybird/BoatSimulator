@@ -52,11 +52,13 @@ public class SceneConfigAdapter implements JsonDeserializer<SceneConfig>, JsonSe
 
                 float allyAttackRange = jsonObject.get("allyAttackRange").getAsFloat();
                 float allyDetectRange = jsonObject.get("allyDetectRange").getAsFloat();
+                float allyAttackAngle = jsonObject.get("allyAttackAngle").getAsFloat();
                 List<AgentConfig> allyUSVs = jsonDeserializationContext.deserialize(jsonObject.getAsJsonArray("allyUSVs"), agentConfigListType);
                 int allyNum = allyUSVs.size();
 
                 float enemyAttackRange = jsonObject.get("enemyAttackRange").getAsFloat();
                 float enemyDetectRange = jsonObject.get("enemyDetectRange").getAsFloat();
+                float enemyAttackAngle = jsonObject.get("enemyAttackAngle").getAsFloat();
                 List<AgentConfig> enemyUSVs = jsonDeserializationContext.deserialize(jsonObject.getAsJsonArray("enemyUSVs"), agentConfigListType);
                 int enemyNum = enemyUSVs.size();
 
@@ -124,6 +126,10 @@ public class SceneConfigAdapter implements JsonDeserializer<SceneConfig>, JsonSe
                 allyDetectRangeField.setAccessible(true);
                 allyDetectRangeField.set(sceneConfig, allyDetectRange);
 
+                Field allyAttackAngleField = clazz.getDeclaredField("allyAttackAngle");
+                allyAttackAngleField.setAccessible(true);
+                allyAttackAngleField.set(sceneConfig, allyAttackAngle);
+
                 Field allyUSVsField = clazz.getDeclaredField("allyUSVs");
                 allyUSVsField.setAccessible(true);
                 allyUSVsField.set(sceneConfig, allyUSVs);
@@ -139,6 +145,10 @@ public class SceneConfigAdapter implements JsonDeserializer<SceneConfig>, JsonSe
                 Field enemyDetectRangeField = clazz.getDeclaredField("enemyDetectRange");
                 enemyDetectRangeField.setAccessible(true);
                 enemyDetectRangeField.set(sceneConfig, enemyDetectRange);
+
+                Field enemyAttackAngleField = clazz.getDeclaredField("enemyAttackAngle");
+                enemyAttackAngleField.setAccessible(true);
+                enemyAttackAngleField.set(sceneConfig, enemyAttackAngle);
 
                 Field enemyUSVsField = clazz.getDeclaredField("enemyUSVs");
                 enemyUSVsField.setAccessible(true);
@@ -169,9 +179,11 @@ public class SceneConfigAdapter implements JsonDeserializer<SceneConfig>, JsonSe
         jsonObject.addProperty("sceneZ", sceneConfig.getSceneZ());
         jsonObject.addProperty("allyAttackRange", sceneConfig.getAllyAttackRange());
         jsonObject.addProperty("allyDetectRange", sceneConfig.getAllyDetectRange());
+        jsonObject.addProperty("allyAttackAngle", sceneConfig.getAllyAttackAngle());
         jsonObject.add("allyUSVs", jsonSerializationContext.serialize(sceneConfig.getAllyUSVs()));
         jsonObject.addProperty("enemyAttackRange", sceneConfig.getEnemyAttackRange());
         jsonObject.addProperty("enemyDetectRange", sceneConfig.getEnemyDetectRange());
+        jsonObject.addProperty("enemyAttackAngle", sceneConfig.getEnemyAttackAngle());
         jsonObject.add("enemyUSVs", jsonSerializationContext.serialize(sceneConfig.getEnemyUSVs()));
         jsonObject.add("mainShip", jsonSerializationContext.serialize(sceneConfig.getMainShip()));
 

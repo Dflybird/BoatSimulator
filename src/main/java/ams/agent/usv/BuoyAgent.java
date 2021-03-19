@@ -22,4 +22,8 @@ public class BuoyAgent extends Agent {
         entity.updateState(stepTime);
     }
 
+    @Override
+    public void reset() {
+        super.reset();
+    }
 }

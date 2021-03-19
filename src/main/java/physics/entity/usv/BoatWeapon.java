@@ -4,6 +4,8 @@ import ams.AgentManager;
 import ams.agent.Agent;
 import ams.agent.usv.USVAgent;
 import org.joml.Vector3f;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import physics.entity.Entity;
 import util.TimeUtil;
 
@@ -14,6 +16,7 @@ import java.util.Random;
  * @Date: 2021/3/12 17:50
  */
 public class BoatWeapon {
+    private static final Logger logger = LoggerFactory.getLogger(BoatWeapon.class);
 
     //武器攻击范围，单位m
     public final float attackRange;

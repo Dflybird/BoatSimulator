@@ -69,6 +69,7 @@ public class TestSceneConfig {
         }
         float allyAttackRange = 100;
         float allyDetectRange = 100;
+        float allyAttackAngle = 30;
         List<AgentConfig> allyUSVs = new ArrayList<>();
         AgentConfig a1 = new AgentConfig();
         a1.setId(0);
@@ -84,6 +85,7 @@ public class TestSceneConfig {
 
         float enemyAttackRange = 100;
         float enemyDetectRange = 100;
+        float enemyAttackAngle = 30;
         List<AgentConfig> enemyUSVs = new ArrayList<>();
         int enemyNum = enemyUSVs.size();
 
@@ -155,6 +157,10 @@ public class TestSceneConfig {
         allyDetectRangeField.setAccessible(true);
         allyDetectRangeField.set(sceneConfig, allyDetectRange);
 
+        Field allyAttackAngleField = clazz.getDeclaredField("allyAttackAngle");
+        allyAttackAngleField.setAccessible(true);
+        allyAttackAngleField.set(sceneConfig, allyAttackAngle);
+
         Field allyUSVsField = clazz.getDeclaredField("allyUSVs");
         allyUSVsField.setAccessible(true);
         allyUSVsField.set(sceneConfig, allyUSVs);
@@ -170,6 +176,10 @@ public class TestSceneConfig {
         Field enemyDetectRangeField = clazz.getDeclaredField("enemyDetectRange");
         enemyDetectRangeField.setAccessible(true);
         enemyDetectRangeField.set(sceneConfig, enemyDetectRange);
+
+        Field enemyAttackAngleField = clazz.getDeclaredField("enemyAttackAngle");
+        enemyAttackAngleField.setAccessible(true);
+        enemyAttackAngleField.set(sceneConfig, enemyAttackAngle);
 
         Field enemyUSVsField = clazz.getDeclaredField("enemyUSVs");
         enemyUSVsField.setAccessible(true);
