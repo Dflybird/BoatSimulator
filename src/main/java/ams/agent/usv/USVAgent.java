@@ -94,13 +94,16 @@ public class USVAgent extends Agent implements AgentMessageHandler {
 
         this.camp = camp;
         this.id = id;
-        engine = new BoatEngine(entity, new Vector3f(-2f, -0.5f, 0f));
         if (camp == Camp.ALLY) {
+            engine = new BoatEngine(entity, new Vector3f(-2f, -0.5f, 0f), sceneConfig.getAllyMaxPower(), sceneConfig.getAllyMaxSteeringAngle(), sceneConfig.getAllyMaxSpeed());
             detector = new BoatDetector(entity, new Vector3f(0f, 0f, 0f), sceneConfig.getAllyDetectRange());
             weapon = new BoatWeapon(entity, new Vector3f(0f, 0f, 0f), sceneConfig.getAllyAttackRange(), sceneConfig.getAllyAttackAngle());
         } else if (camp == Camp.ENEMY) {
+            engine = new BoatEngine(entity, new Vector3f(-2f, -0.5f, 0f), sceneConfig.getEnemyMaxPower(), sceneConfig.getEnemyMaxSteeringAngle(), sceneConfig.getEnemyMaxSpeed());
             detector = new BoatDetector(entity, new Vector3f(0f, 0f, 0f), sceneConfig.getEnemyDetectRange());
             weapon = new BoatWeapon(entity, new Vector3f(0f, 0f, 0f), sceneConfig.getEnemyAttackRange(), sceneConfig.getEnemyAttackAngle());
+        } else {
+            engine = new BoatEngine(entity, new Vector3f(-2f, -0.5f, 0f), 0, 0, 0);
         }
 
         status = Status.ALIVE;
@@ -138,6 +141,7 @@ public class USVAgent extends Agent implements AgentMessageHandler {
         if (msg.getCorrespondingMessageClass() == SteerMessage.class) {
             if (status == Status.ALIVE) {
                 SteerMessage steerMessage = (SteerMessage) msg;
+                steerMessage.adaptEngine(engine);
                 engine.setEnginePower(steerMessage.getPower());
                 engine.setEngineRotation(steerMessage.getAngle());
             }
@@ -237,8 +241,11 @@ public class USVAgent extends Agent implements AgentMessageHandler {
             }
             if (agent instanceof USVAgent) {
                 USVAgent usvAgent = (USVAgent) agent;
-                //拥有阵营但和自己不是同阵营的都属于敌方,且不是主舰
-                if (usvAgent.getCamp() != null && usvAgent.getCamp() != Camp.MAIN_SHIP && usvAgent.getCamp() != camp) {
+                //拥有阵营但和自己不是同阵营的都属于敌方,且不是主舰，且存活
+                if (usvAgent.getStatus() != Status.DEAD &&
+                        usvAgent.getCamp() != null &&
+                        usvAgent.getCamp() != Camp.MAIN_SHIP &&
+                        usvAgent.getCamp() != camp) {
                     float distance = detector.detect(usvAgent);
                     if (distance >0 && distance < minDistance) {
                         minDistance = distance;
@@ -263,7 +270,9 @@ public class USVAgent extends Agent implements AgentMessageHandler {
             if (agent instanceof USVAgent) {
                 USVAgent usvAgent = (USVAgent) agent;
                 //拥有阵营但和自己是同阵营的都属于友方
-                if (usvAgent.getCamp() != null && usvAgent.getCamp() == camp) {
+                if (usvAgent.getStatus() != Status.DEAD &&
+                        usvAgent.getCamp() != null &&
+                        usvAgent.getCamp() == camp) {
                     float distance = detector.detect(usvAgent);
                     if (distance >0 && distance < minDistance) {
                         minDistance = distance;

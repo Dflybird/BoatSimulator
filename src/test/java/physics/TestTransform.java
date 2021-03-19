@@ -47,6 +47,7 @@ public class TestTransform {
         logger.debug("point2 x:{} | y: {} | z: {}", point2.x, point2.y, point2.z);
         logger.debug("point3 x:{} | y: {} | z: {}", point3.x, point3.y, point3.z);
         logger.debug("point3 x:{} | y: {} | z: {}", point3.x, point3.y, point3.z);
+
     }
 
     @Test
@@ -55,5 +56,16 @@ public class TestTransform {
 //        float t = 0.00000000000000000000000000000000000000000000000000000000001f;
         float f = (float) d;
         logger.debug("f {}", f);
+    }
+
+    @Test
+    public void testMath() {
+
+        Vector3f forward = new Vector3f(1,0,0);
+        forward.rotateY(30);
+        logger.info("{} | {} | {}", forward.x, forward.y, forward.z);
+        float sin = (float) org.joml.Math.sin((double)30 * 0.5D);
+        float cos = (float) org.joml.Math.cosFromSin((double)sin, (double)30 * 0.5D);
+        logger.info("{} | {}", sin, cos);
     }
 }

@@ -6,42 +6,42 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="engine" level="DEBUG" additivity="false">
-            <AppenderRef ref="Console"/>
-        </Logger>
-        <Logger name="gui" level="DEBUG" additivity="false">
-            <AppenderRef ref="Console"/>
-        </Logger>
+<!--        <Logger name="engine" level="DEBUG" additivity="false">-->
+<!--            <AppenderRef ref="Console"/>-->
+<!--        </Logger>-->
+<!--        <Logger name="gui" level="DEBUG" additivity="false">-->
+<!--            <AppenderRef ref="Console"/>-->
+<!--        </Logger>-->
 
-        <Logger name="ams" level="DEBUG" additivity="false">
-            <AppenderRef ref="Console"/>
-        </Logger>
+<!--        <Logger name="ams" level="DEBUG" additivity="false">-->
+<!--            <AppenderRef ref="Console"/>-->
+<!--        </Logger>-->
 
-        <Logger name="state" level="DEBUG" additivity="false">
-            <AppenderRef ref="Console"/>
-        </Logger>
+<!--        <Logger name="state" level="DEBUG" additivity="false">-->
+<!--            <AppenderRef ref="Console"/>-->
+<!--        </Logger>-->
 
-        <Logger name="physics" level="DEBUG" additivity="false">
-            <AppenderRef ref="Console"/>
-        </Logger>
-        <Logger name="environment" level="DEBUG" additivity="false">
-            <AppenderRef ref="Console"/>
-        </Logger>
-        <Logger name="sim" level="DEBUG" additivity="false">
-            <AppenderRef ref="Console"/>
-        </Logger>
+<!--        <Logger name="physics" level="DEBUG" additivity="false">-->
+<!--            <AppenderRef ref="Console"/>-->
+<!--        </Logger>-->
+<!--        <Logger name="environment" level="DEBUG" additivity="false">-->
+<!--            <AppenderRef ref="Console"/>-->
+<!--        </Logger>-->
+<!--        <Logger name="sim" level="DEBUG" additivity="false">-->
+<!--            <AppenderRef ref="Console"/>-->
+<!--        </Logger>-->
 
-        <Logger name="util" level="DEBUG" additivity="false">
-            <AppenderRef ref="Console"/>
-        </Logger>
+<!--        <Logger name="util" level="DEBUG" additivity="false">-->
+<!--            <AppenderRef ref="Console"/>-->
+<!--        </Logger>-->
 
-        <Logger name="conf" level="DEBUG" additivity="false">
-            <AppenderRef ref="Console"/>
-        </Logger>
+<!--        <Logger name="conf" level="DEBUG" additivity="false">-->
+<!--            <AppenderRef ref="Console"/>-->
+<!--        </Logger>-->
 
-        <Logger name="net" level="DEBUG" additivity="false">
-            <AppenderRef ref="Console"/>
-        </Logger>
+<!--        <Logger name="net" level="DEBUG" additivity="false">-->
+<!--            <AppenderRef ref="Console"/>-->
+<!--        </Logger>-->
 
         <Root level="INFO">
             <AppenderRef ref="Console"/>

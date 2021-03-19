@@ -53,12 +53,20 @@ public class SceneConfigAdapter implements JsonDeserializer<SceneConfig>, JsonSe
                 float allyAttackRange = jsonObject.get("allyAttackRange").getAsFloat();
                 float allyDetectRange = jsonObject.get("allyDetectRange").getAsFloat();
                 float allyAttackAngle = jsonObject.get("allyAttackAngle").getAsFloat();
+                float allyMaxPower = jsonObject.get("allyMaxPower").getAsFloat();
+                float allyMaxSteeringAngle = jsonObject.get("allyMaxSteeringAngle").getAsFloat();
+                float allyMaxSpeed = jsonObject.get("allyMaxSpeed").getAsFloat();
+                float allyMinSpeed = jsonObject.get("allyMinSpeed").getAsFloat();
                 List<AgentConfig> allyUSVs = jsonDeserializationContext.deserialize(jsonObject.getAsJsonArray("allyUSVs"), agentConfigListType);
                 int allyNum = allyUSVs.size();
 
                 float enemyAttackRange = jsonObject.get("enemyAttackRange").getAsFloat();
                 float enemyDetectRange = jsonObject.get("enemyDetectRange").getAsFloat();
                 float enemyAttackAngle = jsonObject.get("enemyAttackAngle").getAsFloat();
+                float enemyMaxPower = jsonObject.get("enemyMaxPower").getAsFloat();
+                float enemyMaxSteeringAngle = jsonObject.get("enemyMaxSteeringAngle").getAsFloat();
+                float enemyMaxSpeed = jsonObject.get("enemyMaxSpeed").getAsFloat();
+                float enemyMinSpeed = jsonObject.get("enemyMinSpeed").getAsFloat();
                 List<AgentConfig> enemyUSVs = jsonDeserializationContext.deserialize(jsonObject.getAsJsonArray("enemyUSVs"), agentConfigListType);
                 int enemyNum = enemyUSVs.size();
 
@@ -129,6 +137,22 @@ public class SceneConfigAdapter implements JsonDeserializer<SceneConfig>, JsonSe
                 Field allyAttackAngleField = clazz.getDeclaredField("allyAttackAngle");
                 allyAttackAngleField.setAccessible(true);
                 allyAttackAngleField.set(sceneConfig, allyAttackAngle);
+                
+                Field allyMaxPowerField = clazz.getDeclaredField("allyMaxPower");
+                allyMaxPowerField.setAccessible(true);
+                allyMaxPowerField.set(sceneConfig, allyMaxPower);
+                
+                Field allyMaxSteeringAngleField = clazz.getDeclaredField("allyMaxSteeringAngle");
+                allyMaxSteeringAngleField.setAccessible(true);
+                allyMaxSteeringAngleField.set(sceneConfig, allyMaxSteeringAngle);
+
+                Field allyMaxSpeedField = clazz.getDeclaredField("allyMaxSpeed");
+                allyMaxSpeedField.setAccessible(true);
+                allyMaxSpeedField.set(sceneConfig, allyMaxSpeed);
+
+                Field allyMinSpeedField = clazz.getDeclaredField("allyMinSpeed");
+                allyMinSpeedField.setAccessible(true);
+                allyMinSpeedField.set(sceneConfig, allyMinSpeed);
 
                 Field allyUSVsField = clazz.getDeclaredField("allyUSVs");
                 allyUSVsField.setAccessible(true);
@@ -149,6 +173,22 @@ public class SceneConfigAdapter implements JsonDeserializer<SceneConfig>, JsonSe
                 Field enemyAttackAngleField = clazz.getDeclaredField("enemyAttackAngle");
                 enemyAttackAngleField.setAccessible(true);
                 enemyAttackAngleField.set(sceneConfig, enemyAttackAngle);
+
+                Field enemyMaxPowerField = clazz.getDeclaredField("enemyMaxPower");
+                enemyMaxPowerField.setAccessible(true);
+                enemyMaxPowerField.set(sceneConfig, enemyMaxPower);
+
+                Field enemyMaxSteeringAngleField = clazz.getDeclaredField("enemyMaxSteeringAngle");
+                enemyMaxSteeringAngleField.setAccessible(true);
+                enemyMaxSteeringAngleField.set(sceneConfig, enemyMaxSteeringAngle);
+
+                Field enemyMaxSpeedField = clazz.getDeclaredField("enemyMaxSpeed");
+                enemyMaxSpeedField.setAccessible(true);
+                enemyMaxSpeedField.set(sceneConfig, enemyMaxSpeed);
+
+                Field enemyMinSpeedField = clazz.getDeclaredField("enemyMinSpeed");
+                enemyMinSpeedField.setAccessible(true);
+                enemyMinSpeedField.set(sceneConfig, enemyMinSpeed);
 
                 Field enemyUSVsField = clazz.getDeclaredField("enemyUSVs");
                 enemyUSVsField.setAccessible(true);
@@ -180,10 +220,18 @@ public class SceneConfigAdapter implements JsonDeserializer<SceneConfig>, JsonSe
         jsonObject.addProperty("allyAttackRange", sceneConfig.getAllyAttackRange());
         jsonObject.addProperty("allyDetectRange", sceneConfig.getAllyDetectRange());
         jsonObject.addProperty("allyAttackAngle", sceneConfig.getAllyAttackAngle());
+        jsonObject.addProperty("allyMaxPower", sceneConfig.getAllyMaxPower());
+        jsonObject.addProperty("allyMaxSteeringAngle", sceneConfig.getAllyMaxSteeringAngle());
+        jsonObject.addProperty("allyMaxSpeed", sceneConfig.getAllyMaxSpeed());
+        jsonObject.addProperty("allyMinSpeed", sceneConfig.getAllyMinSpeed());
         jsonObject.add("allyUSVs", jsonSerializationContext.serialize(sceneConfig.getAllyUSVs()));
         jsonObject.addProperty("enemyAttackRange", sceneConfig.getEnemyAttackRange());
         jsonObject.addProperty("enemyDetectRange", sceneConfig.getEnemyDetectRange());
         jsonObject.addProperty("enemyAttackAngle", sceneConfig.getEnemyAttackAngle());
+        jsonObject.addProperty("enemyMaxPower", sceneConfig.getEnemyMaxPower());
+        jsonObject.addProperty("enemyMaxSteeringAngle", sceneConfig.getEnemyMaxSteeringAngle());
+        jsonObject.addProperty("enemyMaxSpeed", sceneConfig.getEnemyMaxSpeed());
+        jsonObject.addProperty("enemyMinSpeed", sceneConfig.getEnemyMinSpeed());
         jsonObject.add("enemyUSVs", jsonSerializationContext.serialize(sceneConfig.getEnemyUSVs()));
         jsonObject.add("mainShip", jsonSerializationContext.serialize(sceneConfig.getMainShip()));
 

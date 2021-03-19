@@ -77,11 +77,19 @@ public class SceneConfig {
     private float allyDetectRange;
     //攻击角度，0~180，单位度
     private float allyAttackAngle;
+    private float allyMaxPower;
+    private float allyMaxSteeringAngle;
+    private float allyMaxSpeed;
+    private float allyMinSpeed;
     private List<AgentConfig> allyUSVs;
     private int enemyNum;
     private float enemyAttackRange;
     private float enemyDetectRange;
     private float enemyAttackAngle;
+    private float enemyMaxPower;
+    private float enemyMaxSteeringAngle;
+    private float enemyMaxSpeed;
+    private float enemyMinSpeed;
     private List<AgentConfig> enemyUSVs;
 
     private AgentConfig mainShip;
@@ -168,6 +176,38 @@ public class SceneConfig {
 
     public float getEnemyAttackAngle() {
         return enemyAttackAngle;
+    }
+
+    public float getAllyMaxPower() {
+        return allyMaxPower;
+    }
+
+    public float getAllyMaxSteeringAngle() {
+        return allyMaxSteeringAngle;
+    }
+
+    public float getEnemyMaxPower() {
+        return enemyMaxPower;
+    }
+
+    public float getEnemyMaxSteeringAngle() {
+        return enemyMaxSteeringAngle;
+    }
+
+    public float getAllyMaxSpeed() {
+        return allyMaxSpeed;
+    }
+
+    public float getAllyMinSpeed() {
+        return allyMinSpeed;
+    }
+
+    public float getEnemyMaxSpeed() {
+        return enemyMaxSpeed;
+    }
+
+    public float getEnemyMinSpeed() {
+        return enemyMinSpeed;
     }
 
     @Override

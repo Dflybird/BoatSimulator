@@ -34,14 +34,21 @@ public class BoatEngine {
     private final Entity entity;
     private final Vector3f engineRelativeCoordinate;
 
-    public BoatEngine(Entity entity, Vector3f engineRelativeCoordinate) {
+    private final float maxPow;
+    private final float maxAngle;
+    private final float maxSpeed;
+
+    public BoatEngine(Entity entity, Vector3f engineRelativeCoordinate, float maxPow, float maxAngle, float maxSpeed) {
         this.ocean = entity.getOcean();
         this.entity = entity;
         this.engineRelativeCoordinate = engineRelativeCoordinate;
+        this.maxPow = maxPow;
+        this.maxAngle = (float) Math.toRadians(maxAngle);
+        this.maxSpeed = maxSpeed;
     }
 
     public void setEnginePower(float power) {
-        if (entity.getBody().getLinearVel().length() <= MAX_SPEED && power <= MAX_POWER) {
+        if (entity.getBody().getLinearVel().length() <= maxSpeed && power <= maxPow) {
             currentEnginePower = power;
         }
     }
@@ -51,12 +58,12 @@ public class BoatEngine {
      * @param angle
      */
     public void setEngineRotation(float angle) {
-        if (angle > MAX_ANGLE) {
-            currentEngineRotation = MAX_ANGLE;
+        if (angle > maxAngle) {
+            currentEngineRotation = maxAngle;
             return;
         }
-        if (angle < -MAX_ANGLE) {
-            currentEngineRotation = -MAX_ANGLE;
+        if (angle < -maxAngle) {
+            currentEngineRotation = -maxAngle;
             return;
         }
         currentEngineRotation = angle;
@@ -93,5 +100,17 @@ public class BoatEngine {
             entity.getBody().addForceAtPos(StructTransform.transformFromVector3f(new Vector3f()),
                     StructTransform.transformFromVector3f(enginePos));
         }
+    }
+
+    public float getMaxPow() {
+        return maxPow;
+    }
+
+    public float getMaxAngle() {
+        return maxAngle;
+    }
+
+    public float getMaxSpeed() {
+        return maxSpeed;
     }
 }

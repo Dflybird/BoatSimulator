@@ -32,6 +32,8 @@ public class RPCServices extends AlgorithmGrpc.AlgorithmImplBase {
     private final GameLogic gameLogic;
     private final SceneConfig sceneConfig;
 
+    private int sizeStep = 0;
+
     public RPCServices(GameLogic gameLogic) {
         this.gameLogic = gameLogic;
         this.sceneConfig = SceneConfig.loadConfig();
@@ -122,7 +124,7 @@ public class RPCServices extends AlgorithmGrpc.AlgorithmImplBase {
                     .build();
             responseObserver.onNext(reward);
             responseObserver.onCompleted();
-
+            logger.debug("step: {}", sizeStep++);
         });
     }
 
@@ -131,6 +133,7 @@ public class RPCServices extends AlgorithmGrpc.AlgorithmImplBase {
         gameLogic.reset();
         responseObserver.onNext(Null.newBuilder().build());
         responseObserver.onCompleted();
+        sizeStep=0;
     }
 
     private TeamObservation getAllyObservation() {

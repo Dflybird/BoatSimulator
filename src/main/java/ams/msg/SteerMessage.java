@@ -2,6 +2,7 @@ package ams.msg;
 
 
 import conf.Constant;
+import physics.entity.usv.BoatEngine;
 
 /**
  * @Author Gq
@@ -37,6 +38,7 @@ public class SteerMessage extends AgentMessage{
 
     private float power;
     private float angle;
+    private SteerType steerType;
     public SteerMessage(float power, float angle) {
         super(SteerMessage.class);
         this.power = power;
@@ -45,6 +47,10 @@ public class SteerMessage extends AgentMessage{
 
     public SteerMessage(SteerType steerType) {
         super(SteerMessage.class);
+        this.steerType = steerType;
+    }
+
+    public void adaptEngine(BoatEngine boatEngine) {
         switch (steerType) {
             case STOP: {
                 power = 0;
@@ -52,23 +58,22 @@ public class SteerMessage extends AgentMessage{
                 break;
             }
             case STRAIGHT: {
-                power = Constant.MAX_POWER;
+                power = boatEngine.getMaxPow();
                 angle = 0;
                 break;
             }
             case TURN_LEFT: {
-                power = Constant.MAX_POWER;
-                angle = -Constant.MAX_ANGLE;
+                power = boatEngine.getMaxPow();
+                angle = -boatEngine.getMaxAngle();
                 break;
             }
             case TURN_RIGHT: {
-                power = Constant.MAX_POWER;
-                angle = Constant.MAX_ANGLE;
+                power = boatEngine.getMaxPow();
+                angle = boatEngine.getMaxAngle();
                 break;
             }
         }
     }
-
 
     public float getPower() {
         return power;

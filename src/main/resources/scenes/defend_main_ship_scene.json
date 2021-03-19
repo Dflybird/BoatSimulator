@@ -17,6 +17,10 @@
   "allyAttackRange": 10.0,
   "allyDetectRange": 1000.0,
   "allyAttackAngle": 30.0,
+  "allyMaxPower": 32000.0,
+  "allyMaxSteeringAngle": 60.0,
+  "allyMaxSpeed": 30.0,
+  "allyMinSpeed": 0.0,
   "allyUSVs": [
     {
       "id": 0,
@@ -61,13 +65,17 @@
   "enemyAttackRange": 10.0,
   "enemyDetectRange": 1000.0,
   "enemyAttackAngle": 30.0,
+  "enemyMaxPower": 16000.0,
+  "enemyMaxSteeringAngle": 30.0,
+  "enemyMaxSpeed": 5.0,
+  "enemyMinSpeed": 0.0,
   "enemyUSVs": [
     {
       "id": 0,
       "pos": {
-        "x": 200.0,
+        "x": 180.0,
         "y": 0.0,
-        "z": 0.0
+        "z": 127.0
       },
       "forward": {
         "x": -1.0,
@@ -78,9 +86,9 @@
     {
       "id": 1,
       "pos": {
-        "x": -100.0,
+        "x": -45.0,
         "y": 0.0,
-        "z": -100.0
+        "z": -173.0
       },
       "forward": {
         "x": 1.0,
@@ -91,9 +99,9 @@
     {
       "id": 2,
       "pos": {
-        "x": -100.0,
+        "x": -191.0,
         "y": 0.0,
-        "z": 100.0
+        "z": 26.0
       },
       "forward": {
         "x": 1.0,
