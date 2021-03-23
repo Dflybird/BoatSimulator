@@ -1,9 +1,9 @@
 {
   "port": 10086,
-  "stepType": "STEP",
+  "stepType": "ROLL",
   "stepSize": 5,
   "FPS": 30,
-  "UPS": 150,
+  "UPS": 50,
   "fastForwardSpeed": 1.0,
   "isRender": true,
   "sceneConfigFile": "defend_main_ship_scene.json",

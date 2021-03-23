@@ -1,5 +1,5 @@
 {
-  "fogVisibility": 5000.0,
+  "fogVisibility": 1000.0,
   "wind": {
     "velocity": 30.0,
     "direction": {

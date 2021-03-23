@@ -58,17 +58,22 @@ public class Ocean {
     public void init(Scene scene, SceneConfig sceneConfig) {
         if (sceneConfig == null) {
             fog = Fog.OCEAN_FLOG;
-            wind = new Wind(30, new Vector2f(1,0));
+            wind = new Wind(30, new Vector2f(0,-1));
         } else {
             fog = new Fog(true, new Vector3f(0.7f, 0.7f, 0.7f), 2f, sceneConfig.getFogVisibility());
             wind = sceneConfig.getWind();
         }
         wave = new Wave(lX, lZ, N, M, wind, A);
+//        Material material = new Material(
+//                new Vector4f(0.0f, 0.65f, 0.75f, 1.0f),
+//                new Vector4f(0.5f, 0.65f, 0.75f, 1.0f),
+//                new Vector4f(0.9f, 0.4f, 0.2f,  1.0f),
+//                1, null);
         Material material = new Material(
-                new Vector4f(0.0f, 0.65f, 0.75f, 1.0f),
-                new Vector4f(0.5f, 0.65f, 0.75f, 1.0f),
-                new Vector4f(0.9f, 0.4f, 0.2f,  1.0f),
-                1, null);
+                new Vector4f((float) 0x90/0xff, (float) 0xca/0xff, (float) 0xf9/0xff, 1.0f),
+                new Vector4f((float) 0x90/0xff, (float) 0xca/0xff, (float) 0xf9/0xff, 1.0f),
+                new Vector4f(1.0f, 0.7f, 0.5f,  1.0f),
+                0.5f, null);
         Mesh mesh = new Mesh(wave.getModel(), material);
         //海洋平铺，先延Z轴平铺，再延X轴平铺
         List<GameObj> oceanBlocks = new ArrayList<>();

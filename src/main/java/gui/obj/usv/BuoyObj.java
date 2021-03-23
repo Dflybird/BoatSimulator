@@ -6,6 +6,7 @@ import gui.obj.GameObj;
 import gui.obj.Model;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,5 +24,11 @@ public class BuoyObj extends GameObj {
         Material material = new Material();
         Mesh mesh = new Mesh(model, material);
         setMesh(mesh);
+    }
+
+    public void setColor(float r, float g, float b, float a){
+        mesh.getMaterial().setAmbient(new Vector4f(r,g,b,a));
+        mesh.getMaterial().setDiffuse(new Vector4f(r,g,b,a));
+        mesh.getMaterial().setSpecular(new Vector4f(r,g,b,a));
     }
 }

@@ -42,8 +42,8 @@ public class RPCServices extends AlgorithmGrpc.AlgorithmImplBase {
     @Override
     public void getSceneParameter(Null request, StreamObserver<SceneParameter> responseObserver) {
         SceneParameter sceneParameter = SceneParameter.newBuilder()
-                .setMaxVelocity(MAX_SPEED)
-                .setMinVelocity(MIN_SPEED)
+                .setAllyMaxVelocity(sceneConfig.getAllyMaxSpeed())
+                .setEnemyMaxVelocity(sceneConfig.getEnemyMaxSpeed())
                 .setMaxXLength(sceneConfig.getMaxBoundaryX())
                 .setMinXLength(sceneConfig.getMinBoundaryX())
                 .setMaxZLength(sceneConfig.getMaxBoundaryZ())
@@ -86,7 +86,12 @@ public class RPCServices extends AlgorithmGrpc.AlgorithmImplBase {
 
             for (MemberAction memberAction : teamAction.getMemberActionList()) {
                 String agentID = AgentUtil.assembleName(camp, memberAction.getId());
-                SteerMessage steerMessage = new SteerMessage(SteerMessage.SteerType.typeOf(memberAction.getActionType()));
+                SteerMessage steerMessage;
+                if (memberAction.getDiscrete()) {
+                    steerMessage = new SteerMessage(SteerMessage.SteerType.typeOf(memberAction.getActionType()));
+                } else {
+                    steerMessage = new SteerMessage(memberAction.getPower(), memberAction.getAngle());
+                }
                 AgentManager.sendAgentMessage(agentID, steerMessage);
             }
         }
@@ -119,12 +124,12 @@ public class RPCServices extends AlgorithmGrpc.AlgorithmImplBase {
             }
             OnDoneAgent onDoneAgent = (OnDoneAgent) AgentManager.getAgent(ON_DONE_AGENT);
             Reward reward = Reward.newBuilder()
-                    .setDone(onDoneAgent.isDone() ? 1 : 0)
+                    .setDone(onDoneAgent.isDone())
                     .addAllTeamReward(list)
                     .build();
             responseObserver.onNext(reward);
             responseObserver.onCompleted();
-            logger.debug("step: {}", sizeStep++);
+            logger.info("step: {}", sizeStep++);
         });
     }
 
@@ -152,6 +157,7 @@ public class RPCServices extends AlgorithmGrpc.AlgorithmImplBase {
                             .setClosestAllyPos(newVector3(usvAgent.relativeCoordinateToSelf(usvAgent.closestAllyPos())))
                             .setMainShipPos(newVector3(usvAgent.relativeCoordinateToSelf(mainShipPos)))
                             .setForward(newVector3(usvAgent.getCurrForward()))
+                            .setSelfVelocity(newVector3(usvAgent.getEntity().getLinearVelocity()))
                             .build();
                     list.add(memberObservation);
                 }
@@ -179,6 +185,7 @@ public class RPCServices extends AlgorithmGrpc.AlgorithmImplBase {
                             .setClosestAllyPos(newVector3(usvAgent.relativeCoordinateToSelf(usvAgent.closestAllyPos())))
                             .setMainShipPos(newVector3(usvAgent.relativeCoordinateToSelf(mainShipPos)))
                             .setForward(newVector3(usvAgent.getCurrForward()))
+                            .setSelfVelocity(newVector3(usvAgent.getEntity().getLinearVelocity()))
                             .build();
                     list.add(memberObservation);
                 }

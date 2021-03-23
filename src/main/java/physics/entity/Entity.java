@@ -35,6 +35,8 @@ public abstract class Entity {
     protected final Quaternionf rotation;
     protected final Vector3f scale;
 
+    protected final Vector3f linearVelocity;
+
     protected final DWorld world;
     protected final DSpace space;
     protected final Ocean ocean;
@@ -56,6 +58,7 @@ public abstract class Entity {
         this.rotation = new Quaternionf(rotation);
         this.scale = new Vector3f(scale);
         this.forward = new Vector3f(forward);
+        this.linearVelocity = new Vector3f();
     }
 
     public void reset() {
@@ -75,6 +78,10 @@ public abstract class Entity {
         //更新选择变化
         DQuaternionC quaternion = geom.getQuaternion();
         transformToQuaternionf(quaternion, rotation);
+
+        DVector3C linearVel = body.getLinearVel();
+
+        transformToVector3f(linearVel, linearVelocity);
     }
 
     public void destroy() {
@@ -122,5 +129,9 @@ public abstract class Entity {
 
     public Ocean getOcean() {
         return ocean;
+    }
+
+    public Vector3f getLinearVelocity() {
+        return linearVelocity;
     }
 }

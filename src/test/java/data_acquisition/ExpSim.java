@@ -1,80 +1,77 @@
-package sim;
+package data_acquisition;
 
+import ams.AgentManager;
 import ams.agent.usv.USVAgent;
 import ams.msg.SteerMessage;
-import conf.AgentConfig;
-import conf.SceneConfig;
+import conf.Config;
+import engine.GameEngine;
+import engine.GameLogic;
 import engine.GameStepController;
 import engine.PauseListener;
 import environment.Ocean;
-import conf.Config;
-import ams.AgentManager;
-import engine.GameEngine;
-import engine.GameLogic;
 import gui.*;
 import gui.graphic.light.DirectionalLight;
 import gui.obj.Camera;
 import gui.obj.Model;
 import gui.obj.usv.BoatObj;
-import net.SimServer;
-import org.joml.*;
+import org.joml.Quaternionf;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import physics.PhysicsEngine;
+import physics.buoy.ModifyBoatMesh;
 import physics.entity.usv.BoatEntity;
 import state.GUIState;
 
 import java.io.File;
-import java.lang.Math;
-import java.util.List;
 
 import static conf.Constant.*;
+import static conf.Constant.BUOY_OBJ_NAME;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 
 /**
- * @Author Gq
- * @Date 2021/1/20 23:27
- * @Version 1.0
- **/
-public class SimGUI implements GameLogic {
+ * @Author: gq
+ * @Date: 2021/3/22 15:32
+ */
+public class ExpSim implements GameLogic {
 
-    private final Logger logger = LoggerFactory.getLogger(SimGUI.class);
+    private final Logger logger = LoggerFactory.getLogger(ExpSim.class);
 
     private final Config config;
-    private final SceneConfig sceneConfig;
     private final Camera camera;
     private final GUIState guiState;
     private final Scene scene;
     private final GUIRenderer renderer;
     private final PhysicsEngine physicsEngine;
     private final GameStepController stepController;
-    private final SimServer server;
     private final Ocean ocean;
     private final Model boatModel;
     private final Model buoyModel;
 
+    private ModifyBoatMesh modifyBoatMesh;
+
+    private USVAgent boatAgent;
+
     public static void main(String[] args) {
-        main(args, new SimGUI());
+        main(args, new ExpSim());
     }
 
-    public static void main(String[] args, SimGUI sim){
+    public static void main(String[] args, ExpSim sim){
         sim.start();
     }
 
 
-    public SimGUI() {
+    public ExpSim() {
         config = Config.loadConfig();
-        sceneConfig = SceneConfig.loadConfig();
 
-        camera = new Camera(new Vector3f(0, 200, 0));
+        camera = new Camera(new Vector3f(0, 50, 0));
         guiState = new GUIState();
         renderer = new GUIRenderer();
         ocean = new Ocean(LENGTH_X, LENGTH_Z, NUM_X, NUM_Z, new Vector3f());
         scene = new Scene();
         physicsEngine = new PhysicsEngine();
         stepController = new GameStepController(GameStepController.SimType.valueOf(config.getStepType()), config.getStepSize());
-        server = new SimServer(this, config.getPort());
         boatModel = Model.loadObj(new File(RESOURCES_MODELS_DIR, BOAT_OBJ_NAME));
         buoyModel = Model.loadObj(new File(RESOURCES_MODELS_DIR, BUOY_OBJ_NAME));
     }
@@ -84,14 +81,13 @@ public class SimGUI implements GameLogic {
         AgentManager.setPhysicsEngine(physicsEngine);
         AgentManager.registerSimStateListener(guiState);
         physicsEngine.init();
-        ocean.init(scene, sceneConfig);
+        ocean.init(scene, null);
         renderer.init(window, camera, scene, guiState);
-        server.start();
         stepController.init();
 
         //环境光
         SceneLight sceneLight = new SceneLight();
-        sceneLight.setAmbientLight(new Vector3f(0.3f, 0.3f, 0.3f));
+        sceneLight.setAmbientLight(new Vector3f(0.5f, 0.5f, 0.5f));
 //        DirectionalLight directionalLight = new DirectionalLight(new Vector3f(1.0f, 0.6f, 0.3f), new Vector3f(1, 0.1f, -1),  1.0f);
         DirectionalLight directionalLight = new DirectionalLight(new Vector3f(1.0f, 0.8f, 0.8f), new Vector3f(1, 0.5f, -1),  1.0f);
         sceneLight.setDirectionalLight(directionalLight);
@@ -155,6 +151,9 @@ public class SimGUI implements GameLogic {
         }
     }
 
+    int writeRate = 0;
+    int dataSize = 0;
+    USVBuoyData usvBuoyData = new USVBuoyData();
     @Override
     public void update(double stepTime) {
         if (!stepController.isPause()) {
@@ -163,19 +162,34 @@ public class SimGUI implements GameLogic {
             //Agent系统周期更新
             AgentManager.update(stepTime);
         }
+
+//        if (dataSize < 10 && boatAgent.getEntity().getTranslation().x > dataSize * 10) {
+//            dataSize++;
+//            usvBuoyData.buoyData.add(boatAgent.getEntity().getTranslation().z);
+//            if (dataSize==10) {
+//                usvBuoyData.writeToFile();
+//                logger.info("write data file done");
+//            }
+//        }
+//        AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(5000, 0));
     }
 
     @Override
     public void render(double alpha) {
         guiState.computeRenderState((float) alpha);
         renderer.render();
+
+        Vector3f newScale = new Vector3f(modifyBoatMesh.getEntity().getScale());
+        renderer.renderMeshes(modifyBoatMesh.getUnderwaterModel(),
+                modifyBoatMesh.getEntity().getTranslation(),
+                modifyBoatMesh.getEntity().getRotation(),
+                newScale.mul(1.001f,1.001f,1.001f));
     }
 
     @Override
     public void cleanup() {
         renderer.cleanup();
         scene.cleanup();
-        server.stop();
         physicsEngine.cleanup();
         AgentManager.stop();
         logger.info("sim shut down");
@@ -207,14 +221,43 @@ public class SimGUI implements GameLogic {
     }
 
     private void initSimScene() {
-        //设置浮标，限制场地范围
-//        List<AgentConfig> buoys = sceneConfig.getBuoys();
-//        for (AgentConfig agentConfig : buoys) {
+        {
+
+            //ally usv
+            //模型初始朝向面向x轴正方向
+            Vector3f position = new Vector3f(0,0,0);
+            Vector3f scale = new Vector3f(1,1,1);
+            Vector3f modelForward = new Vector3f(1,0,0);
+            Vector3f forward = new Vector3f(1,0,0);
+            Vector3f u = new Vector3f();
+            modelForward.cross(forward, u);
+            float angle = forward.angle(modelForward);
+            u.mul((float) Math.sin(angle/2));
+            Quaternionf rotation = new Quaternionf(u.x, u.y, u.z, (float) Math.cos(angle/2));
+
+            BoatEntity boatEntity = new BoatEntity(ocean,
+                    physicsEngine.getWorld(), physicsEngine.getSpace(),
+                    position, rotation, scale, boatModel);
+            boatEntity.createBuoyHelper();
+            boatAgent = new USVAgent(USVAgent.Camp.ALLY, 0, boatEntity);
+            AgentManager.addAgent(boatAgent);
+            BoatObj boat = new BoatObj(boatAgent.getAgentID(),
+                    boatEntity.getTranslation(),
+                    boatEntity.getRotation(),
+                    boatEntity.getScale(),
+                    boatModel);
+            boat.setColor((float) 0xff/0xff,(float) 0x6e/0xff,(float) 0x40/0xff,1);
+            scene.setGameObj(boat);
+
+            modifyBoatMesh = boatEntity.getBuoyHelper().getModifyBoatMesh();
+        }
+
+//        {
 //            //模型初始朝向面向x轴正方向
-//            Vector3f position = agentConfig.getPos();
+//            Vector3f position = new Vector3f(-1,0,0);
 //            Vector3f scale = new Vector3f(1,1,1);
 //            Vector3f modelForward = new Vector3f(1,0,0);
-//            Vector3f forward = agentConfig.getForward();
+//            Vector3f forward = new Vector3f(1,0,0);
 //            Vector3f u = new Vector3f();
 //            modelForward.cross(forward, u);
 //            float angle = forward.angle(modelForward);
@@ -225,101 +268,17 @@ public class SimGUI implements GameLogic {
 //                    physicsEngine.getWorld(), physicsEngine.getSpace(),
 //                    position, rotation, scale, buoyModel);
 //            buoyEntity.createBuoyHelper();
-//            BuoyAgent buoyAgent = new BuoyAgent("BUOY_"+agentConfig.getId());
+//            BuoyAgent buoyAgent = new BuoyAgent("BUOY_0");
 //
 //            buoyAgent.setEntity(buoyEntity);
 //            AgentManager.addAgent(buoyAgent);
-//            GameObj buoy = new BuoyObj(buoyAgent.getAgentID(),
+//            BuoyObj buoy = new BuoyObj(buoyAgent.getAgentID(),
 //                    buoyEntity.getTranslation(),
 //                    buoyEntity.getRotation(),
 //                    buoyEntity.getScale(),
 //                    buoyModel);
+//            buoy.setColor((float) 0xff/0xff,(float) 0xc4/0xff,(float) 0x00/0xff,1);
 //            scene.setGameObj(buoy);
 //        }
-        //main ship
-        {
-            AgentConfig agentConfig = sceneConfig.getMainShip();
-            //模型初始朝向面向x轴正方向
-            Vector3f position = agentConfig.getPos();
-            Vector3f scale = new Vector3f(1,1,1);
-            Vector3f modelForward = new Vector3f(1,0,0);
-            Vector3f forward = agentConfig.getForward();
-            Vector3f u = new Vector3f();
-            modelForward.cross(forward, u);
-            float angle = forward.angle(modelForward);
-            u.mul((float) Math.sin(angle/2));
-            Quaternionf rotation = new Quaternionf(u.x, u.y, u.z, (float) Math.cos(angle/2));
-
-            BoatEntity boatEntity = new BoatEntity(ocean,
-                    physicsEngine.getWorld(), physicsEngine.getSpace(),
-                    position, rotation, scale, boatModel);
-            boatEntity.createBuoyHelper();
-            USVAgent boatAgent = new USVAgent(USVAgent.Camp.MAIN_SHIP, agentConfig.getId(), boatEntity);
-            AgentManager.addAgent(boatAgent);
-            BoatObj boat = new BoatObj(boatAgent.getAgentID(),
-                    boatEntity.getTranslation(),
-                    boatEntity.getRotation(),
-                    boatEntity.getScale(),
-                    boatModel);
-            scene.setGameObj(boat);
-        }
-        //ally usv
-        List<AgentConfig> allyUSVs = sceneConfig.getAllyUSVs();
-        for (AgentConfig agentConfig : allyUSVs) {
-            //模型初始朝向面向x轴正方向
-            Vector3f position = agentConfig.getPos();
-            Vector3f scale = new Vector3f(1,1,1);
-            Vector3f modelForward = new Vector3f(1,0,0);
-            Vector3f forward = agentConfig.getForward();
-            Vector3f u = new Vector3f();
-            modelForward.cross(forward, u);
-            float angle = forward.angle(modelForward);
-            u.mul((float) Math.sin(angle/2));
-            Quaternionf rotation = new Quaternionf(u.x, u.y, u.z, (float) Math.cos(angle/2));
-
-            BoatEntity boatEntity = new BoatEntity(ocean,
-                    physicsEngine.getWorld(), physicsEngine.getSpace(),
-                    position, rotation, scale, boatModel);
-            boatEntity.createBuoyHelper();
-            USVAgent boatAgent = new USVAgent(USVAgent.Camp.ALLY, agentConfig.getId(), boatEntity);
-            AgentManager.addAgent(boatAgent);
-            BoatObj boat = new BoatObj(boatAgent.getAgentID(),
-                    boatEntity.getTranslation(),
-                    boatEntity.getRotation(),
-                    boatEntity.getScale(),
-                    boatModel);
-            boat.setColor((float) 0xff/0xff,(float) 0x6e/0xff,(float) 0x40/0xff,1);
-            scene.setGameObj(boat);
-        }
-        //enemy usv
-        List<AgentConfig> enemyUSVs = sceneConfig.getEnemyUSVs();
-        for (AgentConfig agentConfig : enemyUSVs) {
-            //模型初始朝向面向x轴正方向
-            Vector3f position = agentConfig.getPos();
-            Vector3f scale = new Vector3f(1,1,1);
-            Vector3f modelForward = new Vector3f(1,0,0);
-            Vector3f forward = agentConfig.getForward();
-            Vector3f u = new Vector3f();
-            modelForward.cross(forward, u);
-            float angle = forward.angle(modelForward);
-            u.mul((float) Math.sin(angle/2));
-            Quaternionf rotation = new Quaternionf(u.x, u.y, u.z, (float) Math.cos(angle/2));
-
-            BoatEntity boatEntity = new BoatEntity(ocean,
-                    physicsEngine.getWorld(), physicsEngine.getSpace(),
-                    position, rotation, scale, boatModel);
-            boatEntity.createBuoyHelper();
-            USVAgent boatAgent = new USVAgent(USVAgent.Camp.ENEMY, agentConfig.getId(), boatEntity);
-            AgentManager.addAgent(boatAgent);
-            BoatObj boat = new BoatObj(boatAgent.getAgentID(),
-                    boatEntity.getTranslation(),
-                    boatEntity.getRotation(),
-                    boatEntity.getScale(),
-                    boatModel);
-            boat.setColor((float) 0x40/0xff,(float) 0xc4/0xff,(float) 0xff/0xff,1);
-            scene.setGameObj(boat);
-        }
-
     }
-
 }

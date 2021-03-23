@@ -26,8 +26,8 @@ message Vector3 {
 }
 
 message SceneParameter {
-  float max_velocity = 1;
-  float min_velocity = 2;
+  float ally_max_velocity = 1;
+  float enemy_max_velocity = 2;
   float max_x_length = 3;
   float min_x_length = 4;
   float max_z_length = 5;
@@ -72,6 +72,8 @@ message MemberObservation {
   Vector3 main_ship_pos = 6;
   //朝向
   Vector3 forward = 7;
+  //自身速度
+  Vector3 self_velocity = 8;
 }
 
 //控制指令，包含多个团队控制指令
@@ -90,12 +92,27 @@ message TeamAction {
 message MemberAction {
   //编号 eg:0,1,2
   int32 id = 1;
-  //0:停止 1:直行 2:左转30度 3:右转30度
-  int32 action_type = 2;
+  //指令离散还是连续 离散时只关注action_type
+  bool discrete = 2;
+  // 0:停止
+  // 1:直行一档（最慢）
+  // 2:一挡左转最大转向角 3:一挡右转最大转向角
+  // 4:一挡左转半转向角 5:一挡右转半转向角
+  // 6:直行二档（中速）
+  // 7:二挡左转最大转向角 8:二挡右转最大转向角
+  // 9:二挡左转半转向角 10:二挡右转半转向角
+  // 11:直行三档（最快）
+  // 12:三挡左转最大转向角 13:三挡右转最大转向角
+  // 14:三挡左转半转向角 15:三挡右转半转向角
+  int32 action_type = 3;
+  //引擎功率，从0到最大功率间的任意数
+  float power = 4;
+  //转舵角度，从0到180间的任意数，单位度
+  float angle = 5;
 }
 
 message Reward {
-  int32 done = 1;
+  bool done = 1;
   repeated TeamReward team_reward = 2;
 }
 

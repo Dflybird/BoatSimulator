@@ -73,7 +73,9 @@ public class GameEngine implements Runnable {
 
     private void render(double alpha) {
         window.clean();
-        gameLogic.render(alpha);
+        if (config.isRender()) {
+            gameLogic.render(alpha);
+        }
         window.render();
         timer.updateFPS();
     }
@@ -110,7 +112,7 @@ public class GameEngine implements Runnable {
 //            logger.debug("FPS: {} | UPS: {}", timer.getFPS(), timer.getUPS());
 
             //如果没有开启垂直同步，通过sleep休眠CPU，控制刷新帧率
-            if (!window.isvSync()) {
+            if (config.isRender() && !window.isvSync()) {
                 sync();
             }
         }
