@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "net";
+option java_outer_classname = "BaseProto";
+option objc_class_prefix = "RTG";
+
+package net;
+
+message Vector3 {
+  float x = 1;
+  //纵坐标
+  float y = 2;
+  float z = 3;
+}
+
+message Null {}
+
+

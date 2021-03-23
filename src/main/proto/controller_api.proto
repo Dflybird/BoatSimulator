@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+option java_multiple_files = false;
+option java_package = "net";
+option java_outer_classname = "ControllerAPIProto";
+option objc_class_prefix = "RTG";
+
+package net;
+
+import "base.proto";
+
+service ControllerAPI {
+  //获得观测数据
+  rpc getObservation(AgentInfo) returns (AgentObservation) {}
+  //下发控制指令，并得到控制指令的回报
+  rpc setAction(AgentAction) returns (Null) {}
+  //重启仿真
+  rpc reset(Null) returns (Null) {}
+}
+
+
+message AgentInfo {
+  //阵营 0:友方 1:敌方
+  string agentID = 1;
+}
+
+message AgentObservation {
+  string agentId = 1;
+  //存活状态 0:死亡 1:存活
+  int32 status = 2;
+  //自身坐标
+  Vector3 self_pos = 3;
+}
+
+//控制指令，包含多个团队控制指令
+message AgentAction {
+  //编号 eg:0,1,2
+  string agentId = 1;
+  // 0:停止
+  // 1:直行一档（最慢）
+  // 2:一挡左转最大转向角 3:一挡右转最大转向角
+  // 4:一挡左转半转向角 5:一挡右转半转向角
+  // 6:直行二档（中速）
+  // 7:二挡左转最大转向角 8:二挡右转最大转向角
+  // 9:二挡左转半转向角 10:二挡右转半转向角
+  // 11:直行三档（最快）
+  // 12:三挡左转最大转向角 13:三挡右转最大转向角
+  // 14:三挡左转半转向角 15:三挡右转半转向角
+  int32 action_type = 2;
+}
+
+
+
+

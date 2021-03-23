@@ -7,6 +7,8 @@ option objc_class_prefix = "RTG";
 
 package net;
 
+import "base.proto";
+
 service Algorithm {
   //获得环境参数
   rpc getSceneParameter(Null) returns (SceneParameter) {}
@@ -18,12 +20,6 @@ service Algorithm {
   rpc reset(Null) returns (Null) {}
 }
 
-message Vector3 {
-  float x = 1;
-  //纵坐标
-  float y = 2;
-  float z = 3;
-}
 
 message SceneParameter {
   float ally_max_velocity = 1;
@@ -123,7 +119,6 @@ message TeamReward {
   float reward = 2;
 }
 
-message Null {}
 
 
 
