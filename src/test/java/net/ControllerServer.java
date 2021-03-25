@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @Author: gq
@@ -23,9 +24,12 @@ public class ControllerServer {
 
     private final Server server;
 
+    private AtomicInteger msgNum;
+
     public ControllerServer(ExpRemoteSim sim, int port) {
         ServerBuilder<?> serverBuilder = ServerBuilder.forPort(port);
-        this.server = serverBuilder.addService(new ControllerService(sim)).build();
+        this.server = serverBuilder.addService(new ControllerService(sim, this)).build();
+        this.msgNum = new AtomicInteger();
     }
 
     public void start(){
@@ -47,11 +51,22 @@ public class ControllerServer {
         }
     }
 
+    public int getMsgNum() {
+        return msgNum.getAndSet(0);
+    }
+
+    public void addMsgNum() {
+        msgNum.incrementAndGet();
+    }
+
+
     public static class ControllerService extends ControllerAPIGrpc.ControllerAPIImplBase {
         private final ExpRemoteSim sim;
+        private final ControllerServer controllerServer;
 
-        public ControllerService(ExpRemoteSim sim) {
+        public ControllerService(ExpRemoteSim sim, ControllerServer controllerServer) {
             this.sim = sim;
+            this.controllerServer = controllerServer;
         }
 
         @Override
@@ -63,17 +78,22 @@ public class ControllerServer {
                     .setSelfPos(newVector3(usvAgent.getEntity().getTranslation())).build();
             responseObserver.onNext(observation);
             responseObserver.onCompleted();
+            controllerServer.addMsgNum();
         }
 
         @Override
         public void setAction(ControllerAPIProto.AgentAction request, StreamObserver<Null> responseObserver) {
             SteerMessage steerMessage = new SteerMessage(SteerMessage.SteerType.typeOf(request.getActionType()));
             AgentManager.sendAgentMessage(request.getAgentId(), steerMessage);
+            responseObserver.onNext(Null.newBuilder().build());
+            responseObserver.onCompleted();
+            controllerServer.addMsgNum();
         }
 
         @Override
         public void reset(Null request, StreamObserver<Null> responseObserver) {
             super.reset(request, responseObserver);
+            controllerServer.addMsgNum();
         }
 
         private Vector3 newVector3(Vector3f vector3f) {

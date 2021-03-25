@@ -56,8 +56,7 @@ public abstract class Agent implements Runnable {
     protected abstract void update(double stepTime) throws Exception;
 
     protected void send(String agentID, AgentMessage msg) {
-        Agent targetAgent = AgentManager.getAgent(agentID);
-        targetAgent.queue.offer(msg);
+        AgentManager.sendAgentMessage(agentID, msg);
     }
 
     protected AgentMessage receive() {

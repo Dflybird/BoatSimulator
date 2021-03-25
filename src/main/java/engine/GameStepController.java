@@ -24,6 +24,7 @@ public class GameStepController {
 
     private double elapsedTime;
     private double lastLoopTime;
+    private double deltaTime;
     private int elapsedStep;
     private boolean pause;
 
@@ -36,15 +37,15 @@ public class GameStepController {
 
     public boolean isPause(){
         double time = TimeUtil.currentTime();
-        double delta = time - lastLoopTime;
+        deltaTime = time - lastLoopTime;
         lastLoopTime = time;
         if (pause) {
             return true;
         }
-        elapsedTime += delta;
+        elapsedTime += deltaTime;
         elapsedStep++;
 
-        if (simType == SimType.STEP && elapsedStep >= stepSize) {
+        if (simType == SimType.STEP && elapsedStep > stepSize) {
             pause();
         }
         return pause;
@@ -70,4 +71,7 @@ public class GameStepController {
         pause = false;
     }
 
+    public double getDeltaTime() {
+        return deltaTime;
+    }
 }

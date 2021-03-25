@@ -7,6 +7,7 @@ import net.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Random;
 import java.util.concurrent.*;
 
 /**
@@ -16,7 +17,9 @@ import java.util.concurrent.*;
 public class Controller implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(Controller.class);
 
-    private static final String[] AGENT_ID = new String[]{"ALLAY_0"};
+    private static final String AGENT_ID = "ALLY_";
+
+    public static final Random random = new Random(System.currentTimeMillis());
 
     private final ControllerAPIGrpc.ControllerAPIBlockingStub blockingStub;
     private final ControllerAPIGrpc.ControllerAPIStub asyncStub;
@@ -34,10 +37,11 @@ public class Controller implements Runnable {
     public static void main(String[] args) throws InterruptedException {
         String target = "localhost:12345";
         ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
-        int controllerNum = 1;
+        int controllerNum = 10;
         Controller[] controllers = new Controller[controllerNum];
         CountDownLatch countDownLatch = new CountDownLatch(controllerNum);
         ExecutorService executor = Executors.newFixedThreadPool(controllerNum);
+        logger.info("controller ready to start.");
         for (int i = 0; i < controllerNum; i++) {
             controllers[i] = new Controller(i, channel, countDownLatch);
             executor.submit(controllers[i]);
@@ -52,11 +56,12 @@ public class Controller implements Runnable {
 
     @Override
     public void run() {
-        int step = 10;
-        while (step-- >= 0) {
+        int step = 300;
+        while (step-- > 0) {
             random();
             try {
-                Thread.sleep(1000);
+//                Thread.sleep(90+(long) (20*random.nextDouble()));
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -66,8 +71,12 @@ public class Controller implements Runnable {
 
     private void random() {
         ControllerAPIProto.AgentAction action = ControllerAPIProto.AgentAction.newBuilder()
-                .setAgentId(AGENT_ID[controllerID])
+                .setAgentId(AGENT_ID + controllerID)
                 .setActionType(1).build();
+        ControllerAPIProto.AgentInfo agentInfo = ControllerAPIProto.AgentInfo.newBuilder()
+                .setAgentID(AGENT_ID + controllerID).build();
+
+        ControllerAPIProto.AgentObservation observation = blockingStub.getObservation(agentInfo);
         Null rsp = blockingStub.setAction(action);
     }
 }

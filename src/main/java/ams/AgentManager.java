@@ -13,6 +13,7 @@ import state.SimState;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @Author: gq
@@ -105,6 +106,7 @@ public class AgentManager {
         Agent targetAgent = instance.agentMap.get(agentID);
         if (targetAgent != null) {
             targetAgent.putMessage(message);
+            msgNum.incrementAndGet();
         }
     }
 
@@ -130,5 +132,12 @@ public class AgentManager {
             e.printStackTrace();
         }
         logger.info("agent manager shutdown.");
+    }
+
+    //用于收集消息数据
+    private static AtomicInteger msgNum = new AtomicInteger();
+
+    public static int getMsgNum(){
+        return msgNum.getAndSet(0);
     }
 }

@@ -24,8 +24,12 @@ import physics.PhysicsEngine;
 import physics.buoy.ModifyBoatMesh;
 import physics.entity.usv.BoatEntity;
 import state.GUIState;
+import util.TimeUtil;
 
 import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
 
 import static conf.Constant.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -154,17 +158,69 @@ public class ExpRemoteSim implements GameLogic {
         }
     }
 
+    private int nodeNum = 10;
+
     int writeRate = 0;
     int dataSize = 0;
     USVBuoyData usvBuoyData = new USVBuoyData();
+    DistributeData distributeData = new DistributeData(nodeNum);
+    MsgData msgData = new MsgData();
+    double accTime = 0;
+    int initTime = 200;
+    boolean initData = true;
+    boolean began = false;
+    int secNum = 0;
+    Random random = new Random(System.currentTimeMillis());
     @Override
     public void update(double stepTime) {
         if (!stepController.isPause()) {
             //海浪等环境更新
             ocean.update(stepController.getElapsedTime());
+            double s = TimeUtil.currentTime();
             //Agent系统周期更新
             AgentManager.update(stepTime);
-        }
+            double e = TimeUtil.currentTime();
+
+
+
+
+            if (initData && initTime-- < 0) {
+                initData = false;
+                began = true;
+                server.getMsgNum();
+                AgentManager.getMsgNum();
+                logger.info("start to collect.");
+            }
+
+            if (began && dataSize < 1000) {
+                dataSize++;
+//                {
+//                    accTime += stepController.getDeltaTime();
+//                    if (accTime >= 1) {
+//                        accTime -= 1;
+//                        secNum++;
+//                        distributeData.msgNum += server.getMsgNum();
+//                        logger.info("msg {}", distributeData.msgNum);
+//                    }
+//                    distributeData.elapsedTime += stepController.getDeltaTime();
+//                    distributeData.updateTime += (e-s);
+//                    if (dataSize == 500) {
+//                        distributeData.msgNum /= secNum;
+//                        distributeData.elapsedTime /= 500;
+//                        distributeData.updateTime /= 500;
+//                        distributeData.writeToFile();
+//                        logger.info("write data file done");
+//                    }
+//                }
+                {
+                    msgData.agentMsg.add(AgentManager.getMsgNum());
+                    msgData.netMsg.add(server.getMsgNum());
+                    if (dataSize == 1000) {
+                        msgData.writeToFile();
+                        logger.info("write data file done");
+                    }
+                }
+            }
 
 //        if (dataSize < 10 && boatAgent.getEntity().getTranslation().x > dataSize * 10) {
 //            dataSize++;
@@ -175,6 +231,7 @@ public class ExpRemoteSim implements GameLogic {
 //            }
 //        }
 //        AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(5000, 0));
+        }
     }
 
     @Override
@@ -225,11 +282,12 @@ public class ExpRemoteSim implements GameLogic {
     }
 
     private void initSimScene() {
-        {
+        for (int i = 0; i < nodeNum; i++) {
+
 
             //ally usv
             //模型初始朝向面向x轴正方向
-            Vector3f position = new Vector3f(0,0,0);
+            Vector3f position = new Vector3f(random.nextFloat() * 200,0,random.nextFloat() * 200);
             Vector3f scale = new Vector3f(1,1,1);
             Vector3f modelForward = new Vector3f(1,0,0);
             Vector3f forward = new Vector3f(1,0,0);
@@ -243,7 +301,39 @@ public class ExpRemoteSim implements GameLogic {
                     physicsEngine.getWorld(), physicsEngine.getSpace(),
                     position, rotation, scale, boatModel);
             boatEntity.createBuoyHelper();
-            boatAgent = new USVAgent(USVAgent.Camp.ALLY, 0, boatEntity);
+            boatAgent = new USVAgent(USVAgent.Camp.ALLY, i, boatEntity);
+            AgentManager.addAgent(boatAgent);
+            BoatObj boat = new BoatObj(boatAgent.getAgentID(),
+                    boatEntity.getTranslation(),
+                    boatEntity.getRotation(),
+                    boatEntity.getScale(),
+                    boatModel);
+            boat.setColor((float) 0xff/0xff,(float) 0x6e/0xff,(float) 0x40/0xff,1);
+            scene.setGameObj(boat);
+
+            modifyBoatMesh = boatEntity.getBuoyHelper().getModifyBoatMesh();
+        }
+
+        for (int i = 0; i < 100; i++) {
+
+
+            //ally usv
+            //模型初始朝向面向x轴正方向
+            Vector3f position = new Vector3f(random.nextFloat() * 200 + 100,0,random.nextFloat() * 200);
+            Vector3f scale = new Vector3f(1,1,1);
+            Vector3f modelForward = new Vector3f(1,0,0);
+            Vector3f forward = new Vector3f(1,0,0);
+            Vector3f u = new Vector3f();
+            modelForward.cross(forward, u);
+            float angle = forward.angle(modelForward);
+            u.mul((float) Math.sin(angle/2));
+            Quaternionf rotation = new Quaternionf(u.x, u.y, u.z, (float) Math.cos(angle/2));
+
+            BoatEntity boatEntity = new BoatEntity(ocean,
+                    physicsEngine.getWorld(), physicsEngine.getSpace(),
+                    position, rotation, scale, boatModel);
+            boatEntity.createBuoyHelper();
+            boatAgent = new USVAgent(USVAgent.Camp.ENEMY, i, boatEntity);
             AgentManager.addAgent(boatAgent);
             BoatObj boat = new BoatObj(boatAgent.getAgentID(),
                     boatEntity.getTranslation(),
