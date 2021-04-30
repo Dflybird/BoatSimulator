@@ -6,6 +6,6 @@
   "UPS": 50,
   "fastForwardSpeed": 1.0,
   "isRender": true,
-  "sceneConfigFile": "defend_main_ship_scene.json",
+  "sceneConfigFile": "test_scene.json",
   "rewardConfigFile": "defend_main_ship_reward.json"
 }

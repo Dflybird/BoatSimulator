@@ -58,11 +58,11 @@ message MemberObservation {
   int32 id = 1;
   //存活状态 0:死亡 1:存活
   int32 status = 2;
-  //自身坐标
+  //自身坐标，世界坐标
   Vector3 self_pos = 3;
-  //最近敌方坐标
+  //最近敌方坐标，相对坐标
   Vector3 closest_enemy_pos = 4;
-  //最近友方坐标
+  //最近友方坐标，相对坐标
   Vector3 closest_ally_pos = 5;
   //主舰坐标
   Vector3 main_ship_pos = 6;

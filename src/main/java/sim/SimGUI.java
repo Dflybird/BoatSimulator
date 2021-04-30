@@ -145,16 +145,33 @@ public class SimGUI implements GameLogic {
         if (glfwGetKey(window.getWindowID(), GLFW_KEY_R) == GLFW_PRESS) {
             reset();
         }
+        //暂停
+        if (glfwGetKey(window.getWindowID(), GLFW_KEY_SPACE) == GLFW_PRESS) {
+            pause();
+        }
+        //播放
+        if (glfwGetKey(window.getWindowID(), GLFW_KEY_ENTER) == GLFW_PRESS) {
+            play(() -> logger.info("sim pause"));
+        }
 
         if (glfwGetKey(window.getWindowID(), GLFW_KEY_UP) == GLFW_PRESS) {
-//            AgentManager.sendAgentMessage("ENEMY_0", new SteerMessage(SteerMessage.SteerType.SECOND_STRAIGHT));
-            AgentManager.sendAgentMessage("ENEMY_0", new SteerMessage(32000,0));
+            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.SECOND_STRAIGHT));
         } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_DOWN) == GLFW_PRESS) {
             AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.STOP));
         } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_LEFT) == GLFW_PRESS) {
-            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.SECOND_TURN_LEFT));
+            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.FIRST_TURN_HALF_LEFT));
         } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
             AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.FIRST_TURN_HALF_RIGHT));
+        }
+
+        if (glfwGetKey(window.getWindowID(), GLFW_KEY_U) == GLFW_PRESS) {
+            AgentManager.sendAgentMessage("ENEMY_0", new SteerMessage(SteerMessage.SteerType.FIRST_STRAIGHT));
+        } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_J) == GLFW_PRESS) {
+            AgentManager.sendAgentMessage("ENEMY_0", new SteerMessage(SteerMessage.SteerType.STOP));
+        } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_H) == GLFW_PRESS) {
+            AgentManager.sendAgentMessage("ENEMY_0", new SteerMessage(SteerMessage.SteerType.FIRST_TURN_HALF_LEFT));
+        } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_K) == GLFW_PRESS) {
+            AgentManager.sendAgentMessage("ENEMY_0", new SteerMessage(SteerMessage.SteerType.FIRST_TURN_HALF_RIGHT));
         }
     }
 
