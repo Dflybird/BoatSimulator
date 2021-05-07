@@ -88,7 +88,7 @@ public class BoatEngine {
 
         float waterLevel = ocean.getWaveHeight(enginePos.x, enginePos.z);
 
-        if (translation.y < waterLevel) {
+        if (enginePos.y < waterLevel) {
             //引擎在水面下
             Vector3f force = new Vector3f(forward);
             force.rotateY(currentEngineRotation);

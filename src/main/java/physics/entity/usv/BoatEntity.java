@@ -24,6 +24,7 @@ public class BoatEntity extends Entity {
     private final Logger logger = LoggerFactory.getLogger(BoatEntity.class);
 
     private BuoyHelper buoyHelper;
+    private float weight = 2000f;
 
     //船头方向就是船的朝向，指向x轴正方向
     public BoatEntity(Ocean ocean, DWorld world, DSpace space, Vector3f translation, Quaternionf rotation, Vector3f scale, Model model) {
@@ -31,10 +32,15 @@ public class BoatEntity extends Entity {
         init();
     }
 
+    public BoatEntity(Ocean ocean, DWorld world, DSpace space, Vector3f translation, Quaternionf rotation, Vector3f scale, float weight,Model model) {
+        super(ocean, world, space, translation, new Vector3f(1,0,0) , rotation, scale, model);
+        //重量，单位kg
+        this.weight = weight;
+        init();
+    }
+
     private void init() {
         DMass mass = OdeHelper.createMass();
-        //重量，单位kg
-        float weight = 2000f * scale.x * scale.y * scale.z;
 
         DTriMeshData meshData = OdeHelper.createTriMeshData();
         meshData.build(model.getVertices(), model.getIndices());

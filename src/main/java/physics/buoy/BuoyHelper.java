@@ -52,7 +52,7 @@ public class BuoyHelper {
         normal.normalize();
         float len = modifyBoatMesh.calcUnderwaterLength(normal);
         float Cf = resistanceCoefficient(
-                velocity.length(),
+                velocity.length()*2,
                 len);
 
         SlammingForceData[] slammingForceData = modifyBoatMesh.getSlammingForceData();

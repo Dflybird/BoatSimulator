@@ -58,7 +58,7 @@ public class Ocean {
     public void init(Scene scene, SceneConfig sceneConfig) {
         if (sceneConfig == null) {
             fog = Fog.OCEAN_FLOG;
-            wind = new Wind(30, new Vector2f(0,-1));
+            wind = new Wind(2, new Vector2f(0,-1));
         } else {
             fog = new Fog(true, new Vector3f(0.7f, 0.7f, 0.7f), 2f, sceneConfig.getFogVisibility());
             wind = sceneConfig.getWind();

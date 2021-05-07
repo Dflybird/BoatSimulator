@@ -22,10 +22,10 @@ public class GameStepController {
         this.stepSize = stepSize;
     }
 
-    private double elapsedTime;
+    private double elapsedTime; //从仿真开始到现在的时间
     private double lastLoopTime;
     private double deltaTime;
-    private int elapsedStep;
+    private int elapsedStep;    //仿真持续运行的步数
     private boolean pause;
 
     public void init() {

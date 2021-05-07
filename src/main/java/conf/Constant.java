@@ -50,12 +50,12 @@ public class Constant {
     //参考运动速度，高于此速度阻力变得明显，单位m/s
     public static final float VELOCITY_REFERENCE = 2f;
     //运动方向与流体正向压力系数
-    public static final float C_PD1 = 200f;
-    public static final float C_PD2 = 200f;
+    public static final float C_PD1 = 230f;
+    public static final float C_PD2 = 230f;
     public static final float f_P = 0.5f;
     //运动方向与流体逆向吸力系数
-    public static final float C_SD1 = 200f;
-    public static final float C_SD2 = 200f;
+    public static final float C_SD1 = 230f;
+    public static final float C_SD2 = 230f;
     public static final float f_S = 0.5f;
     //流体撞击力参数
     public static final float P = 2f;

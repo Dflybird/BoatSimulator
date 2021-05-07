@@ -3,6 +3,8 @@ package data_acquisition;
 import ams.AgentManager;
 import ams.agent.usv.USVAgent;
 import ams.msg.SteerMessage;
+import analysis.ChartOps;
+import analysis.SimulationCharts;
 import conf.Config;
 import engine.GameEngine;
 import engine.GameLogic;
@@ -25,6 +27,7 @@ import physics.entity.usv.BoatEntity;
 import state.GUIState;
 
 import java.io.File;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static conf.Constant.*;
 import static conf.Constant.BUOY_OBJ_NAME;
@@ -85,6 +88,8 @@ public class ExpSim implements GameLogic {
         renderer.init(window, camera, scene, guiState);
         stepController.init();
 
+        ChartOps.displayChartMatrix();
+
         //环境光
         SceneLight sceneLight = new SceneLight();
         sceneLight.setAmbientLight(new Vector3f(0.5f, 0.5f, 0.5f));
@@ -140,20 +145,36 @@ public class ExpSim implements GameLogic {
         }
 
         if (glfwGetKey(window.getWindowID(), GLFW_KEY_UP) == GLFW_PRESS) {
+            work.set(true);
 //            AgentManager.sendAgentMessage("ENEMY_0", new SteerMessage(SteerMessage.SteerType.SECOND_STRAIGHT));
-            AgentManager.sendAgentMessage("ENEMY_0", new SteerMessage(32000,0));
+//            AgentManager.sendAgentMessage("ENEMY_0", new SteerMessage(32000,0));
         } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_DOWN) == GLFW_PRESS) {
-            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.STOP));
-        } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_LEFT) == GLFW_PRESS) {
-            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.SECOND_TURN_LEFT));
-        } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
-            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.FIRST_TURN_HALF_RIGHT));
+            work.set(false);
+//            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.STOP));
+        }
+//        else if (glfwGetKey(window.getWindowID(), GLFW_KEY_LEFT) == GLFW_PRESS) {
+//            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.SECOND_TURN_LEFT));
+//        } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
+//            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.FIRST_TURN_HALF_RIGHT));
+//        }
+
+        if (work.get()) {
+//            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(3.13f,0));
+            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(3.13f,0));
+        } else {
+            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(0,0));
         }
     }
+
+    AtomicBoolean work = new AtomicBoolean(false);
 
     int writeRate = 0;
     int dataSize = 0;
     USVBuoyData usvBuoyData = new USVBuoyData();
+    int step = 0;
+    float ela = 0.1f;
+    SpeedData speedData = new SpeedData();
+
     @Override
     public void update(double stepTime) {
         if (!stepController.isPause()) {
@@ -161,6 +182,26 @@ public class ExpSim implements GameLogic {
             ocean.update(stepController.getElapsedTime());
             //Agent系统周期更新
             AgentManager.update(stepTime);
+
+            if (work.get()) {
+                if (ela >= 0.1) {
+                    ela -=0.1;
+                    dataSize++;
+                    Vector3f s =  AgentManager.getAgent("ALLY_0").getEntity().getLinearVelocity();
+                    float speed = (float) Math.sqrt(s.x * s.x + s.z * s.z);
+                    speedData.speed.add(speed);
+
+                    SimulationCharts.SPEED.getSeries()[0].getseriesData().record(step, speed);
+                    ChartOps.updateChartData(SimulationCharts.SPEED);
+                    step++;
+                }
+                ela += stepTime;
+                if (dataSize >= 150) {
+                    speedData.writeToFile();
+                    logger.info("write file");
+                    work.set(false);
+                }
+            }
         }
 
 //        if (dataSize < 10 && boatAgent.getEntity().getTranslation().x > dataSize * 10) {
@@ -226,7 +267,9 @@ public class ExpSim implements GameLogic {
             //ally usv
             //模型初始朝向面向x轴正方向
             Vector3f position = new Vector3f(0,0,0);
-            Vector3f scale = new Vector3f(1,1,1);
+//            Vector3f scale = new Vector3f(0.2f,0.25f,0.1f);
+            Vector3f scale = new Vector3f(0.2f,0.25f,0.2f);
+//            Vector3f scale = new Vector3f(1,1,1);
             Vector3f modelForward = new Vector3f(1,0,0);
             Vector3f forward = new Vector3f(1,0,0);
             Vector3f u = new Vector3f();
@@ -235,9 +278,11 @@ public class ExpSim implements GameLogic {
             u.mul((float) Math.sin(angle/2));
             Quaternionf rotation = new Quaternionf(u.x, u.y, u.z, (float) Math.cos(angle/2));
 
+            //默认长5m 宽2m 高1m
             BoatEntity boatEntity = new BoatEntity(ocean,
                     physicsEngine.getWorld(), physicsEngine.getSpace(),
-                    position, rotation, scale, boatModel);
+                    position, rotation, scale,
+                    12f, boatModel);
             boatEntity.createBuoyHelper();
             boatAgent = new USVAgent(USVAgent.Camp.ALLY, 0, boatEntity);
             AgentManager.addAgent(boatAgent);

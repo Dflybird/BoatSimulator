@@ -464,6 +464,13 @@
             <version>6.0.53</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- Data analysis library -->
+        <dependency>
+            <groupId>org.knowm.xchart</groupId>
+            <artifactId>xchart</artifactId>
+            <version>3.5.0</version>
+        </dependency>
     </dependencies>
 
     <build>
