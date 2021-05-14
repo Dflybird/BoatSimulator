@@ -92,7 +92,6 @@ public class ControllerRPCServices extends ControllerGrpc.ControllerImplBase {
                         .setFitness(entry.getValue())
                         .build();
                 list.add(teamFitness);
-                logger.debug("camp: {} | fitness: {}", entry.getKey(), entry.getValue());
             }
 
             OnDoneAgent onDoneAgent = (OnDoneAgent) AgentManager.getAgent(ON_DONE_AGENT);
