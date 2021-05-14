@@ -253,30 +253,40 @@ public class SteerMessage extends AgentMessage {
         USVAgent mainUSV = (USVAgent) AgentManager.getAgent(mainShipId);
         Vector3f refPos = new Vector3f(mainUSV.getEntity().getTranslation());
         Vector3f direction = new Vector3f(mainUSV.getCurrForward());
-        List<Vector3f> scouts = addJustGuard(refPos, 3, sceneConfig.getAllyDetectRange() * 1.1f, direction);
+        List<Vector3f> scouts = addJustGuard(refPos, 18, sceneConfig.getAllyDetectRange() * 1.1f, direction);
 
-        Map<String[], Double> costs = new HashMap<>();
+        Map<Integer, Double> costs = new HashMap<>();
         int col;
         for (Vector3f v : scouts) {
             col = scouts.indexOf(v);
             double distance = v.distance(agent.getEntity().getTranslation());
             Quaternionf rot = fromTwoVectors(agent.getCurrForward(), v);
             double or = getYaw(rot) / 180;
-            double angle =Math.abs(or);
-            double cost = distance + angle;
-            costs.put(new String[]{agent.getAgentID(), col + ""}, cost);
+            double angle = Math.abs(or);
+            double cost = distance + or;
+            costs.put(col, cost);
         }
-        List<Map.Entry<String[], Double>> list = new LinkedList<>(costs.entrySet());
+        List<Map.Entry<Integer, Double>> list = new LinkedList<>(costs.entrySet());
         list.sort(Map.Entry.comparingByValue());
 
-        for (Vector3f v: scouts) {
-            col=scouts.indexOf(v);
-            for (Map.Entry<String[], Double> aa : list) {
-                String[] ass = aa.getKey();
-                if (ass[1].equals(col+"")) {
+//        List<Map.Entry<Integer, Double>> list =
+//                new LinkedList<Map.Entry<Integer, Double>>(costs.entrySet());
+//        Collections.sort(list, new Comparator<Map.Entry<Integer, Double>>() {
+//            public int compare(Map.Entry<Integer, Double> o1,
+//                               Map.Entry<Integer, Double> o2) {
+//                return (o1.getValue()).compareTo(o2.getValue());
+//            }
+//        });
+
+//        list.sort((o1, o2) -> (o2.getValue()).compareTo(o1.getValue()));
+
+
+        for (Map.Entry<Integer, Double> aa : list) {
+            for (Vector3f v : scouts) {
+                col = scouts.indexOf(v);
+                if (aa.getKey() == col) {
                     return steer(v, new Vector3f(agent.getEntity().getTranslation()), agent.getCurrForward());
                 }
-
             }
         }
 
