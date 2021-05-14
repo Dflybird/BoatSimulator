@@ -83,7 +83,7 @@ public class ControllerServer {
 
         @Override
         public void setAction(ControllerAPIProto.AgentAction request, StreamObserver<Null> responseObserver) {
-            SteerMessage steerMessage = new SteerMessage(SteerMessage.SteerType.typeOf(request.getActionType()));
+            SteerMessage steerMessage = new SteerMessage(SteerMessage.ControllerType.typeOf(request.getActionType()));
             AgentManager.sendAgentMessage(request.getAgentId(), steerMessage);
             responseObserver.onNext(Null.newBuilder().build());
             responseObserver.onCompleted();

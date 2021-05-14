@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import physics.buoy.BuoyHelper;
 import physics.entity.Entity;
 
+import java.util.Arrays;
+
 import static util.StructTransform.transformFromQuaternionf;
 import static util.StructTransform.transformFromVector3f;
 
@@ -43,7 +45,14 @@ public class BoatEntity extends Entity {
         DMass mass = OdeHelper.createMass();
 
         DTriMeshData meshData = OdeHelper.createTriMeshData();
-        meshData.build(model.getVertices(), model.getIndices());
+        float[] v = model.getVertices();
+        float[] nv = new float[v.length];
+        for (int i = 0; i < v.length/3; i++) {
+            nv[i*3] = v[i*3] * scale.x;
+            nv[i*3+1] = v[i*3+1] * scale.y;
+            nv[i*3+2] = v[i*3+2] * scale.z;
+        }
+        meshData.build(v, model.getIndices());
 
         geom = OdeHelper.createTriMesh(space, meshData, null, null, null);
 
@@ -51,6 +60,7 @@ public class BoatEntity extends Entity {
 
         body = OdeHelper.createBody(world);
         body.setMass(mass);
+
         body.setPosition(transformFromVector3f(translation));
         body.setQuaternion(transformFromQuaternionf(rotation));
         geom.setBody(body);
@@ -84,5 +94,13 @@ public class BoatEntity extends Entity {
 
     public BuoyHelper getBuoyHelper() {
         return buoyHelper;
+    }
+
+    public Vector3f getBuoyancyForce() {
+        return buoyHelper.getTempBuoyancyForce();
+    }
+
+    public Vector3f getDamp() {
+        return buoyHelper.getTempDampForce();
     }
 }

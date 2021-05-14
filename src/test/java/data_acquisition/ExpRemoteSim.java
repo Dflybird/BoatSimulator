@@ -27,8 +27,6 @@ import state.GUIState;
 import util.TimeUtil;
 
 import java.io.File;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
 
 import static conf.Constant.*;
@@ -147,14 +145,14 @@ public class ExpRemoteSim implements GameLogic {
         }
 
         if (glfwGetKey(window.getWindowID(), GLFW_KEY_UP) == GLFW_PRESS) {
-//            AgentManager.sendAgentMessage("ENEMY_0", new SteerMessage(SteerMessage.SteerType.SECOND_STRAIGHT));
+//            AgentManager.sendAgentMessage("ENEMY_0", new SteerMessage(SteerMessage.ControllerType.SECOND_STRAIGHT));
             AgentManager.sendAgentMessage("ENEMY_0", new SteerMessage(32000,0));
         } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_DOWN) == GLFW_PRESS) {
-            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.STOP));
+            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.ControllerType.STOP));
         } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_LEFT) == GLFW_PRESS) {
-            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.SECOND_TURN_LEFT));
+            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.ControllerType.SECOND_TURN_LEFT));
         } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
-            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.FIRST_TURN_HALF_RIGHT));
+            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.ControllerType.FIRST_TURN_HALF_RIGHT));
         }
     }
 

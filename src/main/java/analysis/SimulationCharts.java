@@ -8,30 +8,26 @@ import org.knowm.xchart.style.Styler;
  * Maintains all different kinds of charts (and their details) on the chart matrix/board
  */
 public enum SimulationCharts {
-//    ROUND_SCORE(new XYChartBuilder()
-//            .title("Performance")
-//            .xAxisTitle("Episode")
-//            .yAxisTitle("Score")
-//            .width(500)
-//            .height(500).theme(Styler.ChartTheme.Matlab).build(), new Series("Score")),
-//    HIGH_SCORE(new XYChartBuilder()
-//            .title("Generation Summary")
-//            .xAxisTitle("Generation")
-//            .yAxisTitle("Score")
-//            .width(500)
-//            .height(500).theme(Styler.ChartTheme.Matlab).build(), new Series("High score"), new Series("Average Score")),
-//    EXP_AVG(new XYChartBuilder()
-//            .title("Moving Average (window = " + Math.toIntExact(Math.round((1 / (1 - 0.95)))) + ")")
-//            .xAxisTitle("Episode")
-//            .yAxisTitle("Score")
-//            .width(500)
-//            .height(500).theme(Styler.ChartTheme.Matlab).build(), new Series("Exp. avg")),
+    WAVE_LEVEL(new XYChartBuilder()
+            .xAxisTitle("Time(s)")
+            .yAxisTitle("Wave(m)")
+            .width(500)
+            .height(500).theme(Styler.ChartTheme.Matlab).build(), new Series("wave")),
+    BUOY(new XYChartBuilder()
+            .xAxisTitle("Time(s)")
+            .yAxisTitle("Buoyancy(N))")
+            .width(500)
+            .height(500).theme(Styler.ChartTheme.Matlab).build(), new Series("buoy")),
+    FORCE(new XYChartBuilder()
+            .xAxisTitle("Time(s)")
+            .yAxisTitle("Force(N)")
+            .width(500)
+            .height(500).theme(Styler.ChartTheme.Matlab).build(), new Series(" thrust"), new Series("damp")),
     SPEED(new XYChartBuilder()
-            .title("Sim")
-            .xAxisTitle("Time")
+            .xAxisTitle("Time(s)")
             .yAxisTitle("Speed(m/s)")
             .width(500)
-            .height(500).theme(Styler.ChartTheme.Matlab).build(), new Series("Mutation Prob."));
+            .height(500).theme(Styler.ChartTheme.Matlab).build(), new Series("speed"));
 
     private final XYChart chart;
     private final Series[] series;

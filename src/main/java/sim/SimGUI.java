@@ -155,23 +155,23 @@ public class SimGUI implements GameLogic {
         }
 
         if (glfwGetKey(window.getWindowID(), GLFW_KEY_UP) == GLFW_PRESS) {
-            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.SECOND_STRAIGHT));
+            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.ControllerType.SECOND_STRAIGHT));
         } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_DOWN) == GLFW_PRESS) {
-            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.STOP));
+            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.ControllerType.STOP));
         } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_LEFT) == GLFW_PRESS) {
-            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.FIRST_TURN_HALF_LEFT));
+            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.ControllerType.FIRST_TURN_HALF_LEFT));
         } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
-            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.FIRST_TURN_HALF_RIGHT));
+            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.ControllerType.FIRST_TURN_HALF_RIGHT));
         }
 
         if (glfwGetKey(window.getWindowID(), GLFW_KEY_U) == GLFW_PRESS) {
-            AgentManager.sendAgentMessage("ENEMY_0", new SteerMessage(SteerMessage.SteerType.FIRST_STRAIGHT));
+            AgentManager.sendAgentMessage("ENEMY_0", new SteerMessage(SteerMessage.ControllerType.FIRST_STRAIGHT));
         } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_J) == GLFW_PRESS) {
-            AgentManager.sendAgentMessage("ENEMY_0", new SteerMessage(SteerMessage.SteerType.STOP));
+            AgentManager.sendAgentMessage("ENEMY_0", new SteerMessage(SteerMessage.ControllerType.STOP));
         } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_H) == GLFW_PRESS) {
-            AgentManager.sendAgentMessage("ENEMY_0", new SteerMessage(SteerMessage.SteerType.FIRST_TURN_HALF_LEFT));
+            AgentManager.sendAgentMessage("ENEMY_0", new SteerMessage(SteerMessage.ControllerType.FIRST_TURN_HALF_LEFT));
         } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_K) == GLFW_PRESS) {
-            AgentManager.sendAgentMessage("ENEMY_0", new SteerMessage(SteerMessage.SteerType.FIRST_TURN_HALF_RIGHT));
+            AgentManager.sendAgentMessage("ENEMY_0", new SteerMessage(SteerMessage.ControllerType.FIRST_TURN_HALF_RIGHT));
         }
     }
 
@@ -228,35 +228,35 @@ public class SimGUI implements GameLogic {
 
     private void initSimScene() {
         //设置浮标，限制场地范围
-        List<AgentConfig> buoys = sceneConfig.getBuoys();
-        for (AgentConfig agentConfig : buoys) {
-            //模型初始朝向面向x轴正方向
-            Vector3f position = agentConfig.getPos();
-            Vector3f scale = new Vector3f(1,1,1);
-            Vector3f modelForward = new Vector3f(1,0,0);
-            Vector3f forward = agentConfig.getForward();
-            Vector3f u = new Vector3f();
-            modelForward.cross(forward, u);
-            float angle = forward.angle(modelForward);
-            u.mul((float) Math.sin(angle/2));
-            Quaternionf rotation = new Quaternionf(u.x, u.y, u.z, (float) Math.cos(angle/2));
-
-            BuoyEntity buoyEntity = new BuoyEntity(ocean,
-                    physicsEngine.getWorld(), physicsEngine.getSpace(),
-                    position, rotation, scale, buoyModel);
-            buoyEntity.createBuoyHelper();
-            BuoyAgent buoyAgent = new BuoyAgent("BUOY_"+agentConfig.getId());
-
-            buoyAgent.setEntity(buoyEntity);
-            AgentManager.addAgent(buoyAgent);
-            BuoyObj buoy = new BuoyObj(buoyAgent.getAgentID(),
-                    buoyEntity.getTranslation(),
-                    buoyEntity.getRotation(),
-                    buoyEntity.getScale(),
-                    buoyModel);
-            buoy.setColor((float) 0xff/0xff,(float) 0xc4/0xff,(float) 0x00/0xff,1);
-            scene.setGameObj(buoy);
-        }
+//        List<AgentConfig> buoys = sceneConfig.getBuoys();
+//        for (AgentConfig agentConfig : buoys) {
+//            //模型初始朝向面向x轴正方向
+//            Vector3f position = agentConfig.getPos();
+//            Vector3f scale = new Vector3f(1,1,1);
+//            Vector3f modelForward = new Vector3f(1,0,0);
+//            Vector3f forward = agentConfig.getForward();
+//            Vector3f u = new Vector3f();
+//            modelForward.cross(forward, u);
+//            float angle = forward.angle(modelForward);
+//            u.mul((float) Math.sin(angle/2));
+//            Quaternionf rotation = new Quaternionf(u.x, u.y, u.z, (float) Math.cos(angle/2));
+//
+//            BuoyEntity buoyEntity = new BuoyEntity(ocean,
+//                    physicsEngine.getWorld(), physicsEngine.getSpace(),
+//                    position, rotation, scale, buoyModel);
+//            buoyEntity.createBuoyHelper();
+//            BuoyAgent buoyAgent = new BuoyAgent("BUOY_"+agentConfig.getId());
+//
+//            buoyAgent.setEntity(buoyEntity);
+//            AgentManager.addAgent(buoyAgent);
+//            BuoyObj buoy = new BuoyObj(buoyAgent.getAgentID(),
+//                    buoyEntity.getTranslation(),
+//                    buoyEntity.getRotation(),
+//                    buoyEntity.getScale(),
+//                    buoyModel);
+//            buoy.setColor((float) 0xff/0xff,(float) 0xc4/0xff,(float) 0x00/0xff,1);
+//            scene.setGameObj(buoy);
+//        }
         //main ship
         {
             AgentConfig agentConfig = sceneConfig.getMainShip();

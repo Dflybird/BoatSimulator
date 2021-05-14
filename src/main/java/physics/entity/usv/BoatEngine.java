@@ -113,4 +113,8 @@ public class BoatEngine {
     public float getMaxSpeed() {
         return maxSpeed;
     }
+
+    public float getCurrentEnginePower() {
+        return currentEnginePower;
+    }
 }

@@ -267,13 +267,13 @@ public class TestSimGUI implements GameLogic {
 //        AgentManager.sendAgentMessage("boat", steerMessage);
 
         if (glfwGetKey(window.getWindowID(), GLFW_KEY_UP) == GLFW_PRESS) {
-            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.FIRST_STRAIGHT));
+            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.ControllerType.FIRST_STRAIGHT));
         } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_DOWN) == GLFW_PRESS) {
-            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.STOP));
+            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.ControllerType.STOP));
         } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_LEFT) == GLFW_PRESS) {
-            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.FIRST_TURN_LEFT));
+            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.ControllerType.FIRST_TURN_LEFT));
         } else if (glfwGetKey(window.getWindowID(), GLFW_KEY_RIGHT) == GLFW_PRESS) {
-            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.SteerType.FIRST_TURN_RIGHT));
+            AgentManager.sendAgentMessage("ALLY_0", new SteerMessage(SteerMessage.ControllerType.FIRST_TURN_RIGHT));
         }
 
         //测试键

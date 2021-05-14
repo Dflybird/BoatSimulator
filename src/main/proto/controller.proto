@@ -1,0 +1,127 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "net";
+option java_outer_classname = "ControllerProto";
+option objc_class_prefix = "RTG";
+
+package net;
+
+import "base.proto";
+
+service Controller {
+  //获得观测数据
+  rpc getObservation(Null) returns (Information) {}
+  //下发控制指令，并得到控制指令的回报
+  rpc step(Command) returns (Fitness) {}
+  //重启仿真
+  rpc reset(Null) returns (Null) {}
+}
+
+message Information {
+  repeated TeamInfo team_info = 1;
+}
+
+message TeamInfo {
+  //阵营 0:友方 1:敌方
+  int32 camp = 1;
+  repeated VesselInfo vesselInfo = 2;
+}
+
+message VesselInfo {
+  string id = 1;
+  InternalState internalState = 2;
+  ExternalState externalState = 3;
+  ObservedState observedState = 4;
+}
+
+message InternalState {
+  float radar_range = 1;
+  float weapon_range = 2;
+  float weapon_angle = 3;
+  float power = 4;
+
+}
+
+message ExternalState {
+  //自身坐标
+  Vector3 position = 1;
+  //朝向
+  Vector3 forward = 2;
+  //自身速度
+  float speed = 3;
+}
+
+message ObservedState{
+  //观测范围内的舰艇
+  repeated VesselsInRange vessels = 1;
+  TargetInfo target = 2;
+}
+
+message VesselsInRange {
+  string id = 1;
+  int32 camp = 2;
+  Vector3 position = 3;
+  Vector3 forward = 4;
+  float speed = 5;
+}
+
+message TargetInfo {
+  string id = 1;
+  //母舰坐标
+  Vector3 position = 2;
+  //母舰朝向
+  Vector3 forward = 3;
+}
+
+//控制指令，包含多个团队控制指令
+message Command {
+  repeated TeamCommand team_command = 1;
+}
+
+//团体控制指令，包含多个团队成员控制指令
+message TeamCommand {
+  //阵营 0:友方 1:敌方 2:主舰
+  int32 camp = 1;
+  repeated MemberCommand member_command = 2;
+}
+
+//成员控制指令，针对具体控制对象
+message MemberCommand {
+  //编号
+  string id = 1;
+  //straightAhead 0
+  //turnLeft 1
+  //turnSlightlyLeft 2
+  //turnVeryLeft 3
+  //turnExtremelyLeft 4
+  //turnRight 5
+  //turnSlightlyRight 6
+  //turnVeryRight 7
+  //turnExtremelyRight 8
+  int32 steer_type = 2;
+  //stop 0
+  //verySlowSpeed 1
+  //lowSpeed 2
+  //normalSpeed 3
+  //fastSpeed 4
+  int32 throttle_type = 3;
+}
+
+message Fitness {
+  bool done = 1;
+  int32 timeStep = 2;
+  repeated TeamFitness team_fitness = 3;
+}
+
+message TeamFitness {
+  //阵营 0:友方 1:敌方
+  int32 camp = 1;
+  //团队回报
+  float fitness = 2;
+}
+
+
+
+
+

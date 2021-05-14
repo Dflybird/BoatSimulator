@@ -31,9 +31,9 @@
             <AppenderRef ref="Console"/>
         </Logger>
 
-        <Logger name="util" level="DEBUG" additivity="false">
-            <AppenderRef ref="Console"/>
-        </Logger>
+<!--        <Logger name="util" level="DEBUG" additivity="false">-->
+<!--            <AppenderRef ref="Console"/>-->
+<!--        </Logger>-->
 
         <Logger name="conf" level="DEBUG" additivity="false">
             <AppenderRef ref="Console"/>

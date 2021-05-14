@@ -95,7 +95,7 @@ public class USVAgent extends Agent implements AgentMessageHandler {
         this.camp = camp;
         this.id = id;
         if (camp == Camp.ALLY) {
-            engine = new BoatEngine(entity, new Vector3f(-1f, -0.25f, 0f), sceneConfig.getAllyMaxPower(), sceneConfig.getAllyMaxSteeringAngle(), sceneConfig.getAllyMaxSpeed());
+            engine = new BoatEngine(entity, new Vector3f(-1f, -0.5f, 0f), sceneConfig.getAllyMaxPower(), sceneConfig.getAllyMaxSteeringAngle(), sceneConfig.getAllyMaxSpeed());
             detector = new BoatDetector(entity, new Vector3f(0f, 0f, 0f), sceneConfig.getAllyDetectRange());
             weapon = new BoatWeapon(entity, new Vector3f(0f, 0f, 0f), sceneConfig.getAllyAttackRange(), sceneConfig.getAllyAttackAngle());
         } else if (camp == Camp.ENEMY) {
@@ -136,12 +136,13 @@ public class USVAgent extends Agent implements AgentMessageHandler {
         }
     }
 
+
     @Override
     public void handle(AgentMessage msg) {
         if (msg.getCorrespondingMessageClass() == SteerMessage.class) {
             if (status == Status.ALIVE) {
                 SteerMessage steerMessage = (SteerMessage) msg;
-                steerMessage.adaptEngine(engine);
+                steerMessage.adaptEngine(this);
                 engine.setEnginePower(steerMessage.getPower());
                 engine.setEngineRotation(steerMessage.getAngle());
             }
@@ -323,5 +324,17 @@ public class USVAgent extends Agent implements AgentMessageHandler {
 
     public int getId() {
         return id;
+    }
+
+    public BoatEngine getEngine() {
+        return engine;
+    }
+
+    public BoatDetector getDetector() {
+        return detector;
+    }
+
+    public BoatWeapon getWeapon() {
+        return weapon;
     }
 }

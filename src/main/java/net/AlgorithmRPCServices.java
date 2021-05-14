@@ -5,7 +5,6 @@ import ams.agent.Agent;
 import ams.agent.OnDoneAgent;
 import ams.agent.usv.USVAgent;
 import ams.msg.SteerMessage;
-import conf.Constant;
 import conf.SceneConfig;
 import engine.GameLogic;
 import io.grpc.stub.StreamObserver;
@@ -25,16 +24,16 @@ import static conf.Constant.*;
  * @Author: gq
  * @Date: 2021/3/15 15:19
  */
-public class RPCServices extends AlgorithmGrpc.AlgorithmImplBase {
+public class AlgorithmRPCServices extends AlgorithmGrpc.AlgorithmImplBase {
 
-    private static final Logger logger = LoggerFactory.getLogger(RPCServices.class);
+    private static final Logger logger = LoggerFactory.getLogger(AlgorithmRPCServices.class);
 
     private final GameLogic gameLogic;
     private final SceneConfig sceneConfig;
 
     private int sizeStep = 0;
 
-    public RPCServices(GameLogic gameLogic) {
+    public AlgorithmRPCServices(GameLogic gameLogic) {
         this.gameLogic = gameLogic;
         this.sceneConfig = SceneConfig.loadConfig();
     }
@@ -88,7 +87,7 @@ public class RPCServices extends AlgorithmGrpc.AlgorithmImplBase {
                 String agentID = AgentUtil.assembleName(camp, memberAction.getId());
                 SteerMessage steerMessage;
                 if (memberAction.getDiscrete()) {
-                    steerMessage = new SteerMessage(SteerMessage.SteerType.typeOf(memberAction.getActionType()));
+                    steerMessage = new SteerMessage(SteerMessage.ControllerType.typeOf(memberAction.getActionType()));
                 } else {
                     steerMessage = new SteerMessage(memberAction.getPower(), memberAction.getAngle());
                 }

@@ -27,7 +27,7 @@ public class Ocean {
     private static final Logger logger = LoggerFactory.getLogger(Ocean.class);
 
     /** 菲利普斯常数,影响波高 */
-    private static final float A = 0.00001f;
+    private static final float A = 0.0001f;
     /** N和M是在x轴与z轴上取样点数 */
     private static final int N = 64;
     private static final int M = 64;
@@ -58,7 +58,7 @@ public class Ocean {
     public void init(Scene scene, SceneConfig sceneConfig) {
         if (sceneConfig == null) {
             fog = Fog.OCEAN_FLOG;
-            wind = new Wind(2, new Vector2f(0,-1));
+            wind = new Wind(2, new Vector2f(-1,0));
         } else {
             fog = new Fog(true, new Vector3f(0.7f, 0.7f, 0.7f), 2f, sceneConfig.getFogVisibility());
             wind = sceneConfig.getWind();

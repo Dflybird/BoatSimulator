@@ -1,6 +1,5 @@
 package net;
 
-import conf.SceneConfig;
 import engine.GameLogic;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
@@ -25,7 +24,7 @@ public class SimServer {
         this.gameLogic = gameLogic;
         this.port = port;
         ServerBuilder<?> serverBuilder = ServerBuilder.forPort(port);
-        this.server = serverBuilder.addService(new RPCServices(gameLogic)).build();
+        this.server = serverBuilder.addService(new ControllerRPCServices(gameLogic)).build();
     }
 
     public void start(){

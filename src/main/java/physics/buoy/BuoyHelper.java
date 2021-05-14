@@ -23,6 +23,9 @@ public class BuoyHelper {
     private final Entity entity;
     private final ModifyBoatMesh modifyBoatMesh;
 
+    private final Vector3f tempBuoyancyForce = new Vector3f();
+    private final Vector3f tempDampForce = new Vector3f();
+
     public BuoyHelper(Ocean ocean, Entity entity) {
         this.ocean = ocean;
         this.world = entity.getWorld();
@@ -83,6 +86,10 @@ public class BuoyHelper {
             force.add(slammingForce);
             Vector3f forcePos = triangleData.getCenter();
             entity.getBody().addForceAtPos(transformFromVector3f(force), transformFromVector3f(forcePos));
+            tempBuoyancyForce.set(buoyancyForce);
+            tempDampForce.set(viscousWaterResistanceForce);
+            tempDampForce.add(pressureDragForce);
+            tempDampForce.add(slammingForce);
         }
     }
 
@@ -108,5 +115,13 @@ public class BuoyHelper {
             data.setVelocity(PhysicsMath.triangleVelocity(entity.getGeom(),
                     modifyBoatMesh.getTransform().transformPoint(center.x, center.y, center.z)));
         }
+    }
+
+    public Vector3f getTempBuoyancyForce() {
+        return tempBuoyancyForce;
+    }
+
+    public Vector3f getTempDampForce() {
+        return tempDampForce;
     }
 }

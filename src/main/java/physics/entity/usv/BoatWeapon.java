@@ -19,9 +19,9 @@ public class BoatWeapon {
     private static final Logger logger = LoggerFactory.getLogger(BoatWeapon.class);
 
     //武器攻击范围，单位m
-    public final float attackRange;
+    private final float attackRange;
     //武器攻击角度，从船的朝向开始算，左右各attackAngle度，单位弧度
-    public final float attackAngle;
+    private final float attackAngle;
     //开火间隔，单位s
     public static final float ATTACK_INTERVAL = 0.1f;
     //击毁概率，百分之八十
@@ -66,5 +66,13 @@ public class BoatWeapon {
             }
         }
         return false;
+    }
+
+    public float getAttackRange() {
+        return attackRange;
+    }
+
+    public float getAttackAngle() {
+        return attackAngle;
     }
 }

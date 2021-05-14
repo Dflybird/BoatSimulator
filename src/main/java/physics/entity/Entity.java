@@ -75,7 +75,7 @@ public abstract class Entity {
         //更新位移变化
         DVector3C position = geom.getPosition();
         transformToVector3f(position, translation);
-        //更新选择变化
+        //更新旋转变化
         DQuaternionC quaternion = geom.getQuaternion();
         transformToQuaternionf(quaternion, rotation);
 
